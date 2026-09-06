@@ -22,8 +22,13 @@ public partial class ChatView : UserControl
 
     private void ChatView_Loaded(object sender, RoutedEventArgs e)
     {
+        DebugCountText.Text = $"count={ViewModel.Messages.Count} chat={ViewModel.CurrentChat?.Title} streaming={ViewModel.IsStreaming}";
         ViewModel.Messages.CollectionChanged += (s, args) =>
         {
+            Dispatcher.Invoke(() =>
+            {
+                DebugCountText.Text = $"count={ViewModel.Messages.Count} chat={ViewModel.CurrentChat?.Title} streaming={ViewModel.IsStreaming}";
+            });
             if (args.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
                 ScrollToBottom();
         };

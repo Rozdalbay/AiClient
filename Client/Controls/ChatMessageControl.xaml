@@ -94,7 +94,14 @@
                        FontSize="14"
                        TextWrapping="Wrap"
                        Visibility="Visible"
-                       Margin="0,0,0,4"/>
+                       Text="DEBUG: no content set"/>
+
+            <TextBlock x:Name="SimpleText"
+                       Grid.Row="2"
+                       Foreground="{StaticResource PrimaryTextBrush}"
+                       FontSize="13"
+                       TextWrapping="Wrap"
+                       Visibility="Visible"/>
 
             <controls:MarkdownRenderer x:Name="MarkdownContent"
                                        Grid.Row="2"

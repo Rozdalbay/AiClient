@@ -13,7 +13,7 @@ public partial class SettingsViewModel : ObservableObject
     private string _selectedSection = "General";
 
     [ObservableProperty]
-    private string _backendUrl = "https://api.example.com";
+    private string _backendUrl = "localhost"; // пока что для тестов localhost
 
     [ObservableProperty]
     private bool _isDarkTheme = true;

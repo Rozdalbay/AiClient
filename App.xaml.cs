@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using AiDesktopClient.Services;
@@ -26,7 +27,8 @@ public partial class App : Application
     private static void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IToastService, ToastService>();
-        services.AddSingleton<IChatService, MockChatService>();
+        services.AddSingleton(_ => new HttpClient {BaseAddress = new Uri("http://localhost:5000/"), Timeout = Timeout.InfiniteTimeSpan});
+        services.AddSingleton<IChatService, SseChatService>();
         services.AddSingleton<IModelService, MockModelService>();
         services.AddSingleton<IUsageService, MockUsageService>();
         services.AddSingleton<IBackendService, MockBackendService>();

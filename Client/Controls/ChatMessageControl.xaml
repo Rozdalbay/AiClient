@@ -90,7 +90,8 @@
 
             <controls:MarkdownRenderer x:Name="MarkdownContent"
                                        Grid.Row="2"
-                                       MinHeight="20"/>
+                                       MinHeight="20"
+                                       Markdown="{Binding Message.Content, RelativeSource={RelativeSource AncestorType=controls:ChatMessageControl}, UpdateSourceTrigger=PropertyChanged}"/>
 
             <StackPanel x:Name="TokenInfoPanel"
                         Grid.Row="3"

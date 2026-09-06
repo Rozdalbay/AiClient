@@ -54,8 +54,6 @@ public partial class ChatMessageControl : UserControl
                 new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC"));
         }
 
-        MarkdownContent.Markdown = message.Content;
-
         if (message.Attachments.Count > 0)
         {
             AttachmentsList.ItemsSource = message.Attachments;

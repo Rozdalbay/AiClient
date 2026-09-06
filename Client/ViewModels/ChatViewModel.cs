@@ -81,7 +81,6 @@ public partial class ChatViewModel : ObservableObject
         };
 
         CurrentChat.Messages.Add(userMessage);
-        Messages = new ObservableCollection<ChatMessage>(CurrentChat.Messages);
         PendingAttachments.Clear();
 
         if (CurrentChat.Title == "New Chat")
@@ -101,7 +100,6 @@ public partial class ChatViewModel : ObservableObject
         };
 
         CurrentChat.Messages.Add(assistantMessage);
-        Messages = new ObservableCollection<ChatMessage>(CurrentChat.Messages);
         CurrentStreamingMessage = assistantMessage;
 
         IsStreaming = true;
@@ -122,7 +120,6 @@ public partial class ChatViewModel : ObservableObject
             {
                 fullContent += chunk;
                 assistantMessage.Content = fullContent;
-                Messages = new ObservableCollection<ChatMessage>(CurrentChat.Messages);
             }
 
             var elapsed = (DateTime.Now - startTime).TotalMilliseconds;

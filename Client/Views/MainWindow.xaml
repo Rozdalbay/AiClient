@@ -28,6 +28,7 @@
         <converters:ChangePercentToColorConverter x:Key="ChangeToColor"/>
         <converters:DateTimeToRelativeConverter x:Key="DateTimeToRelative"/>
         <converters:BoolToOpacityConverter x:Key="BoolToOpacity"/>
+        <converters:InverseBoolConverter x:Key="InverseBool"/>
 
         <DataTemplate DataType="{x:Type vm:ChatViewModel}">
             <views:ChatView/>
@@ -99,7 +100,14 @@
                 <StackPanel Grid.Column="0"
                             Orientation="Horizontal"
                             VerticalAlignment="Center"
-                            Margin="14,0,0,0">
+                            Margin="8,0,0,0">
+                    <Button Style="{StaticResource IconButtonStyle}"
+                            Click="ToggleSidebar_Click"
+                            ToolTip="Toggle sidebar"
+                            Width="28" Height="28"
+                            Margin="0,0,6,0">
+                        <TextBlock Text="&#xE700;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                    </Button>
                     <TextBlock Text="&#xE99A;"
                                FontFamily="Segoe MDL2 Assets"
                                FontSize="13"
@@ -114,6 +122,13 @@
 
                 <StackPanel Grid.Column="1"
                             Orientation="Horizontal">
+                    <Button Style="{StaticResource IconButtonStyle}"
+                            Click="ToggleUsagePanel_Click"
+                            ToolTip="Toggle usage panel"
+                            Width="28" Height="28"
+                            Margin="0,0,4,0">
+                        <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="12"/>
+                    </Button>
                     <Button Style="{StaticResource WindowButtonStyle}"
                             Click="MinimizeButton_Click"
                             ToolTip="Minimize">
@@ -145,6 +160,17 @@
                         Background="{StaticResource SidebarBackgroundBrush}"
                         BorderBrush="{StaticResource BorderBrush}"
                         BorderThickness="0,0,1,0">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Width" Value="270"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSidebarCollapsed}" Value="True">
+                                    <Setter Property="Width" Value="0"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -423,7 +449,19 @@
 
                 <views:UsagePanel Grid.Column="2"
                                   Width="350"
-                                  DataContext="{Binding UsageInfo}"/>
+                                  DataContext="{Binding UsageInfo}">
+                    <views:UsagePanel.Style>
+                        <Style TargetType="views:UsagePanel">
+                            <Setter Property="Width" Value="350"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsUsagePanelOpen}" Value="False">
+                                    <Setter Property="Width" Value="0"/>
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </views:UsagePanel.Style>
+                </views:UsagePanel>
             </Grid>
         </Grid>
     </Border>

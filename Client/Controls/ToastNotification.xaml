@@ -34,6 +34,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <TextBlock x:Name="IconText"
@@ -49,6 +50,16 @@
                        FontSize="13"
                        VerticalAlignment="Center"
                        TextWrapping="Wrap"/>
+
+            <Button x:Name="CloseButton"
+                    Grid.Column="2"
+                    Style="{StaticResource IconButtonStyle}"
+                    Width="20" Height="20"
+                    Margin="6,0,0,0"
+                    Click="CloseButton_Click"
+                    ToolTip="Dismiss">
+                <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="8"/>
+            </Button>
         </Grid>
     </Border>
 </UserControl>

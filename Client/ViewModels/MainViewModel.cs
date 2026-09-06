@@ -57,6 +57,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isPromptsVisible;
 
+    [ObservableProperty]
+    private bool _isUsagePanelOpen = true;
+
     public ICollectionView ChatsView { get; }
 
     public MainViewModel(
@@ -233,6 +236,12 @@ public partial class MainViewModel : ObservableObject
     private void ToggleSidebar()
     {
         IsSidebarCollapsed = !IsSidebarCollapsed;
+    }
+
+    [RelayCommand]
+    private void ToggleUsagePanel()
+    {
+        IsUsagePanelOpen = !IsUsagePanelOpen;
     }
 }
 

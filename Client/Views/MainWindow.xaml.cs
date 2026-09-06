@@ -73,6 +73,16 @@ public partial class MainWindow : Window
         Close();
     }
 
+    private void ToggleSidebar_Click(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ToggleSidebarCommand.Execute(null);
+    }
+
+    private void ToggleUsagePanel_Click(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ToggleUsagePanelCommand.Execute(null);
+    }
+
     private void ChatListItem_Click(object sender, MouseButtonEventArgs e)
     {
         if (sender is Border border && border.Tag is Chat chat)

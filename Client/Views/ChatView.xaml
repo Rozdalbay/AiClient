@@ -20,6 +20,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
@@ -94,80 +95,84 @@
                 Margin="0,44,20,0"
                 HorizontalAlignment="Right"
                 Width="260"
+                MaxHeight="340"
                 Visibility="Collapsed"
                 VerticalAlignment="Top">
-            <StackPanel>
-                <TextBlock Text="Select Model"
-                           Foreground="{StaticResource SecondaryTextBrush}"
-                           FontSize="11"
-                           FontWeight="SemiBold"
-                           Margin="8,4,0,6"/>
-                <ItemsControl ItemsSource="{Binding AvailableModels}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Background="Transparent"
-                                    CornerRadius="8"
-                                    Padding="10,8"
-                                    Cursor="Hand"
-                                    Margin="0,1"
-                                    MouseLeftButtonDown="ModelItem_Click"
-                                    Tag="{Binding}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <TextBlock Text="Select Model"
+                               Foreground="{StaticResource SecondaryTextBrush}"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Margin="8,4,0,6"/>
+                    <ItemsControl ItemsSource="{Binding AvailableModels}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="Transparent"
+                                        CornerRadius="8"
+                                        Padding="10,8"
+                                        Cursor="Hand"
+                                        Margin="0,1"
+                                        MouseLeftButtonDown="ModelItem_Click"
+                                        Tag="{Binding}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <Border Background="{StaticResource PrimaryAccentBrush}"
-                                            CornerRadius="6"
-                                            Width="28" Height="28"
-                                            Margin="0,0,10,0"
-                                            VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Icon}"
-                                                   FontFamily="Segoe MDL2 Assets"
-                                                   FontSize="12"
-                                                   Foreground="White"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"/>
-                                    </Border>
+                                        <Border Background="{StaticResource PrimaryAccentBrush}"
+                                                CornerRadius="6"
+                                                Width="28" Height="28"
+                                                Margin="0,0,10,0"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Icon}"
+                                                       FontFamily="Segoe MDL2 Assets"
+                                                       FontSize="12"
+                                                       Foreground="White"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
 
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding DisplayName}"
-                                                   Foreground="{StaticResource PrimaryTextBrush}"
-                                                   FontSize="13"
-                                                   FontWeight="SemiBold"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Provider}"
-                                                       Foreground="{StaticResource TertiaryTextBrush}"
-                                                       FontSize="11"/>
-                                            <TextBlock Text=" • "
-                                                       Foreground="{StaticResource TertiaryTextBrush}"
-                                                       FontSize="11"/>
-                                            <TextBlock Foreground="{StaticResource TertiaryTextBrush}"
-                                                       FontSize="11">
-                                                <TextBlock.Text>
-                                                    <Binding Path="ContextWindow" StringFormat="{}{0:N0} tokens"/>
-                                                </TextBlock.Text>
-                                            </TextBlock>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding DisplayName}"
+                                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Provider}"
+                                                           Foreground="{StaticResource TertiaryTextBrush}"
+                                                           FontSize="11"/>
+                                                <TextBlock Text=" • "
+                                                           Foreground="{StaticResource TertiaryTextBrush}"
+                                                           FontSize="11"/>
+                                                <TextBlock Foreground="{StaticResource TertiaryTextBrush}"
+                                                           FontSize="11">
+                                                    <TextBlock.Text>
+                                                        <Binding Path="ContextWindow" StringFormat="{}{0:N0} tokens"/>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
                                         </StackPanel>
-                                    </StackPanel>
 
-                                    <Border Grid.Column="2"
-                                            Width="8" Height="8"
-                                            CornerRadius="4"
-                                            VerticalAlignment="Center"
-                                            Visibility="{Binding IsAvailable, Converter={StaticResource BoolToVis}}">
-                                        <Border.Background>
-                                            <SolidColorBrush Color="{StaticResource SuccessAccent}"/>
-                                        </Border.Background>
-                                    </Border>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
+                                        <Border Grid.Column="2"
+                                                Width="8" Height="8"
+                                                CornerRadius="4"
+                                                VerticalAlignment="Center"
+                                                Visibility="{Binding IsAvailable, Converter={StaticResource BoolToVis}}">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{StaticResource SuccessAccent}"/>
+                                            </Border.Background>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
         </Border>
 
         <ScrollViewer x:Name="MessagesScroll"
@@ -175,25 +180,52 @@
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
                       Padding="0">
-            <ItemsControl x:Name="MessagesList"
-                          ItemsSource="{Binding Messages}"
-                          Margin="20,10">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <controls:ChatMessageControl Message="{Binding}"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
+            <Grid>
+                <ItemsControl x:Name="MessagesList"
+                              ItemsSource="{Binding Messages}"
+                              Margin="20,10">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:ChatMessageControl Message="{Binding}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <StackPanel x:Name="EmptyState"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="0,-60,0,0"
+                            Visibility="Collapsed">
+                    <Border Background="{StaticResource AccentGradient}"
+                            CornerRadius="20" Width="64" Height="64"
+                            HorizontalAlignment="Center" Margin="0,0,0,16">
+                        <TextBlock Text="&#xE99A;" FontFamily="Segoe MDL2 Assets" FontSize="28"
+                                   Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="How can I help you?"
+                               Foreground="{StaticResource PrimaryTextBrush}"
+                               FontSize="20" FontWeight="SemiBold"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Ask me anything — I can help with code, writing, analysis, and more."
+                               Foreground="{StaticResource TertiaryTextBrush}"
+                               FontSize="13"
+                               HorizontalAlignment="Center"
+                               Margin="0,6,0,0"
+                               TextWrapping="Wrap"
+                               MaxWidth="380"
+                               TextAlignment="Center"/>
+                </StackPanel>
+            </Grid>
         </ScrollViewer>
 
         <Border x:Name="DropOverlay"
                 Grid.Row="1"
-                Background="#800D0F18"
+                Background="#B30D0F18"
                 CornerRadius="0"
                 Visibility="Collapsed"
                 AllowDrop="True">
@@ -262,7 +294,7 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <Border Grid.Row="2"
+        <Border Grid.Row="3"
                 Padding="20,8,20,16"
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="0,1,0,0">

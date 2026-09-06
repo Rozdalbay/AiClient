@@ -70,6 +70,14 @@ public partial class ChatView : UserControl
             _subscribedMessages.CollectionChanged += Messages_CollectionChanged;
         _followTail = true;
         ScrollToBottom();
+        UpdateEmptyState();
+    }
+
+    private void UpdateEmptyState()
+    {
+        var hasMessages = _subscribedMessages is not null && _subscribedMessages.Count > 0;
+        EmptyState.Visibility = hasMessages ? Visibility.Collapsed : Visibility.Visible;
+        MessagesList.Visibility = hasMessages ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void Messages_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -79,6 +87,7 @@ public partial class ChatView : UserControl
             _followTail = true;
             ScrollToBottom();
         }
+        UpdateEmptyState();
     }
 
     private void MessagesScroll_ScrollChanged(object sender, ScrollChangedEventArgs e)

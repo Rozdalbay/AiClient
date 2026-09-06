@@ -94,15 +94,18 @@ public partial class ChatMessageControl : UserControl
         if (isUser)
         {
             MessageBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A2540"));
-            MessageBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A3550"));
+            MessageBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A3A5C"));
             MessageBorder.BorderThickness = new Thickness(1);
+            MessageBorder.CornerRadius = new CornerRadius(12, 12, 2, 12);
             ((Border)RoleIcon.Parent).Background =
                 new SolidColorBrush((Color)ColorConverter.ConvertFromString("#5CA0FC"));
         }
         else
         {
-            MessageBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#131620"));
-            MessageBorder.BorderThickness = new Thickness(0);
+            MessageBorder.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#16192A"));
+            MessageBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E2236"));
+            MessageBorder.BorderThickness = new Thickness(1);
+            MessageBorder.CornerRadius = new CornerRadius(12, 12, 12, 2);
             ((Border)RoleIcon.Parent).Background =
                 new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC"));
         }

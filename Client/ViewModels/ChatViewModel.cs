@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Net.Http;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -145,9 +146,16 @@ public partial class ChatViewModel : ObservableObject
             assistantMessage.Content += "\n\n*[Generation stopped]*";
             assistantMessage.IsGenerating = false;
         }
-        catch (Exception)
+        catch (HttpRequestException ex)
         {
-            assistantMessage.Content = "An error occurred while generating the response.";
+            assistantMessage.Content = $"Connection error: {ex.Message}\n\nMake sure the backend server is running.";
+            assistantMessage.IsGenerating = false;
+            assistantMessage.IsError = true;
+            _toastService.ShowError("Backend connection failed");
+        }
+        catch (Exception ex)
+        {
+            assistantMessage.Content = $"Error: {ex.Message}";
             assistantMessage.IsGenerating = false;
             assistantMessage.IsError = true;
             _toastService.ShowError("Failed to generate response");

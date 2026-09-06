@@ -71,4 +71,10 @@ public partial class ToastNotification : UserControl
         BeginAnimation(OpacityProperty, fadeOut);
         Translate.BeginAnimation(System.Windows.Media.TranslateTransform.YProperty, slideOut);
     }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        _timer?.Stop();
+        Hide();
+    }
 }

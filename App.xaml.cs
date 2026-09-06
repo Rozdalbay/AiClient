@@ -27,7 +27,15 @@ public partial class App : Application
     private static void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<IToastService, ToastService>();
-        services.AddSingleton(_ => new HttpClient {BaseAddress = new Uri("http://localhost:5000/"), Timeout = Timeout.InfiniteTimeSpan});
+        services.AddSingleton(_ =>
+        {
+            var handler = new HttpClientHandler { UseProxy = false };
+            return new HttpClient(handler)
+            {
+                BaseAddress = new Uri("http://localhost:5000/"),
+                Timeout = Timeout.InfiniteTimeSpan
+            };
+        });
         services.AddSingleton<IChatService, SseChatService>();
         services.AddSingleton<IModelService, MockModelService>();
         services.AddSingleton<IUsageService, MockUsageService>();

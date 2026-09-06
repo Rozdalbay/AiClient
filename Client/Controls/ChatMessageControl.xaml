@@ -108,7 +108,8 @@
                         Orientation="Horizontal"
                         Margin="0,8,0,0"
                         Visibility="Collapsed">
-                <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                <Border x:Name="TokensBorder"
+                        Background="{StaticResource TertiaryBackgroundBrush}"
                         CornerRadius="6"
                         Padding="8,4"
                         Margin="0,0,6,0">

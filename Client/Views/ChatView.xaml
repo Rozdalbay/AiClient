@@ -43,12 +43,6 @@
                                FontSize="15"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
-                    <TextBlock x:Name="DebugCountText"
-                               Foreground="Red"
-                               FontSize="12"
-                               Margin="10,0,0,0"
-                               VerticalAlignment="Center"
-                               Text="count: ?"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
@@ -180,28 +174,22 @@
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
                       Padding="0">
-            <StackPanel>
-                <TextBlock Text="HARDCODED TEST - IF YOU SEE THIS, ChatView IS VISIBLE"
-                           Foreground="Lime"
-                           FontSize="20"
-                           FontWeight="Bold"
-                           Margin="20,20"/>
-                <ItemsControl x:Name="MessagesList"
-                            ItemsSource="{Binding Messages}"
-                            Margin="20,10">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <controls:ChatMessageControl Message="{Binding}"
-                                                        DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                    <ItemsControl.ItemsPanel>
+            <ItemsControl x:Name="MessagesList"
+                          ItemsSource="{Binding Messages}"
+                          Margin="20,10">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:ChatMessageControl
+                            Message="{Binding Content, RelativeSource={RelativeSource AncestorType=ContentPresenter}}"
+                            DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
-            </StackPanel>
         </ScrollViewer>
 
         <Border x:Name="DropOverlay"

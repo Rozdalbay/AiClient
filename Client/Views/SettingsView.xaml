@@ -11,6 +11,8 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
         <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
         <converters:InverseBoolConverter x:Key="InverseBool"/>
+        <converters:StringToVisibilityConverter x:Key="StringToVis"/>
+        <converters:ConnectionStatusToColorConverter x:Key="StatusColor"/>
     </UserControl.Resources>
 
     <Border Background="{StaticResource PrimaryBackgroundBrush}">
@@ -148,9 +150,16 @@
                                        Text="{Binding ConnectionTestResult}"
                                        Margin="0,8,0,0"
                                        FontSize="12"
-                                       Foreground="{StaticResource PrimaryTextBrush}"
                                        TextWrapping="Wrap"
-                                       Visibility="{Binding ConnectionTestResult, Converter={StaticResource BoolToVis}}"/>
+                                       Visibility="{Binding ConnectionTestResult, Converter={StaticResource StringToVis}}">
+                                <TextBlock.Foreground>
+                                    <Binding Path="ConnectionTestStatus">
+                                        <Binding.Converter>
+                                            <converters:ConnectionStatusToColorConverter/>
+                                        </Binding.Converter>
+                                    </Binding>
+                                </TextBlock.Foreground>
+                            </TextBlock>
                         </StackPanel>
                     </Border>
 

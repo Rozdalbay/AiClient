@@ -88,9 +88,20 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <controls:MarkdownRenderer x:Name="MarkdownContent"
-                                       Grid.Row="2"
-                                       MinHeight="20"/>
+            <TextBlock x:Name="DebugText"
+                       Grid.Row="2"
+                       Foreground="Red"
+                       FontSize="14"
+                       TextWrapping="Wrap"
+                       Visibility="Visible"
+                       Text="DEBUG: no content set"/>
+
+            <TextBlock x:Name="SimpleText"
+                       Grid.Row="2"
+                       Foreground="{StaticResource PrimaryTextBrush}"
+                       FontSize="13"
+                       TextWrapping="Wrap"
+                       Visibility="Visible"/>
 
             <StackPanel x:Name="TokenInfoPanel"
                         Grid.Row="3"

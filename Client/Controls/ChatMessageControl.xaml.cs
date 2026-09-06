@@ -46,19 +46,11 @@ public partial class ChatMessageControl : UserControl
 
     private void OnMessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (!ReferenceEquals(sender, Message)) return;
-        if (Dispatcher.CheckAccess())
-            RefreshMessage();
-        else
-            Dispatcher.InvokeAsync(RefreshMessage);
-    }
-
-    private void OnAttachmentsChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (Dispatcher.CheckAccess())
-            RefreshMessage();
-        else
-            Dispatcher.InvokeAsync(RefreshMessage);
+        if (e.PropertyName == nameof(ChatMessage.Content) && _subscribedMessage is not null)
+        {
+            DebugText.Text = $"DEBUG: streaming len={_subscribedMessage.Content?.Length ?? 0}";
+            SimpleText.Text = _subscribedMessage.Content ?? "(null)";
+        }
     }
 
     private void RefreshMessage()
@@ -105,6 +97,15 @@ public partial class ChatMessageControl : UserControl
             MessageBorder.BorderThickness = new Thickness(0);
             ((Border)RoleIcon.Parent).Background =
                 new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC"));
+        }
+
+        DebugText.Text = $"DEBUG: role={message.Role} contentLen={message.Content?.Length ?? 0}";
+        SimpleText.Text = message.Content ?? "(null)";
+
+        if (message.Attachments.Count > 0)
+        {
+            AttachmentsList.ItemsSource = message.Attachments;
+            AttachmentsList.Visibility = Visibility.Visible;
         }
 
         if (message.Role == MessageRole.Assistant && !message.IsGenerating)

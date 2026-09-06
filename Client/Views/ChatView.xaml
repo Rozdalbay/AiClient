@@ -175,7 +175,8 @@
                       HorizontalScrollBarVisibility="Disabled"
                       Padding="0">
             <ItemsControl x:Name="MessagesList"
-                          Margin="20,10">
+                        ItemsSource="{Binding Messages}"
+                        Margin="20,10">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <controls:ChatMessageControl Message="{Binding}"

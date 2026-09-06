@@ -57,11 +57,13 @@ public partial class ChatViewModel : ObservableObject
         _mainViewModel = mainViewModel;
     }
 
-    public void LoadChat(Chat chat)
+    public void LoadChat(Chat? chat)
     {
         CurrentChat = chat;
-        Messages = chat.Messages;
-        SelectedModel = AvailableModels.FirstOrDefault(m => m.Id == chat.ModelId);
+        Messages = chat?.Messages ?? new ObservableCollection<ChatMessage>();
+        SelectedModel = chat is not null
+            ? AvailableModels.FirstOrDefault(m => m.Id == chat.ModelId)
+            : AvailableModels.FirstOrDefault();
     }
 
     [RelayCommand]

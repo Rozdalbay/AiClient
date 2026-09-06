@@ -31,9 +31,6 @@ public partial class MainViewModel : ObservableObject
     private ObservableCollection<Chat> _chats = [];
 
     [ObservableProperty]
-    private ObservableCollection<Project> _projects = [];
-
-    [ObservableProperty]
     private ObservableCollection<ModelInfo> _availableModels = [];
 
     [ObservableProperty]
@@ -62,6 +59,8 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isUsagePanelOpen = true;
+
+    public bool HasChats => Chats.Count > 0;
 
     public ICollectionView ChatsView { get; }
 
@@ -125,6 +124,7 @@ public partial class MainViewModel : ObservableObject
 
     partial void OnChatsChanged(ObservableCollection<Chat> value)
     {
+        OnPropertyChanged(nameof(HasChats));
         if (ChatsView is ICollectionView view)
             view.Refresh();
     }
@@ -141,9 +141,6 @@ public partial class MainViewModel : ObservableObject
         var modelStats = await _usageService.GetModelStatsAsync();
         ModelStats = new ObservableCollection<ModelUsageStat>(modelStats);
         UsageInfo.ModelStats = ModelStats;
-
-        CreateDefaultChats();
-        CreateDefaultProjects();
     }
 
     private async Task CheckBackendHealthAsync()
@@ -153,41 +150,6 @@ public partial class MainViewModel : ObservableObject
         BackendStatus.LatencyMs = result.LatencyMs;
         BackendStatus.LastChecked = result.LastChecked;
         BackendStatus.BackendVersion = result.BackendVersion;
-    }
-
-    private void CreateDefaultChats()
-    {
-        var defaultChats = new List<Chat>
-        {
-            new() { Title = "How to write a C# program", ModelId = "model-a", ModelName = "Model A",
-                CreatedAt = DateTime.Now.AddHours(-1), UpdatedAt = DateTime.Now.AddHours(-1) },
-            new() { Title = "Creating REST API", ModelId = "model-b", ModelName = "Model B",
-                CreatedAt = DateTime.Now.AddHours(-3), UpdatedAt = DateTime.Now.AddHours(-3) },
-            new() { Title = "Working with C# collections", ModelId = "model-a", ModelName = "Model A",
-                CreatedAt = DateTime.Now.AddDays(-1), UpdatedAt = DateTime.Now.AddDays(-1) },
-            new() { Title = "Python data analysis", ModelId = "model-c", ModelName = "Model C",
-                CreatedAt = DateTime.Now.AddDays(-1), UpdatedAt = DateTime.Now.AddDays(-1) },
-            new() { Title = "Docker containerization", ModelId = "model-a", ModelName = "Model A",
-                CreatedAt = DateTime.Now.AddDays(-3), UpdatedAt = DateTime.Now.AddDays(-3), IsFavorite = true },
-            new() { Title = "React hooks tutorial", ModelId = "model-b", ModelName = "Model B",
-                CreatedAt = DateTime.Now.AddDays(-5), UpdatedAt = DateTime.Now.AddDays(-5) },
-        };
-
-        foreach (var chat in defaultChats)
-            Chats.Add(chat);
-
-        ChatsView.Refresh();
-
-        if (Chats.Count > 0)
-            CurrentChatViewModel.LoadChat(Chats[0]);
-    }
-
-    private void CreateDefaultProjects()
-    {
-        Projects.Add(new Project { Name = "Development", Color = "#7C5CFC" });
-        Projects.Add(new Project { Name = "Study", Color = "#5CA0FC" });
-        Projects.Add(new Project { Name = "Web", Color = "#5CFCB0" });
-        Projects.Add(new Project { Name = "Personal", Color = "#FCE55C" });
     }
 
     [RelayCommand]
@@ -206,11 +168,11 @@ public partial class MainViewModel : ObservableObject
             ModelName = SelectedModel?.DisplayName ?? "Model A"
         };
         Chats.Insert(0, newChat);
+        OnPropertyChanged(nameof(HasChats));
         ChatsView.Refresh();
         CurrentChatViewModel.LoadChat(newChat);
         CurrentView = CurrentChatViewModel;
         SelectedNavigation = "Chats";
-        _toastService.ShowSuccess("New chat created");
     }
 
     [RelayCommand]
@@ -244,10 +206,15 @@ public partial class MainViewModel : ObservableObject
     private void DeleteChat(Chat chat)
     {
         Chats.Remove(chat);
+        OnPropertyChanged(nameof(HasChats));
         ChatsView.Refresh();
-        if (CurrentChatViewModel.CurrentChat == chat && Chats.Count > 0)
-            CurrentChatViewModel.LoadChat(Chats[0]);
-        _toastService.ShowInfo("Chat deleted");
+        if (CurrentChatViewModel.CurrentChat == chat)
+        {
+            if (Chats.Count > 0)
+                CurrentChatViewModel.LoadChat(Chats[0]);
+            else
+                CurrentChatViewModel.LoadChat(null!);
+        }
     }
 
     [RelayCommand]

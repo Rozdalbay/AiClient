@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using AiDesktopClient.Models;
@@ -45,6 +47,14 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _searchQuery = string.Empty;
 
+    [ObservableProperty]
+    private bool _isChatVisible = true;
+
+    [ObservableProperty]
+    private bool _isPromptsVisible;
+
+    public ICollectionView ChatsView { get; }
+
     public MainViewModel(
         IChatService chatService,
         IModelService modelService,
@@ -58,7 +68,48 @@ public partial class MainViewModel : ObservableObject
         _currentView = _currentChatViewModel;
         _backendStatus = new BackendConnectionStatus { Status = Contracts.BackendStatus.Connected, LatencyMs = 142 };
 
+        ChatsView = CollectionViewSource.GetDefaultView(Chats);
+        ChatsView.Filter = FilterChats;
+
         InitializeAsync();
+    }
+
+    private bool FilterChats(object obj)
+    {
+        if (obj is not Chat chat) return false;
+        if (SelectedNavigation == "Favorites")
+            return chat.IsFavorite;
+        if (!string.IsNullOrWhiteSpace(SearchQuery))
+            return chat.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase);
+        return true;
+    }
+
+    partial void OnSelectedNavigationChanged(string value)
+    {
+        IsChatVisible = value is "Chats" or "Favorites";
+        IsPromptsVisible = value == "Prompts";
+        ChatsView.Refresh();
+
+        if (value == "Settings" && CurrentView is not SettingsViewModel)
+        {
+            var settingsVm = App.ServiceProvider!.GetRequiredService<SettingsViewModel>();
+            CurrentView = settingsVm;
+        }
+        else if (value != "Settings" && CurrentView is SettingsViewModel)
+        {
+            CurrentView = CurrentChatViewModel;
+        }
+    }
+
+    partial void OnSearchQueryChanged(string value)
+    {
+        ChatsView.Refresh();
+    }
+
+    partial void OnChatsChanged(ObservableCollection<Chat> value)
+    {
+        if (ChatsView is ICollectionView view)
+            view.Refresh();
     }
 
     private async void InitializeAsync()
@@ -92,6 +143,8 @@ public partial class MainViewModel : ObservableObject
         foreach (var chat in defaultChats)
             Chats.Add(chat);
 
+        ChatsView.Refresh();
+
         if (Chats.Count > 0)
             CurrentChatViewModel.LoadChat(Chats[0]);
     }
@@ -108,25 +161,6 @@ public partial class MainViewModel : ObservableObject
     private void Navigate(string view)
     {
         SelectedNavigation = view;
-        switch (view)
-        {
-            case "Chats":
-                CurrentView = CurrentChatViewModel;
-                break;
-            case "Favorites":
-                CurrentView = CurrentChatViewModel;
-                break;
-            case "Prompts":
-                CurrentView = CurrentChatViewModel;
-                break;
-            case "Settings":
-                if (CurrentView is not SettingsViewModel)
-                {
-                    var settingsVm = App.ServiceProvider!.GetRequiredService<SettingsViewModel>();
-                    CurrentView = settingsVm;
-                }
-                break;
-        }
     }
 
     [RelayCommand]
@@ -139,6 +173,7 @@ public partial class MainViewModel : ObservableObject
             ModelName = SelectedModel?.DisplayName ?? "Model A"
         };
         Chats.Insert(0, newChat);
+        ChatsView.Refresh();
         CurrentChatViewModel.LoadChat(newChat);
         CurrentView = CurrentChatViewModel;
         SelectedNavigation = "Chats";
@@ -162,6 +197,7 @@ public partial class MainViewModel : ObservableObject
     private void ToggleFavorite(Chat chat)
     {
         chat.IsFavorite = !chat.IsFavorite;
+        ChatsView.Refresh();
         _toastService.ShowSuccess(chat.IsFavorite ? "Added to favorites" : "Removed from favorites");
     }
 
@@ -175,6 +211,7 @@ public partial class MainViewModel : ObservableObject
     private void DeleteChat(Chat chat)
     {
         Chats.Remove(chat);
+        ChatsView.Refresh();
         if (CurrentChatViewModel.CurrentChat == chat && Chats.Count > 0)
             CurrentChatViewModel.LoadChat(Chats[0]);
         _toastService.ShowInfo("Chat deleted");

@@ -252,9 +252,11 @@
 
                                 <TextBlock Text="CHATS"
                                            Style="{StaticResource SectionHeaderStyle}"
-                                           Margin="16,0,0,6"/>
+                                           Margin="16,0,0,6"
+                                           Visibility="{Binding IsChatVisible, Converter={StaticResource BoolToVis}}"/>
 
-                                <ItemsControl ItemsSource="{Binding Chats}">
+                                <ItemsControl ItemsSource="{Binding ChatsView}"
+                                              Visibility="{Binding IsChatVisible, Converter={StaticResource BoolToVis}}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Border Style="{StaticResource ChatListItemStyle}"
@@ -297,13 +299,36 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
 
-                                <Border Height="1" Background="{StaticResource BorderBrush}" Margin="16,10"/>
+                                <StackPanel Visibility="{Binding IsPromptsVisible, Converter={StaticResource BoolToVis}}"
+                                            Margin="16,20,16,0">
+                                    <TextBlock Text="&#xE8F1;"
+                                               FontFamily="Segoe MDL2 Assets"
+                                               FontSize="32"
+                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,12"/>
+                                    <TextBlock Text="Prompt Templates"
+                                               Foreground="{StaticResource PrimaryTextBrush}"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Coming soon"
+                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               FontSize="12"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,4,0,0"/>
+                                </StackPanel>
+
+                                <Border Height="1" Background="{StaticResource BorderBrush}" Margin="16,10"
+                                        Visibility="{Binding IsChatVisible, Converter={StaticResource BoolToVis}}"/>
 
                                 <TextBlock Text="PROJECTS"
                                            Style="{StaticResource SectionHeaderStyle}"
-                                           Margin="16,0,0,6"/>
+                                           Margin="16,0,0,6"
+                                           Visibility="{Binding IsChatVisible, Converter={StaticResource BoolToVis}}"/>
 
-                                <ItemsControl ItemsSource="{Binding Projects}">
+                                <ItemsControl ItemsSource="{Binding Projects}"
+                                              Visibility="{Binding IsChatVisible, Converter={StaticResource BoolToVis}}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Border Style="{StaticResource ChatListItemStyle}"

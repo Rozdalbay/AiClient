@@ -147,8 +147,20 @@ public partial class ChatMessageControl : UserControl
     {
         if (Message is not null)
         {
-            var chatViewModel = DataContext as ViewModels.ChatViewModel;
+            var chatViewModel = FindViewModel();
             chatViewModel?.RegenerateCommand.Execute(Message);
         }
+    }
+
+    private ViewModels.ChatViewModel? FindViewModel()
+    {
+        var parent = VisualTreeHelper.GetParent(this);
+        while (parent is not null)
+        {
+            if (parent is UserControl uc && uc.DataContext is ViewModels.ChatViewModel vm)
+                return vm;
+            parent = VisualTreeHelper.GetParent(parent);
+        }
+        return DataContext as ViewModels.ChatViewModel;
     }
 }

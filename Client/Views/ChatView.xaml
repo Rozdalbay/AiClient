@@ -179,9 +179,7 @@
                           Margin="20,10">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <controls:ChatMessageControl
-                            Message="{Binding Content, RelativeSource={RelativeSource AncestorType=ContentPresenter}}"
-                            DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <controls:ChatMessageControl Message="{Binding}"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>

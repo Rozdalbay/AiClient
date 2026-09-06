@@ -3,8 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:AiDesktopClient.Converters"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="700">
+
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+        <converters:InverseBoolConverter x:Key="InverseBool"/>
+    </UserControl.Resources>
 
     <Border Background="{StaticResource PrimaryBackgroundBrush}">
         <Grid>
@@ -125,7 +132,8 @@
                             <Button Command="{Binding TestConnectionCommand}"
                                     Style="{StaticResource PrimaryButtonStyle}"
                                     HorizontalAlignment="Left"
-                                    Padding="16,8">
+                                    Padding="16,8"
+                                    IsEnabled="{Binding IsTestingConnection, Converter={StaticResource InverseBool}}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="&#xE968;"
                                                FontFamily="Segoe MDL2 Assets"
@@ -137,9 +145,12 @@
                                 </StackPanel>
                             </Button>
                             <TextBlock x:Name="ConnectionResult"
+                                       Text="{Binding ConnectionTestResult}"
                                        Margin="0,8,0,0"
                                        FontSize="12"
-                                       Visibility="Collapsed"/>
+                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                       TextWrapping="Wrap"
+                                       Visibility="{Binding ConnectionTestResult, Converter={StaticResource BoolToVis}}"/>
                         </StackPanel>
                     </Border>
 

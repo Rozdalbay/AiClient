@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -13,6 +14,8 @@ public partial class ChatMessageControl : UserControl
         DependencyProperty.Register(nameof(Message), typeof(ChatMessage), typeof(ChatMessageControl),
             new PropertyMetadata(null, OnMessageChanged));
 
+    private ChatMessage? _subscribedMessage;
+
     public ChatMessageControl()
     {
         InitializeComponent();
@@ -26,8 +29,26 @@ public partial class ChatMessageControl : UserControl
 
     private static void OnMessageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is ChatMessageControl control && e.NewValue is ChatMessage message)
-            control.BindMessage(message);
+        if (d is ChatMessageControl control)
+        {
+            if (e.OldValue is INotifyPropertyChanged oldMsg)
+                oldMsg.PropertyChanged -= control.OnMessagePropertyChanged;
+
+            if (e.NewValue is ChatMessage message)
+            {
+                control.BindMessage(message);
+                message.PropertyChanged += control.OnMessagePropertyChanged;
+                control._subscribedMessage = message;
+            }
+        }
+    }
+
+    private void OnMessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ChatMessage.Content) && _subscribedMessage is not null)
+        {
+            MarkdownContent.Markdown = _subscribedMessage.Content;
+        }
     }
 
     private void BindMessage(ChatMessage message)
@@ -53,6 +74,8 @@ public partial class ChatMessageControl : UserControl
             ((Border)RoleIcon.Parent).Background =
                 new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC"));
         }
+
+        MarkdownContent.Markdown = message.Content;
 
         if (message.Attachments.Count > 0)
         {

@@ -1,0 +1,404 @@
+<Window x:Class="AiDesktopClient.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:AiDesktopClient.ViewModels"
+        xmlns:views="clr-namespace:AiDesktopClient.Views"
+        xmlns:controls="clr-namespace:AiDesktopClient.Controls"
+        xmlns:converters="clr-namespace:AiDesktopClient.Converters"
+        mc:Ignorable="d"
+        Title="AI Desktop Client"
+        Height="800" Width="1400"
+        MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource PrimaryBackgroundBrush}"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="CanResizeWithGrip">
+
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+        <converters:DecimalToCurrencyConverter x:Key="DecimalToCurrency"/>
+        <converters:IntToFormattedStringConverter x:Key="IntToString"/>
+        <converters:BackendStatusToColorConverter x:Key="StatusToColor"/>
+        <converters:BackendStatusToTextConverter x:Key="StatusToText"/>
+        <converters:ChangePercentToDisplayConverter x:Key="ChangeToDisplay"/>
+        <converters:ChangePercentToColorConverter x:Key="ChangeToColor"/>
+        <converters:DateTimeToRelativeConverter x:Key="DateTimeToRelative"/>
+        <converters:BoolToOpacityConverter x:Key="BoolToOpacity"/>
+
+        <DataTemplate DataType="{x:Type vm:ChatViewModel}">
+            <views:ChatView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+            <views:SettingsView/>
+        </DataTemplate>
+
+        <ContextMenu x:Key="ChatContextMenu"
+                     Background="{StaticResource SurfaceBackgroundBrush}"
+                     BorderBrush="{StaticResource BorderBrush}"
+                     BorderThickness="1">
+            <MenuItem Header="Rename"
+                      Click="RenameChat_Click"
+                      FontFamily="{StaticResource PrimaryFont}">
+                <MenuItem.Icon>
+                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                               Foreground="{StaticResource SecondaryTextBrush}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Pin"
+                      Click="PinChat_Click"
+                      FontFamily="{StaticResource PrimaryFont}">
+                <MenuItem.Icon>
+                    <TextBlock Text="&#xE840;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                               Foreground="{StaticResource SecondaryTextBrush}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add to Favorites"
+                      Click="FavoriteChat_Click"
+                      FontFamily="{StaticResource PrimaryFont}">
+                <MenuItem.Icon>
+                    <TextBlock Text="&#xE734;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                               Foreground="{StaticResource SecondaryTextBrush}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator Background="{StaticResource BorderBrush}"/>
+            <MenuItem Header="Delete"
+                      Click="DeleteChat_Click"
+                      FontFamily="{StaticResource PrimaryFont}">
+                <MenuItem.Icon>
+                    <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                               Foreground="{StaticResource ErrorAccentBrush}"/>
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </Window.Resources>
+
+    <Grid>
+    <Border Background="{StaticResource PrimaryBackgroundBrush}"
+            CornerRadius="10"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="38"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0"
+                  Background="{StaticResource PrimaryBackgroundBrush}"
+                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Margin="14,0,0,0">
+                    <TextBlock Text="&#xE99A;"
+                               FontFamily="Segoe MDL2 Assets"
+                               FontSize="13"
+                               Foreground="{StaticResource PrimaryAccentBrush}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0"/>
+                    <TextBlock Text="AI Desktop Client"
+                               Foreground="{StaticResource SecondaryTextBrush}"
+                               FontSize="12"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal">
+                    <Button Style="{StaticResource WindowButtonStyle}"
+                            Click="MinimizeButton_Click"
+                            ToolTip="Minimize">
+                        <TextBlock Text="&#xE949;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
+                    </Button>
+                    <Button x:Name="MaximizeButton"
+                            Style="{StaticResource WindowButtonStyle}"
+                            Click="MaximizeButton_Click"
+                            ToolTip="Maximize">
+                        <TextBlock x:Name="MaximizeIcon" Text="&#xE739;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
+                    </Button>
+                    <Button Style="{StaticResource CloseButtonStyle}"
+                            Click="CloseButton_Click"
+                            ToolTip="Close">
+                        <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0"
+                        Width="270"
+                        Background="{StaticResource SidebarBackgroundBrush}"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="0,0,1,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0"
+                                    Margin="16,16,16,8">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Background="{StaticResource AccentGradient}"
+                                        CornerRadius="10"
+                                        Width="36" Height="36"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="&#xE99A;"
+                                               FontFamily="Segoe MDL2 Assets"
+                                               FontSize="16"
+                                               Foreground="White"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="AI Desktop"
+                                               Foreground="{StaticResource PrimaryTextBrush}"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="Your AI Assistant"
+                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               FontSize="11"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Button Grid.Row="1"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Command="{Binding CreateNewChatCommand}"
+                                Margin="12,8,12,12"
+                                HorizontalAlignment="Stretch"
+                                Padding="14,10">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="&#xE710;"
+                                           FontFamily="Segoe MDL2 Assets"
+                                           FontSize="14"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,8,0"/>
+                                <TextBlock Text="New Chat"
+                                           FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+
+                        <ScrollViewer Grid.Row="2"
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel>
+                                <StackPanel Margin="8,0">
+                                    <RadioButton Style="{StaticResource SidebarItemStyle}"
+                                                 IsChecked="True"
+                                                 Command="{Binding NavigateCommand}"
+                                                 CommandParameter="Chats"
+                                                 Margin="0,1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBlock Text="Chats" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </RadioButton>
+
+                                    <RadioButton Style="{StaticResource SidebarItemStyle}"
+                                                 Command="{Binding NavigateCommand}"
+                                                 CommandParameter="Favorites"
+                                                 Margin="0,1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE734;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBlock Text="Favorites" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </RadioButton>
+
+                                    <RadioButton Style="{StaticResource SidebarItemStyle}"
+                                                 Command="{Binding NavigateCommand}"
+                                                 CommandParameter="Prompts"
+                                                 Margin="0,1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE8F1;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBlock Text="Prompts" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </RadioButton>
+
+                                    <RadioButton Style="{StaticResource SidebarItemStyle}"
+                                                 Command="{Binding NavigateCommand}"
+                                                 CommandParameter="Settings"
+                                                 Margin="0,1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBlock Text="Settings" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </RadioButton>
+                                </StackPanel>
+
+                                <Border Height="1" Background="{StaticResource BorderBrush}" Margin="16,10"/>
+
+                                <TextBlock Text="CHATS"
+                                           Style="{StaticResource SectionHeaderStyle}"
+                                           Margin="16,0,0,6"/>
+
+                                <ItemsControl ItemsSource="{Binding Chats}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Style="{StaticResource ChatListItemStyle}"
+                                                    MouseLeftButtonDown="ChatListItem_Click"
+                                                    Tag="{Binding}"
+                                                    ContextMenu="{StaticResource ChatContextMenu}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Title}"
+                                                                   Foreground="{StaticResource PrimaryTextBrush}"
+                                                                   FontSize="13"
+                                                                   TextTrimming="CharacterEllipsis"
+                                                                   MaxWidth="180"/>
+                                                        <TextBlock Foreground="{StaticResource TertiaryTextBrush}"
+                                                                   FontSize="11"
+                                                                   Margin="0,2,0,0">
+                                                            <TextBlock.Text>
+                                                                <Binding Path="UpdatedAt" Converter="{StaticResource DateTimeToRelative}"/>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                        <TextBlock x:Name="FavoriteIcon"
+                                                                   Text="&#xE734;"
+                                                                   FontFamily="Segoe MDL2 Assets"
+                                                                   FontSize="10"
+                                                                   Foreground="{StaticResource WarningAccentBrush}"
+                                                                   Visibility="Collapsed"
+                                                                   Margin="4,0,0,0"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <Border Height="1" Background="{StaticResource BorderBrush}" Margin="16,10"/>
+
+                                <TextBlock Text="PROJECTS"
+                                           Style="{StaticResource SectionHeaderStyle}"
+                                           Margin="16,0,0,6"/>
+
+                                <ItemsControl ItemsSource="{Binding Projects}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Style="{StaticResource ChatListItemStyle}"
+                                                    Padding="12,7">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Border Width="8" Height="8"
+                                                            CornerRadius="2"
+                                                            Margin="0,0,8,0"
+                                                            VerticalAlignment="Center">
+                                                        <Border.Background>
+                                                            <SolidColorBrush>
+                                                            <SolidColorBrush.Color>
+                                                                <Binding Path="Color">
+                                                                    <Binding.Converter>
+                                                                        <converters:StringToBrushConverter/>
+                                                                    </Binding.Converter>
+                                                                </Binding>
+                                                            </SolidColorBrush.Color>
+                                                        </SolidColorBrush>
+                                                        </Border.Background>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Name}"
+                                                               Foreground="{StaticResource PrimaryTextBrush}"
+                                                               FontSize="13"
+                                                               VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <Border Grid.Row="3"
+                                Margin="12,8"
+                                Padding="12,10"
+                                Background="{StaticResource TertiaryBackgroundBrush}"
+                                CornerRadius="10">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse x:Name="StatusDot"
+                                             Width="8" Height="8"
+                                             Fill="{StaticResource ConnectedBrush}"
+                                             VerticalAlignment="Center"
+                                             Margin="0,0,8,0"/>
+                                    <TextBlock x:Name="StatusText"
+                                               Text="Connected"
+                                               Foreground="{StaticResource PrimaryTextBrush}"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <TextBlock Text="Backend"
+                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               FontSize="11"/>
+                                    <TextBlock Text=" • "
+                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               FontSize="11"/>
+                                    <TextBlock Text="API"
+                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               FontSize="11"/>
+                                    <TextBlock x:Name="LatencyText"
+                                               Text=" • 142ms"
+                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               FontSize="11"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Grid.Row="4"
+                                   Text="v1.0.0"
+                                   Foreground="{StaticResource TertiaryTextBrush}"
+                                   FontSize="10"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,8"/>
+                    </Grid>
+                </Border>
+
+                <ContentControl Grid.Column="1"
+                                Content="{Binding CurrentView}"
+                                Margin="0"/>
+
+                <views:UsagePanel Grid.Column="2"
+                                  Width="350"
+                                  DataContext="{Binding UsageInfo}"/>
+            </Grid>
+        </Grid>
+    </Border>
+
+    <controls:ToastNotification x:Name="ToastControl"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Margin="0,50,20,0"
+                                Width="320"
+                                Visibility="Collapsed"/>
+    </Grid>
+</Window>

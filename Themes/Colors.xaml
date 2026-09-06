@@ -1,0 +1,80 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="PrimaryBackground">#0D0F18</Color>
+    <Color x:Key="SecondaryBackground">#131620</Color>
+    <Color x:Key="TertiaryBackground">#1A1D2E</Color>
+    <Color x:Key="SurfaceBackground">#1E2135</Color>
+    <Color x:Key="CardBackground">#1A1D2E</Color>
+    <Color x:Key="InputBackground">#131620</Color>
+    <Color x:Key="SidebarBackground">#0D0F18</Color>
+
+    <Color x:Key="PrimaryAccent">#7C5CFC</Color>
+    <Color x:Key="PrimaryAccentHover">#9B7FFD</Color>
+    <Color x:Key="SecondaryAccent">#5CA0FC</Color>
+    <Color x:Key="SuccessAccent">#5CFCB0</Color>
+    <Color x:Key="WarningAccent">#FCE55C</Color>
+    <Color x:Key="ErrorAccent">#FC5C7C</Color>
+    <Color x:Key="InfoAccent">#5CD4FC</Color>
+
+    <Color x:Key="PrimaryText">#E8E8F0</Color>
+    <Color x:Key="SecondaryText">#8B8D9E</Color>
+    <Color x:Key="TertiaryText">#5C5E6E</Color>
+    <Color x:Key="InverseText">#0D0F18</Color>
+
+    <Color x:Key="BorderColor">#2A2D3E</Color>
+    <Color x:Key="BorderHover">#3A3D4E</Color>
+    <Color x:Key="BorderFocus">#7C5CFC</Color>
+
+    <Color x:Key="ConnectedColor">#5CFCB0</Color>
+    <Color x:Key="DisconnectedColor">#FC5C7C</Color>
+    <Color x:Key="ConnectingColor">#FCE55C</Color>
+
+    <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="{StaticResource PrimaryBackground}"/>
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="{StaticResource SecondaryBackground}"/>
+    <SolidColorBrush x:Key="TertiaryBackgroundBrush" Color="{StaticResource TertiaryBackground}"/>
+    <SolidColorBrush x:Key="SurfaceBackgroundBrush" Color="{StaticResource SurfaceBackground}"/>
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackground}"/>
+    <SolidColorBrush x:Key="InputBackgroundBrush" Color="{StaticResource InputBackground}"/>
+    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="{StaticResource SidebarBackground}"/>
+
+    <SolidColorBrush x:Key="PrimaryAccentBrush" Color="{StaticResource PrimaryAccent}"/>
+    <SolidColorBrush x:Key="PrimaryAccentHoverBrush" Color="{StaticResource PrimaryAccentHover}"/>
+    <SolidColorBrush x:Key="SecondaryAccentBrush" Color="{StaticResource SecondaryAccent}"/>
+    <SolidColorBrush x:Key="SuccessAccentBrush" Color="{StaticResource SuccessAccent}"/>
+    <SolidColorBrush x:Key="WarningAccentBrush" Color="{StaticResource WarningAccent}"/>
+    <SolidColorBrush x:Key="ErrorAccentBrush" Color="{StaticResource ErrorAccent}"/>
+    <SolidColorBrush x:Key="InfoAccentBrush" Color="{StaticResource InfoAccent}"/>
+
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="{StaticResource PrimaryText}"/>
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryText}"/>
+    <SolidColorBrush x:Key="TertiaryTextBrush" Color="{StaticResource TertiaryText}"/>
+    <SolidColorBrush x:Key="InverseTextBrush" Color="{StaticResource InverseText}"/>
+
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="BorderHoverBrush" Color="{StaticResource BorderHover}"/>
+    <SolidColorBrush x:Key="BorderFocusBrush" Color="{StaticResource BorderFocus}"/>
+
+    <SolidColorBrush x:Key="ConnectedBrush" Color="{StaticResource ConnectedColor}"/>
+    <SolidColorBrush x:Key="DisconnectedBrush" Color="{StaticResource DisconnectedColor}"/>
+    <SolidColorBrush x:Key="ConnectingBrush" Color="{StaticResource ConnectingColor}"/>
+
+    <Color x:Key="CodeBackground">#0F1117</Color>
+    <Color x:Key="CodeHeaderBackground">#151825</Color>
+    <Color x:Key="LineNumberColor">#3A3D4E</Color>
+
+    <SolidColorBrush x:Key="CodeBackgroundBrush" Color="{StaticResource CodeBackground}"/>
+    <SolidColorBrush x:Key="CodeHeaderBackgroundBrush" Color="{StaticResource CodeHeaderBackground}"/>
+    <SolidColorBrush x:Key="LineNumberBrush" Color="{StaticResource LineNumberColor}"/>
+
+    <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#7C5CFC" Offset="0"/>
+        <GradientStop Color="#5CA0FC" Offset="1"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="GlowGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#267C5CFC" Offset="0"/>
+        <GradientStop Color="Transparent" Offset="1"/>
+    </LinearGradientBrush>
+
+</ResourceDictionary>

@@ -1,0 +1,300 @@
+<UserControl x:Class="AiDesktopClient.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="700">
+
+    <Border Background="{StaticResource PrimaryBackgroundBrush}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,0,1,0"
+                    Padding="16,20">
+                <StackPanel>
+                    <TextBlock Text="Settings"
+                               Foreground="{StaticResource PrimaryTextBrush}"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="0,0,0,20"/>
+
+                    <RadioButton x:Name="NavGeneral"
+                                 Style="{StaticResource SidebarItemStyle}"
+                                 IsChecked="True"
+                                 Click="Nav_Click"
+                                 Tag="General"
+                                 Margin="0,1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="General" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton x:Name="NavAppearance"
+                                 Style="{StaticResource SidebarItemStyle}"
+                                 Click="Nav_Click"
+                                 Tag="Appearance"
+                                 Margin="0,1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE790;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="Appearance" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton x:Name="NavModels"
+                                 Style="{StaticResource SidebarItemStyle}"
+                                 Click="Nav_Click"
+                                 Tag="Models"
+                                 Margin="0,1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE99A;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="Models" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton x:Name="NavBackend"
+                                 Style="{StaticResource SidebarItemStyle}"
+                                 Click="Nav_Click"
+                                 Tag="Backend"
+                                 Margin="0,1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE968;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="Backend" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton x:Name="NavNotifications"
+                                 Style="{StaticResource SidebarItemStyle}"
+                                 Click="Nav_Click"
+                                 Tag="Notifications"
+                                 Margin="0,1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE7ED;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="Notifications" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <RadioButton x:Name="NavAbout"
+                                 Style="{StaticResource SidebarItemStyle}"
+                                 Click="Nav_Click"
+                                 Tag="About"
+                                 Margin="0,1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="About" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+            </Border>
+
+            <ScrollViewer Grid.Column="1"
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="30,24">
+                <StackPanel>
+
+                <StackPanel x:Name="GeneralPanel" Margin="0,0,0,20">
+                    <TextBlock Text="General Settings"
+                               Foreground="{StaticResource PrimaryTextBrush}"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="0,0,0,20"/>
+
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="Backend URL"
+                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,8"/>
+                            <TextBox Text="{Binding BackendUrl, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="400"
+                                     HorizontalAlignment="Left"
+                                     Margin="0,0,0,12"/>
+                            <Button Command="{Binding TestConnectionCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    HorizontalAlignment="Left"
+                                    Padding="16,8">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE968;"
+                                               FontFamily="Segoe MDL2 Assets"
+                                               FontSize="12"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,6,0"/>
+                                    <TextBlock Text="Test Connection"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <TextBlock x:Name="ConnectionResult"
+                                       Margin="0,8,0,0"
+                                       FontSize="12"
+                                       Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Enable Streaming"
+                                           Foreground="{StaticResource PrimaryTextBrush}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="Receive responses token by token"
+                                           Foreground="{StaticResource TertiaryTextBrush}"
+                                           FontSize="11"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <ToggleButton Grid.Column="1"
+                                          IsChecked="{Binding EnableStreaming}"
+                                          Style="{StaticResource ToggleSwitchStyle}"
+                                          VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Show Token Count"
+                                           Foreground="{StaticResource PrimaryTextBrush}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="Display token usage per message"
+                                           Foreground="{StaticResource TertiaryTextBrush}"
+                                           FontSize="11"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <ToggleButton Grid.Column="1"
+                                          IsChecked="{Binding ShowTokenCount}"
+                                          Style="{StaticResource ToggleSwitchStyle}"
+                                          VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Show Cost Info"
+                                           Foreground="{StaticResource PrimaryTextBrush}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="Display cost per request"
+                                           Foreground="{StaticResource TertiaryTextBrush}"
+                                           FontSize="11"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <ToggleButton Grid.Column="1"
+                                          IsChecked="{Binding ShowCostInfo}"
+                                          Style="{StaticResource ToggleSwitchStyle}"
+                                          VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel x:Name="BackendPanel" Visibility="Collapsed" Margin="0,0,0,20">
+                    <TextBlock Text="Backend Configuration"
+                               Foreground="{StaticResource PrimaryTextBrush}"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="0,0,0,20"/>
+
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="SECURITY:"
+                                       Foreground="{StaticResource WarningAccentBrush}"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Margin="0,0,0,6"/>
+                            <TextBlock Text="API keys of AI providers should NEVER be stored in the desktop frontend. All secrets and authorization must be handled by the backend."
+                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Connection Architecture"
+                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10"/>
+                            <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                                    CornerRadius="8"
+                                    Padding="14,10">
+                                <TextBlock Text="Desktop Client → Backend API → AI Provider"
+                                           Foreground="{StaticResource PrimaryAccentBrush}"
+                                           FontSize="12"
+                                           FontFamily="{StaticResource MonoFont}"
+                                           HorizontalAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel x:Name="AboutPanel" Visibility="Collapsed">
+                    <TextBlock Text="About"
+                               Foreground="{StaticResource PrimaryTextBrush}"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="0,0,0,20"/>
+
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel HorizontalAlignment="Center" Margin="20">
+                            <Border Background="{StaticResource AccentGradient}"
+                                    CornerRadius="16"
+                                    Width="60" Height="60"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,0,0,12">
+                                <TextBlock Text="&#xE99A;"
+                                           FontFamily="Segoe MDL2 Assets"
+                                           FontSize="28"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="AI Desktop Client"
+                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                       FontSize="18"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Version 1.0.0"
+                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                       FontSize="13"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,4,0,0"/>
+                            <TextBlock Text="Modern AI desktop application frontend"
+                                       Foreground="{StaticResource TertiaryTextBrush}"
+                                       FontSize="12"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,12,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

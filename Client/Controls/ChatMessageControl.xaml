@@ -103,11 +103,6 @@
                        TextWrapping="Wrap"
                        Visibility="Visible"/>
 
-            <controls:MarkdownRenderer x:Name="MarkdownContent"
-                                       Grid.Row="2"
-                                       MinHeight="20"
-                                       Visibility="Collapsed"/>
-
             <StackPanel x:Name="TokenInfoPanel"
                         Grid.Row="3"
                         Orientation="Horizontal"

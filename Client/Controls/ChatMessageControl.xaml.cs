@@ -47,7 +47,6 @@ public partial class ChatMessageControl : UserControl
     {
         if (e.PropertyName == nameof(ChatMessage.Content) && _subscribedMessage is not null)
         {
-            MarkdownContent.Markdown = _subscribedMessage.Content;
             DebugText.Text = $"DEBUG: streaming len={_subscribedMessage.Content?.Length ?? 0}";
             SimpleText.Text = _subscribedMessage.Content ?? "(null)";
         }
@@ -77,7 +76,6 @@ public partial class ChatMessageControl : UserControl
                 new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC"));
         }
 
-        MarkdownContent.Markdown = message.Content;
         DebugText.Text = $"DEBUG: role={message.Role} contentLen={message.Content?.Length ?? 0}";
         SimpleText.Text = message.Content ?? "(null)";
 

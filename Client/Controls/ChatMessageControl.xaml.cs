@@ -48,6 +48,7 @@ public partial class ChatMessageControl : UserControl
         if (e.PropertyName == nameof(ChatMessage.Content) && _subscribedMessage is not null)
         {
             MarkdownContent.Markdown = _subscribedMessage.Content;
+            DebugText.Text = _subscribedMessage.Content ?? "(empty)";
         }
     }
 
@@ -76,6 +77,7 @@ public partial class ChatMessageControl : UserControl
         }
 
         MarkdownContent.Markdown = message.Content;
+        DebugText.Text = message.Content ?? "(empty)";
 
         if (message.Attachments.Count > 0)
         {

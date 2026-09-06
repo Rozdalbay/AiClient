@@ -11,6 +11,7 @@
                                Background="Transparent">
         <FlowDocument x:Name="Document"
                        Background="Transparent"
+                       FontFamily="{StaticResource PrimaryFont}"
                        PagePadding="0"
                        ColumnWidth="999999">
             <Paragraph x:Name="MarkdownParagraph"

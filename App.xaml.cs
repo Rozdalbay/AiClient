@@ -35,7 +35,7 @@ public partial class App : Application
 
         services.AddTransient<MainViewModel>();
         services.AddTransient<ChatViewModel>();
-        services.AddTransient<SettingsViewModel>();
+        services.AddSingleton<SettingsViewModel>();
 
         services.AddTransient<MainWindow>();
     }

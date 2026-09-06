@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Threading;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,6 +15,8 @@ public partial class MainViewModel : ObservableObject
     private readonly IModelService _modelService;
     private readonly IToastService _toastService;
     private readonly IUsageService _usageService;
+    private readonly IBackendService _backendService;
+    private readonly DispatcherTimer _healthCheckTimer;
 
     [ObservableProperty]
     private ChatViewModel _currentChatViewModel;
@@ -72,14 +75,20 @@ public partial class MainViewModel : ObservableObject
         _modelService = modelService;
         _toastService = toastService;
         _usageService = usageService;
+        _backendService = backendService;
         _currentChatViewModel = new ChatViewModel(chatService, modelService, toastService, this);
         _currentView = _currentChatViewModel;
-        _backendStatus = new BackendConnectionStatus { Status = Contracts.BackendStatus.Connected, LatencyMs = 142 };
+        _backendStatus = new BackendConnectionStatus { Status = Contracts.BackendStatus.Connecting };
 
         ChatsView = CollectionViewSource.GetDefaultView(Chats);
         ChatsView.Filter = FilterChats;
 
+        _healthCheckTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
+        _healthCheckTimer.Tick += async (_, _) => await CheckBackendHealthAsync();
+        _healthCheckTimer.Start();
+
         InitializeAsync();
+        _ = CheckBackendHealthAsync();
     }
 
     private bool FilterChats(object obj)
@@ -135,6 +144,15 @@ public partial class MainViewModel : ObservableObject
 
         CreateDefaultChats();
         CreateDefaultProjects();
+    }
+
+    private async Task CheckBackendHealthAsync()
+    {
+        var result = await _backendService.GetStatusAsync();
+        BackendStatus.Status = result.Status;
+        BackendStatus.LatencyMs = result.LatencyMs;
+        BackendStatus.LastChecked = result.LastChecked;
+        BackendStatus.BackendVersion = result.BackendVersion;
     }
 
     private void CreateDefaultChats()

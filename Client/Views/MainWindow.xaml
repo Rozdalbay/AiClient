@@ -371,15 +371,21 @@
                                 <StackPanel Orientation="Horizontal">
                                     <Ellipse x:Name="StatusDot"
                                              Width="8" Height="8"
-                                             Fill="{StaticResource ConnectedBrush}"
                                              VerticalAlignment="Center"
-                                             Margin="0,0,8,0"/>
+                                             Margin="0,0,8,0">
+                                        <Ellipse.Fill>
+                                            <Binding Path="BackendStatus.Status" Converter="{StaticResource StatusToColor}"/>
+                                        </Ellipse.Fill>
+                                    </Ellipse>
                                     <TextBlock x:Name="StatusText"
-                                               Text="Connected"
                                                Foreground="{StaticResource PrimaryTextBrush}"
                                                FontSize="12"
                                                FontWeight="SemiBold"
-                                               VerticalAlignment="Center"/>
+                                               VerticalAlignment="Center">
+                                        <TextBlock.Text>
+                                            <Binding Path="BackendStatus.Status" Converter="{StaticResource StatusToText}"/>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                                     <TextBlock Text="Backend"
@@ -392,9 +398,12 @@
                                                Foreground="{StaticResource TertiaryTextBrush}"
                                                FontSize="11"/>
                                     <TextBlock x:Name="LatencyText"
-                                               Text=" • 142ms"
                                                Foreground="{StaticResource TertiaryTextBrush}"
-                                               FontSize="11"/>
+                                               FontSize="11">
+                                        <TextBlock.Text>
+                                            <Binding Path="BackendStatus.LatencyMs" StringFormat="• {0:F0}ms"/>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </Border>

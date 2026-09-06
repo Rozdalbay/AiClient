@@ -13,6 +13,7 @@ public partial class MainViewModel : ObservableObject
 {
     private readonly IModelService _modelService;
     private readonly IToastService _toastService;
+    private readonly IUsageService _usageService;
 
     [ObservableProperty]
     private ChatViewModel _currentChatViewModel;
@@ -31,6 +32,9 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<ModelInfo> _availableModels = [];
+
+    [ObservableProperty]
+    private ObservableCollection<ModelUsageStat> _modelStats = [];
 
     [ObservableProperty]
     private ModelInfo? _selectedModel;
@@ -64,6 +68,7 @@ public partial class MainViewModel : ObservableObject
     {
         _modelService = modelService;
         _toastService = toastService;
+        _usageService = usageService;
         _currentChatViewModel = new ChatViewModel(chatService, modelService, toastService, this);
         _currentView = _currentChatViewModel;
         _backendStatus = new BackendConnectionStatus { Status = Contracts.BackendStatus.Connected, LatencyMs = 142 };
@@ -117,6 +122,13 @@ public partial class MainViewModel : ObservableObject
         var models = await _modelService.GetModelsAsync();
         AvailableModels = new ObservableCollection<ModelInfo>(models);
         SelectedModel = AvailableModels.FirstOrDefault();
+
+        var usage = await _usageService.GetUsageAsync();
+        UsageInfo = usage;
+
+        var modelStats = await _usageService.GetModelStatsAsync();
+        ModelStats = new ObservableCollection<ModelUsageStat>(modelStats);
+        UsageInfo.ModelStats = ModelStats;
 
         CreateDefaultChats();
         CreateDefaultProjects();

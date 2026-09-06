@@ -26,13 +26,27 @@ public partial class UsagePanel : UserControl
         if (DataContext is not UsageInfo usage)
             return;
 
-        var costs = new double[] { 0.4, 1.2, 0.8, 1.5, 0.6, 1.8, 1.42 };
+        var dailyCosts = usage.DailyCosts;
+        if (dailyCosts is null || dailyCosts.Count < 2)
+        {
+            var costs = new double[] { 0.4, 1.2, 0.8, 1.5, 0.6, 1.8, 1.42 };
+            DrawGraphInternal(costs);
+            return;
+        }
+
+        var values = dailyCosts.Select(d => (double)d.Cost).ToArray();
+        DrawGraphInternal(values);
+    }
+
+    private void DrawGraphInternal(double[] costs)
+    {
         var maxCost = costs.Max();
         var canvasWidth = 290.0;
         var canvasHeight = 110.0;
         var padding = 10.0;
 
-        if (costs.Length < 2) return;
+        var accentColor = (Color)ColorConverter.ConvertFromString("#7C5CFC");
+        var bgColor = (Color)ColorConverter.ConvertFromString("#0D0F18");
 
         var points = new List<Point>();
         for (int i = 0; i < costs.Length; i++)
@@ -47,8 +61,8 @@ public partial class UsagePanel : UserControl
             StartPoint = new Point(0, 0),
             EndPoint = new Point(0, 1)
         };
-        fillBrush.GradientStops.Add(new GradientStop(Color.FromArgb(60, 124, 92, 252), 0));
-        fillBrush.GradientStops.Add(new GradientStop(Color.FromArgb(10, 124, 92, 252), 1));
+        fillBrush.GradientStops.Add(new GradientStop(Color.FromArgb(60, accentColor.R, accentColor.G, accentColor.B), 0));
+        fillBrush.GradientStops.Add(new GradientStop(Color.FromArgb(10, accentColor.R, accentColor.G, accentColor.B), 1));
 
         var fillGeometry = new StreamGeometry();
         using (var ctx = fillGeometry.Open())
@@ -92,7 +106,7 @@ public partial class UsagePanel : UserControl
         var linePath = new Path
         {
             Data = lineGeometry,
-            Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC")),
+            Stroke = new SolidColorBrush(accentColor),
             StrokeThickness = 2
         };
         GraphCanvas.Children.Add(linePath);
@@ -103,8 +117,8 @@ public partial class UsagePanel : UserControl
             {
                 Width = 6,
                 Height = 6,
-                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC")),
-                Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0D0F18")),
+                Fill = new SolidColorBrush(accentColor),
+                Stroke = new SolidColorBrush(bgColor),
                 StrokeThickness = 2
             };
             Canvas.SetLeft(dot, point.X - 3);

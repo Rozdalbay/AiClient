@@ -12,6 +12,7 @@
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
         <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+        <converters:IntToVisibilityConverter x:Key="IntToVis"/>
     </UserControl.Resources>
 
     <Grid Background="{StaticResource PrimaryBackgroundBrush}">
@@ -219,7 +220,7 @@
         <ItemsControl Grid.Row="2"
                       ItemsSource="{Binding PendingAttachments}"
                       Margin="20,8,20,0"
-                      Visibility="{Binding PendingAttachments.Count, Converter={StaticResource BoolToVis}}">
+                      Visibility="{Binding PendingAttachments.Count, Converter={StaticResource IntToVis}}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>

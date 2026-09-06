@@ -13,6 +13,7 @@
         <converters:ChangePercentToDisplayConverter x:Key="CP2D"/>
         <converters:ChangePercentToColorConverter x:Key="CP2C"/>
         <converters:DoubleToPercentConverter x:Key="D2P"/>
+        <converters:RatioToScaleXConverter x:Key="RatioToScaleX"/>
     </UserControl.Resources>
 
     <Border Background="{StaticResource PrimaryBackgroundBrush}"
@@ -91,10 +92,16 @@
                                 Height="6">
                             <Border HorizontalAlignment="Left"
                                     CornerRadius="3"
-                                    Background="{StaticResource AccentGradient}"
-                                    Width="142">
+                                    Background="{StaticResource AccentGradient}">
                                 <Border.RenderTransform>
-                                    <ScaleTransform ScaleX="1"/>
+                                    <ScaleTransform>
+                                        <ScaleTransform.ScaleX>
+                                            <MultiBinding Converter="{StaticResource RatioToScaleX}">
+                                                <Binding Path="DailyCost"/>
+                                                <Binding Path="BudgetLimit"/>
+                                            </MultiBinding>
+                                        </ScaleTransform.ScaleX>
+                                    </ScaleTransform>
                                 </Border.RenderTransform>
                             </Border>
                         </Border>

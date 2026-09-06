@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -14,16 +16,16 @@ public partial class ChatMessageControl : UserControl
         DependencyProperty.Register(nameof(Message), typeof(ChatMessage), typeof(ChatMessageControl),
             new PropertyMetadata(null, OnMessageChanged));
 
-    private ChatMessage? _subscribedMessage;
+    private ObservableCollection<Attachment>? _subscribedAttachments;
 
     public ChatMessageControl()
     {
         InitializeComponent();
     }
 
-    public ChatMessage Message
+    public ChatMessage? Message
     {
-        get => (ChatMessage)GetValue(MessageProperty);
+        get => (ChatMessage?)GetValue(MessageProperty);
         set => SetValue(MessageProperty, value);
     }
 
@@ -32,29 +34,57 @@ public partial class ChatMessageControl : UserControl
         if (d is ChatMessageControl control)
         {
             if (e.OldValue is INotifyPropertyChanged oldMsg)
-                oldMsg.PropertyChanged -= control.OnMessagePropertyChanged;
+                PropertyChangedEventManager.RemoveHandler(oldMsg, control.OnMessagePropertyChanged, string.Empty);
 
             if (e.NewValue is ChatMessage message)
             {
-                control.BindMessage(message);
-                message.PropertyChanged += control.OnMessagePropertyChanged;
-                control._subscribedMessage = message;
+                PropertyChangedEventManager.AddHandler(message, control.OnMessagePropertyChanged, string.Empty);
             }
+            control.RefreshMessage();
         }
     }
 
     private void OnMessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(ChatMessage.Content) && _subscribedMessage is not null)
-        {
-            MarkdownContent.Markdown = _subscribedMessage.Content;
-            DebugText.Text = $"DEBUG: streaming len={_subscribedMessage.Content?.Length ?? 0}";
-            SimpleText.Text = _subscribedMessage.Content ?? "(null)";
-        }
+        if (!ReferenceEquals(sender, Message)) return;
+        if (Dispatcher.CheckAccess())
+            RefreshMessage();
+        else
+            Dispatcher.InvokeAsync(RefreshMessage);
     }
 
-    private void BindMessage(ChatMessage message)
+    private void OnAttachmentsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (Dispatcher.CheckAccess())
+            RefreshMessage();
+        else
+            Dispatcher.InvokeAsync(RefreshMessage);
+    }
+
+    private void RefreshMessage()
+    {
+        var message = Message;
+        if (!ReferenceEquals(_subscribedAttachments, message?.Attachments))
+        {
+            if (_subscribedAttachments is not null)
+                CollectionChangedEventManager.RemoveHandler(_subscribedAttachments, OnAttachmentsChanged);
+            _subscribedAttachments = message?.Attachments;
+            if (_subscribedAttachments is not null)
+                CollectionChangedEventManager.AddHandler(_subscribedAttachments, OnAttachmentsChanged);
+        }
+
+        MessageBorder.Visibility = message is null ? Visibility.Collapsed : Visibility.Visible;
+        MarkdownContent.Markdown = message?.Content ?? string.Empty;
+        AttachmentsList.ItemsSource = message?.Attachments;
+        AttachmentsList.Visibility = message?.Attachments.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        ActionButtons.Visibility = Visibility.Collapsed;
+        TokenInfoPanel.Visibility = Visibility.Collapsed;
+        TokensBorder.Visibility = Visibility.Collapsed;
+        CostBorder.Visibility = Visibility.Collapsed;
+        TimeBorder.Visibility = Visibility.Collapsed;
+        TokensText.Text = CostText.Text = ResponseTimeText.Text = string.Empty;
+        if (message is null) return;
+
         var isUser = message.Role == MessageRole.User;
 
         RoleIcon.Text = isUser ? "\uE77B" : "\uE99A";
@@ -77,16 +107,6 @@ public partial class ChatMessageControl : UserControl
                 new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC"));
         }
 
-        MarkdownContent.Markdown = message.Content;
-        DebugText.Text = $"DEBUG: role={message.Role} contentLen={message.Content?.Length ?? 0}";
-        SimpleText.Text = message.Content ?? "(null)";
-
-        if (message.Attachments.Count > 0)
-        {
-            AttachmentsList.ItemsSource = message.Attachments;
-            AttachmentsList.Visibility = Visibility.Visible;
-        }
-
         if (message.Role == MessageRole.Assistant && !message.IsGenerating)
         {
             ActionButtons.Visibility = Visibility.Visible;
@@ -94,7 +114,7 @@ public partial class ChatMessageControl : UserControl
             if (message.TotalTokens > 0)
             {
                 TokensText.Text = $"{message.TotalTokens:N0} tokens";
-                TokenInfoPanel.Visibility = Visibility.Visible;
+                TokensBorder.Visibility = Visibility.Visible;
             }
 
             if (message.Cost > 0)
@@ -108,6 +128,8 @@ public partial class ChatMessageControl : UserControl
                 ResponseTimeText.Text = $"{message.ResponseTimeMs / 1000.0:F1}s";
                 TimeBorder.Visibility = Visibility.Visible;
             }
+            TokenInfoPanel.Visibility = message.TotalTokens > 0 || message.Cost > 0 || message.ResponseTimeMs > 0
+                ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 

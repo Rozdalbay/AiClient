@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Compile Remove="Server\**\*.cs" />
+    <Compile Remove="Tests\**\*.cs" />
   </ItemGroup>
 </Project>
 

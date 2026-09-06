@@ -88,32 +88,17 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <TextBlock x:Name="DebugText"
-                       Grid.Row="2"
-                       Foreground="Red"
-                       FontSize="14"
-                       TextWrapping="Wrap"
-                       Visibility="Visible"
-                       Text="DEBUG: no content set"/>
-
-            <TextBlock x:Name="SimpleText"
-                       Grid.Row="2"
-                       Foreground="{StaticResource PrimaryTextBrush}"
-                       FontSize="13"
-                       TextWrapping="Wrap"
-                       Visibility="Visible"/>
-
             <controls:MarkdownRenderer x:Name="MarkdownContent"
                                        Grid.Row="2"
-                                       MinHeight="20"
-                                       Visibility="Collapsed"/>
+                                       MinHeight="20"/>
 
             <StackPanel x:Name="TokenInfoPanel"
                         Grid.Row="3"
                         Orientation="Horizontal"
                         Margin="0,8,0,0"
                         Visibility="Collapsed">
-                <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                <Border x:Name="TokensBorder"
+                        Background="{StaticResource TertiaryBackgroundBrush}"
                         CornerRadius="6"
                         Padding="8,4"
                         Margin="0,0,6,0">

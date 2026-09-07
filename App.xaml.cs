@@ -37,7 +37,7 @@ public partial class App : Application
             var handler = new HttpClientHandler { UseProxy = false };
             return new HttpClient(handler)
             {
-                BaseAddress = new Uri("http://localhost:5000/"),
+                BaseAddress = new Uri("http://127.0.0.1:5000/"),
                 Timeout = Timeout.InfiniteTimeSpan
             };
         });

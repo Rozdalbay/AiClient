@@ -88,9 +88,9 @@ public sealed class SseChatService : IChatService
                 capturedUsage = sseEvent.Usage;
             }
 
-            if (sseEvent.Chunk is not null)
+            if (sseEvent.Delta is not null)
             {
-                yield return new StreamChunk { Text = sseEvent.Chunk };
+                yield return new StreamChunk { Text = sseEvent.Delta };
             }
         }
 
@@ -131,7 +131,7 @@ public sealed class SseChatService : IChatService
 
     private sealed class SseEvent
     {
-        public string? Chunk { get; init; }
+        public string? Delta { get; init; }
         public StreamUsage? Usage { get; init; }
     }
 }

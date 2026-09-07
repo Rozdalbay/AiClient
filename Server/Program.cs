@@ -1,7 +1,19 @@
 using System.Text.Json;
+using OpenAI.Responses;
+#pragma warning disable OPENAI001
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
+
+
+
+string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
+ResponsesClient client = new(key);
+
+IAsyncEnumerable<StreamingResponseUpdate> GetOpenAiStream(string prompt)
+{
+    return client.CreateResponseStreamingAsync("gpt-5.6-luna", prompt);
+}
 
 app.MapPost("/stream", async (
     ChatRequest request,
@@ -15,34 +27,28 @@ app.MapPost("/stream", async (
     Console.WriteLine($"Model: {request.ModelId}");
     Console.WriteLine($"Chat: {request.ChatId}");
 
-    var inputTokens = request.Message.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2;
-    string[] chunks =
-    [
-        "hi ",
-        "see",
-        "working ",
-        "good."
-    ];
+    var stream = GetOpenAiStream(request.Message);
 
-    var outputText = string.Concat(chunks);
-    var outputTokens = outputText.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2;
-
-    foreach (var chunk in chunks)
+    await foreach (StreamingResponseUpdate rsp in stream)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var json = JsonSerializer.Serialize(new
+        if (rsp is StreamingResponseOutputTextDeltaUpdate delta)
         {
-            chunk
-        });
+            cancellationToken.ThrowIfCancellationRequested();
 
-        await response.WriteAsync(
-            $"data: {json}\n\n",
-            cancellationToken);
+            var json = JsonSerializer.Serialize(new
+            {
+                delta.Delta
+            });
 
-        await response.Body.FlushAsync(cancellationToken);
+            await response.WriteAsync(
+                $"data: {json}\n\n",
+                cancellationToken);
 
-        await Task.Delay(500, cancellationToken);
+            await response.Body.FlushAsync(cancellationToken);
+
+            await Task.Delay(500, cancellationToken);
+            }
+
     }
 
     var usageEvent = JsonSerializer.Serialize(new

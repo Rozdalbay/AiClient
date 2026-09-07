@@ -334,6 +334,7 @@
                                  MaxHeight="150"
                                  VerticalContentAlignment="Center"
                                  Padding="8,8"
+                                 PreviewKeyDown="MessageInput_PreviewKeyDown"
                                  KeyDown="MessageInput_KeyDown"
                                  Text="{Binding InputMessage, UpdateSourceTrigger=PropertyChanged}"
                                  VerticalScrollBarVisibility="Auto"/>

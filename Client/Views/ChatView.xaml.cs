@@ -111,6 +111,14 @@ public partial class ChatView : UserControl
         }));
     }
 
+    private void MessageInput_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && !Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+        {
+            e.Handled = true;
+        }
+    }
+
     private void MessageInput_KeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key == Key.Enter)

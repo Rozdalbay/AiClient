@@ -21,12 +21,11 @@ app.MapPost("/stream", async (
     CancellationToken cancellationToken) =>
 {
     response.ContentType = "text/event-stream";
-
     response.Headers.CacheControl = "no-cache";
 
-    Console.WriteLine($"Получено сообщение: {request.Message}");
-    Console.WriteLine($"Модель: {request.ModelId}");
-    Console.WriteLine($"Чат: {request.ChatId}");
+    Console.WriteLine($"Received message: {request.Message}");
+    Console.WriteLine($"Model: {request.ModelId}");
+    Console.WriteLine($"Chat: {request.ChatId}");
 
     var stream = GetOpenAiStream(request.Message);
 
@@ -51,6 +50,21 @@ app.MapPost("/stream", async (
             }
 
     }
+
+    var usageEvent = JsonSerializer.Serialize(new
+    {
+        usage = new
+        {
+            input_tokens = inputTokens,
+            output_tokens = outputTokens
+        }
+    });
+
+    await response.WriteAsync(
+        $"data: {usageEvent}\n\n",
+        cancellationToken);
+
+    await response.Body.FlushAsync(cancellationToken);
 
     await response.WriteAsync(
         "data: [DONE]\n\n",

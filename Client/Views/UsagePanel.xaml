@@ -16,8 +16,8 @@
         <converters:RatioToScaleXConverter x:Key="RatioToScaleX"/>
     </UserControl.Resources>
 
-    <Border Background="{StaticResource PrimaryBackgroundBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
+    <Border Background="{DynamicResource PrimaryBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1,0,0,0">
         <ScrollViewer VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
@@ -25,16 +25,16 @@
 
                 <Grid Margin="0,0,0,16">
                     <TextBlock Text="Usage"
-                               Foreground="{StaticResource PrimaryTextBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="15"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
                     <Border HorizontalAlignment="Right"
-                            Background="{StaticResource TertiaryBackgroundBrush}"
+                            Background="{DynamicResource TertiaryBackgroundBrush}"
                             CornerRadius="6"
                             Padding="8,4">
                         <TextBlock Text="Today"
-                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                    FontSize="11"/>
                     </Border>
                 </Grid>
@@ -43,7 +43,7 @@
                         Margin="0,0,0,12">
                     <StackPanel>
                         <TextBlock Text="Spent"
-                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                    FontSize="12"
                                    Margin="0,0,0,6"/>
                         <Grid Margin="0,0,0,10">
@@ -53,7 +53,7 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0"
                                        Text="{Binding DailyCost, Converter={StaticResource D2C}}"
-                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="28"
                                        FontWeight="Bold"/>
                             <StackPanel Grid.Column="1"
@@ -61,10 +61,10 @@
                                         VerticalAlignment="Bottom"
                                         Margin="0,0,0,4">
                                 <TextBlock Text="↓ "
-                                           Foreground="{StaticResource SuccessAccentBrush}"
+                                           Foreground="{DynamicResource SuccessAccentBrush}"
                                            FontSize="12"
                                            FontWeight="SemiBold"/>
-                                <TextBlock Foreground="{StaticResource SuccessAccentBrush}"
+                                <TextBlock Foreground="{DynamicResource SuccessAccentBrush}"
                                            FontSize="12"
                                            FontWeight="SemiBold">
                                     <TextBlock.Text>
@@ -76,10 +76,10 @@
 
                         <Grid Margin="0,0,0,4">
                             <TextBlock Text="of "
-                                       Foreground="{StaticResource TertiaryTextBrush}"
+                                       Foreground="{DynamicResource TertiaryTextBrush}"
                                        FontSize="11"/>
                             <TextBlock HorizontalAlignment="Right"
-                                       Foreground="{StaticResource TertiaryTextBrush}"
+                                       Foreground="{DynamicResource TertiaryTextBrush}"
                                        FontSize="11">
                                 <TextBlock.Text>
                                     <Binding Path="BudgetLimit" Converter="{StaticResource D2C}"/>
@@ -87,12 +87,12 @@
                             </TextBlock>
                         </Grid>
 
-                        <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                        <Border Background="{DynamicResource TertiaryBackgroundBrush}"
                                 CornerRadius="3"
                                 Height="6">
                             <Border HorizontalAlignment="Left"
                                     CornerRadius="3"
-                                    Background="{StaticResource AccentGradient}">
+                                    Background="{DynamicResource AccentGradient}">
                                 <Border.RenderTransform>
                                     <ScaleTransform>
                                         <ScaleTransform.ScaleX>
@@ -119,15 +119,15 @@
                             Style="{StaticResource CardStyle}">
                         <StackPanel>
                             <TextBlock Text="Tokens"
-                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
                                        FontSize="11"
                                        Margin="0,0,0,4"/>
                             <TextBlock Text="{Binding DailyTokens, Converter={StaticResource I2S}}"
-                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="18"
                                        FontWeight="Bold"
                                        Margin="0,0,0,4"/>
-                            <TextBlock Foreground="{StaticResource SuccessAccentBrush}"
+                            <TextBlock Foreground="{DynamicResource SuccessAccentBrush}"
                                        FontSize="11"
                                        FontWeight="SemiBold">
                                 <TextBlock.Text>
@@ -141,15 +141,15 @@
                             Style="{StaticResource CardStyle}">
                         <StackPanel>
                             <TextBlock Text="Requests"
-                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
                                        FontSize="11"
                                        Margin="0,0,0,4"/>
                             <TextBlock Text="{Binding DailyRequests, Converter={StaticResource I2S}}"
-                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="18"
                                        FontWeight="Bold"
                                        Margin="0,0,0,4"/>
-                            <TextBlock Foreground="{StaticResource SuccessAccentBrush}"
+                            <TextBlock Foreground="{DynamicResource SuccessAccentBrush}"
                                        FontSize="11"
                                        FontWeight="SemiBold">
                                 <TextBlock.Text>
@@ -164,7 +164,7 @@
                         Margin="0,0,0,12">
                     <StackPanel>
                         <TextBlock Text="Model Statistics"
-                                   Foreground="{StaticResource PrimaryTextBrush}"
+                                   Foreground="{DynamicResource PrimaryTextBrush}"
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    Margin="0,0,0,12"/>
@@ -182,19 +182,19 @@
 
                                         <TextBlock Grid.Column="0"
                                                    Text="{Binding ModelName}"
-                                                   Foreground="{StaticResource PrimaryTextBrush}"
+                                                   Foreground="{DynamicResource PrimaryTextBrush}"
                                                    FontSize="12"
                                                    VerticalAlignment="Center"/>
 
                                         <TextBlock Grid.Column="1"
                                                    Text="{Binding Cost, Converter={StaticResource D2C}}"
-                                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                                    FontSize="12"
                                                    VerticalAlignment="Center"
                                                    Margin="0,0,8,0"/>
 
                                         <TextBlock Grid.Column="2"
-                                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                                    FontSize="12"
                                                    VerticalAlignment="Center"
                                                    MinWidth="36"
@@ -205,13 +205,13 @@
                                         </TextBlock>
                                     </Grid>
 
-                                    <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                                    <Border Background="{DynamicResource TertiaryBackgroundBrush}"
                                             CornerRadius="2"
                                             Height="4"
                                             Margin="0,0,0,4">
                                         <Border HorizontalAlignment="Left"
                                                 CornerRadius="2"
-                                                Background="{StaticResource PrimaryAccentBrush}">
+                                                Background="{DynamicResource PrimaryAccentBrush}">
                                             <Border.Width>
                                                 <Binding Path="Percentage">
                                                     <Binding.Converter>
@@ -232,7 +232,7 @@
                         Margin="0,0,0,12">
                     <StackPanel>
                         <TextBlock Text="Cost Dynamics"
-                                   Foreground="{StaticResource PrimaryTextBrush}"
+                                   Foreground="{DynamicResource PrimaryTextBrush}"
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    Margin="0,0,0,12"/>
@@ -251,13 +251,13 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Mon" Foreground="{StaticResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" Text="Tue" Foreground="{StaticResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="2" Text="Wed" Foreground="{StaticResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="3" Text="Thu" Foreground="{StaticResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="4" Text="Fri" Foreground="{StaticResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="5" Text="Sat" Foreground="{StaticResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="6" Text="Sun" Foreground="{StaticResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="0" Text="Mon" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Tue" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="Wed" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="3" Text="Thu" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="Fri" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="5" Text="Sat" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="6" Text="Sun" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -266,24 +266,24 @@
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                             <TextBlock Text="✓ "
-                                       Foreground="{StaticResource SuccessAccentBrush}"
+                                       Foreground="{DynamicResource SuccessAccentBrush}"
                                        FontSize="14"
                                        FontWeight="Bold"/>
                             <TextBlock Text="Backend Online"
-                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="13"
                                        FontWeight="SemiBold"/>
                         </StackPanel>
                         <TextBlock Text="Requests are processed through backend API."
-                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                    FontSize="11"
                                    TextWrapping="Wrap"
                                    Margin="0,0,0,8"/>
-                        <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                        <Border Background="{DynamicResource TertiaryBackgroundBrush}"
                                 CornerRadius="6"
                                 Padding="10,8">
                             <TextBlock Text="Desktop Client → Backend → AI Provider"
-                                       Foreground="{StaticResource TertiaryTextBrush}"
+                                       Foreground="{DynamicResource TertiaryTextBrush}"
                                        FontSize="10"
                                        FontFamily="{StaticResource MonoFont}"
                                        HorizontalAlignment="Center"/>

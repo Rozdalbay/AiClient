@@ -46,7 +46,7 @@ public partial class UsagePanel : UserControl
         var padding = 10.0;
 
         var accentColor = (Color)ColorConverter.ConvertFromString("#7C5CFC");
-        var bgColor = (Color)ColorConverter.ConvertFromString("#0D0F18");
+        var bgColor = (Application.Current.FindResource("PrimaryBackgroundBrush") as SolidColorBrush)?.Color ?? (Color)ColorConverter.ConvertFromString("#0D0F18");
 
         var points = new List<Point>();
         for (int i = 0; i < costs.Length; i++)

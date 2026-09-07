@@ -15,7 +15,7 @@
                        PagePadding="0"
                        ColumnWidth="999999">
             <Paragraph x:Name="MarkdownParagraph"
-                       Foreground="{StaticResource PrimaryTextBrush}"
+                       Foreground="{DynamicResource PrimaryTextBrush}"
                        FontFamily="{StaticResource PrimaryFont}"
                        FontSize="13"
                        LineHeight="22">

@@ -18,17 +18,29 @@ public partial class MarkdownRenderer : UserControl
         set => SetValue(MarkdownProperty, value);
     }
 
-    private static readonly SolidColorBrush PrimaryText = new((Color)ColorConverter.ConvertFromString("#E8E8F0"));
-    private static readonly SolidColorBrush SecondaryText = new((Color)ColorConverter.ConvertFromString("#8B8D9E"));
-    private static readonly SolidColorBrush AccentColor = new((Color)ColorConverter.ConvertFromString("#7C5CFC"));
-    private static readonly SolidColorBrush LinkColor = new((Color)ColorConverter.ConvertFromString("#5CA0FC"));
-    private static readonly SolidColorBrush BorderColor = new((Color)ColorConverter.ConvertFromString("#2A2D3E"));
-    private static readonly SolidColorBrush CodeBg = new((Color)ColorConverter.ConvertFromString("#1A1D2E"));
     private static readonly FontFamily MonoFont = new("Cascadia Code, JetBrains Mono, Consolas");
+
+    private SolidColorBrush PrimaryText = null!;
+    private SolidColorBrush SecondaryText = null!;
+    private SolidColorBrush AccentColor = null!;
+    private SolidColorBrush LinkColor = null!;
+    private SolidColorBrush BorderColor = null!;
+    private SolidColorBrush CodeBg = null!;
 
     public MarkdownRenderer()
     {
         InitializeComponent();
+        LoadThemeBrushes();
+    }
+
+    private void LoadThemeBrushes()
+    {
+        PrimaryText = (Application.Current.FindResource("PrimaryTextBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8E8F0"));
+        SecondaryText = (Application.Current.FindResource("SecondaryTextBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B8D9E"));
+        AccentColor = (Application.Current.FindResource("PrimaryAccentBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC"));
+        LinkColor = (Application.Current.FindResource("SecondaryAccentBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#5CA0FC"));
+        BorderColor = (Application.Current.FindResource("BorderBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A2D3E"));
+        CodeBg = (Application.Current.FindResource("InputBackgroundBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A1D2E"));
     }
 
     private static void OnMarkdownChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -207,7 +219,7 @@ public partial class MarkdownRenderer : UserControl
             Document.Blocks.Add(paragraph);
     }
 
-    private static void AddInlineFormatted(Paragraph paragraph, string text)
+    private void AddInlineFormatted(Paragraph paragraph, string text)
     {
         var parts = Regex.Split(text, @"(\*\*.*?\*\*|\*.*?\*|`[^`]+`|\[.*?\]\(.*?\))");
 
@@ -260,15 +272,19 @@ public partial class MarkdownRenderer : UserControl
         }
     }
 
-    private static void AddCodeBlock(FlowDocument document, string code, string language)
+    private void AddCodeBlock(FlowDocument document, string code, string language)
     {
+        var codeHeaderBg = (Application.Current.FindResource("CodeHeaderBackgroundBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#151825"));
+        var codeBodyBg = (Application.Current.FindResource("CodeBackgroundBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F1117"));
+        var lineNumBrush = (Application.Current.FindResource("LineNumberBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3A3D4E"));
+
         var headerPara = new Paragraph
         {
             Foreground = SecondaryText,
             FontSize = 11,
             Padding = new Thickness(12, 6, 12, 2),
             Margin = new Thickness(0, 8, 0, 0),
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#151825"))
+            Background = codeHeaderBg
         };
         headerPara.Inlines.Add(new Run($"  {language}  ") { FontSize = 11, Foreground = SecondaryText });
         document.Blocks.Add(headerPara);
@@ -284,11 +300,11 @@ public partial class MarkdownRenderer : UserControl
                 LineHeight = 20,
                 Padding = new Thickness(12, 1, 12, 1),
                 Margin = new Thickness(0),
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0F1117"))
+                Background = codeBodyBg
             };
             codePara.Inlines.Add(new Run($"  {(i + 1).ToString().PadLeft(3)} │ ")
             {
-                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3A3D4E")),
+                Foreground = lineNumBrush,
                 FontFamily = MonoFont,
                 FontSize = 12
             });

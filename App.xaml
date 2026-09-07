@@ -5,6 +5,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Client/Themes/Colors.xaml"/>
+                <ResourceDictionary Source="Client/Themes/DarkTheme.xaml"/>
                 <ResourceDictionary Source="Client/Themes/Styles.xaml"/>
                 <ResourceDictionary Source="Client/Themes/Buttons.xaml"/>
                 <ResourceDictionary Source="Client/Themes/Cards.xaml"/>

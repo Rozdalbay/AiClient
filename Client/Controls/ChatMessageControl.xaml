@@ -29,7 +29,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Border Background="{StaticResource PrimaryAccentBrush}"
+                    <Border Background="{DynamicResource PrimaryAccentBrush}"
                             CornerRadius="6"
                             Width="24" Height="24"
                             Margin="0,0,8,0"
@@ -42,7 +42,7 @@
                                    VerticalAlignment="Center"/>
                     </Border>
                     <TextBlock x:Name="RoleText"
-                               Foreground="{StaticResource SecondaryTextBrush}"
+                               Foreground="{DynamicResource SecondaryTextBrush}"
                                FontSize="12"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
@@ -50,7 +50,7 @@
 
                 <TextBlock Grid.Column="2"
                            x:Name="TimeText"
-                           Foreground="{StaticResource TertiaryTextBrush}"
+                           Foreground="{DynamicResource TertiaryTextBrush}"
                            FontSize="11"
                            VerticalAlignment="Center"/>
             </Grid>
@@ -61,7 +61,7 @@
                           Visibility="Collapsed">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                        <Border Background="{DynamicResource TertiaryBackgroundBrush}"
                                 CornerRadius="8"
                                 Padding="10,6"
                                 Margin="0,2"
@@ -70,15 +70,15 @@
                                 <TextBlock Text="&#xE7C3;"
                                            FontFamily="Segoe MDL2 Assets"
                                            FontSize="14"
-                                           Foreground="{StaticResource SecondaryTextBrush}"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
                                            VerticalAlignment="Center"
                                            Margin="0,0,6,0"/>
                                 <TextBlock Text="{Binding FileName}"
-                                           Foreground="{StaticResource PrimaryTextBrush}"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
                                            FontSize="12"
                                            VerticalAlignment="Center"/>
                                 <TextBlock Text="{Binding FileSizeDisplay}"
-                                           Foreground="{StaticResource TertiaryTextBrush}"
+                                           Foreground="{DynamicResource TertiaryTextBrush}"
                                            FontSize="11"
                                            VerticalAlignment="Center"
                                            Margin="8,0,0,0"/>
@@ -98,7 +98,7 @@
                         Margin="0,8,0,0"
                         Visibility="Collapsed">
                 <Border x:Name="TokensBorder"
-                        Background="{StaticResource TertiaryBackgroundBrush}"
+                        Background="{DynamicResource TertiaryBackgroundBrush}"
                         CornerRadius="6"
                         Padding="8,4"
                         Margin="0,0,6,0">
@@ -106,38 +106,38 @@
                         <TextBlock Text="&#xE9D9;"
                                    FontFamily="Segoe MDL2 Assets"
                                    FontSize="11"
-                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                    VerticalAlignment="Center"
                                    Margin="0,0,4,0"/>
                         <TextBlock x:Name="TokensText"
-                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                    FontSize="11"
                                    VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
 
                 <Border x:Name="CostBorder"
-                        Background="{StaticResource TertiaryBackgroundBrush}"
+                        Background="{DynamicResource TertiaryBackgroundBrush}"
                         CornerRadius="6"
                         Padding="8,4"
                         Margin="0,0,6,0"
                         Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="$"
-                                   Foreground="{StaticResource SuccessAccentBrush}"
+                                   Foreground="{DynamicResource SuccessAccentBrush}"
                                    FontSize="11"
                                    FontWeight="Bold"
                                    VerticalAlignment="Center"
                                    Margin="0,0,4,0"/>
                         <TextBlock x:Name="CostText"
-                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                    FontSize="11"
                                    VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
 
                 <Border x:Name="TimeBorder"
-                        Background="{StaticResource TertiaryBackgroundBrush}"
+                        Background="{DynamicResource TertiaryBackgroundBrush}"
                         CornerRadius="6"
                         Padding="8,4"
                         Visibility="Collapsed">
@@ -145,11 +145,11 @@
                         <TextBlock Text="&#xE967;"
                                    FontFamily="Segoe MDL2 Assets"
                                    FontSize="11"
-                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                    VerticalAlignment="Center"
                                    Margin="0,0,4,0"/>
                         <TextBlock x:Name="ResponseTimeText"
-                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
                                    FontSize="11"
                                    VerticalAlignment="Center"/>
                     </StackPanel>

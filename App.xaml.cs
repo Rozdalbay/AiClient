@@ -10,6 +10,7 @@ namespace AiDesktopClient;
 public partial class App : Application
 {
     public static IServiceProvider? ServiceProvider { get; private set; }
+    public static ThemeManager? ThemeManager { get; private set; }
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -19,6 +20,9 @@ public partial class App : Application
         ConfigureServices(services);
         ServiceProvider = services.BuildServiceProvider();
 
+        ThemeManager = ServiceProvider.GetRequiredService<ThemeManager>();
+        ThemeManager.ApplyInitialTheme();
+
         var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
         mainWindow.DataContext = ServiceProvider.GetRequiredService<MainViewModel>();
         mainWindow.Show();
@@ -26,6 +30,7 @@ public partial class App : Application
 
     private static void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<ThemeManager>();
         services.AddSingleton<IToastService, ToastService>();
         services.AddSingleton(_ =>
         {

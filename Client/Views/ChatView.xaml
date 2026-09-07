@@ -15,7 +15,7 @@
         <converters:IntToVisibilityConverter x:Key="IntToVis"/>
     </UserControl.Resources>
 
-    <Grid Background="{StaticResource PrimaryBackgroundBrush}">
+    <Grid Background="{DynamicResource PrimaryBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -25,7 +25,7 @@
 
         <Border Grid.Row="0"
                 Padding="20,10"
-                BorderBrush="{StaticResource BorderBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="0,0,0,1">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -37,11 +37,11 @@
                     <TextBlock Text="&#xE710;"
                                FontFamily="Segoe MDL2 Assets"
                                FontSize="16"
-                               Foreground="{StaticResource PrimaryAccentBrush}"
+                               Foreground="{DynamicResource PrimaryAccentBrush}"
                                VerticalAlignment="Center"
                                Margin="0,0,10,0"/>
                     <TextBlock Text="{Binding CurrentChat.Title}"
-                               Foreground="{StaticResource PrimaryTextBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="15"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
@@ -49,7 +49,7 @@
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Border x:Name="ModelSelectorBorder"
-                            Background="{StaticResource TertiaryBackgroundBrush}"
+                            Background="{DynamicResource TertiaryBackgroundBrush}"
                             CornerRadius="8"
                             Padding="10,6"
                             Cursor="Hand"
@@ -58,18 +58,18 @@
                             <TextBlock Text="&#xE99A;"
                                        FontFamily="Segoe MDL2 Assets"
                                        FontSize="12"
-                                       Foreground="{StaticResource PrimaryAccentBrush}"
+                                       Foreground="{DynamicResource PrimaryAccentBrush}"
                                        VerticalAlignment="Center"
                                        Margin="0,0,6,0"/>
                             <TextBlock x:Name="SelectedModelText"
                                        Text="Model A"
-                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="12"
                                        VerticalAlignment="Center"/>
                             <TextBlock Text="&#xE70D;"
                                        FontFamily="Segoe MDL2 Assets"
                                        FontSize="8"
-                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
                                        VerticalAlignment="Center"
                                        Margin="8,0,0,0"/>
                         </StackPanel>
@@ -87,8 +87,8 @@
 
         <Border x:Name="ModelDropdown"
                 Grid.Row="0"
-                Background="{StaticResource SurfaceBackgroundBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+                Background="{DynamicResource SurfaceBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="10"
                 Padding="6"
@@ -102,7 +102,7 @@
                           HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
                     <TextBlock Text="Select Model"
-                               Foreground="{StaticResource SecondaryTextBrush}"
+                               Foreground="{DynamicResource SecondaryTextBrush}"
                                FontSize="11"
                                FontWeight="SemiBold"
                                Margin="8,4,0,6"/>
@@ -123,7 +123,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <Border Background="{StaticResource PrimaryAccentBrush}"
+                                        <Border Background="{DynamicResource PrimaryAccentBrush}"
                                                 CornerRadius="6"
                                                 Width="28" Height="28"
                                                 Margin="0,0,10,0"
@@ -138,17 +138,17 @@
 
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding DisplayName}"
-                                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                                       Foreground="{DynamicResource PrimaryTextBrush}"
                                                        FontSize="13"
                                                        FontWeight="SemiBold"/>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding Provider}"
-                                                           Foreground="{StaticResource TertiaryTextBrush}"
+                                                           Foreground="{DynamicResource TertiaryTextBrush}"
                                                            FontSize="11"/>
                                                 <TextBlock Text=" • "
-                                                           Foreground="{StaticResource TertiaryTextBrush}"
+                                                           Foreground="{DynamicResource TertiaryTextBrush}"
                                                            FontSize="11"/>
-                                                <TextBlock Foreground="{StaticResource TertiaryTextBrush}"
+                                                <TextBlock Foreground="{DynamicResource TertiaryTextBrush}"
                                                            FontSize="11">
                                                     <TextBlock.Text>
                                                         <Binding Path="ContextWindow" StringFormat="{}{0:N0} tokens"/>
@@ -163,7 +163,7 @@
                                                 VerticalAlignment="Center"
                                                 Visibility="{Binding IsAvailable, Converter={StaticResource BoolToVis}}">
                                             <Border.Background>
-                                                <SolidColorBrush Color="{StaticResource SuccessAccent}"/>
+                                                <SolidColorBrush Color="{DynamicResource SuccessAccent}"/>
                                             </Border.Background>
                                         </Border>
                                     </Grid>
@@ -201,18 +201,18 @@
                             VerticalAlignment="Center"
                             Margin="0,-60,0,0"
                             Visibility="Collapsed">
-                    <Border Background="{StaticResource AccentGradient}"
+                    <Border Background="{DynamicResource AccentGradient}"
                             CornerRadius="20" Width="64" Height="64"
                             HorizontalAlignment="Center" Margin="0,0,0,16">
                         <TextBlock Text="&#xE99A;" FontFamily="Segoe MDL2 Assets" FontSize="28"
                                    Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <TextBlock Text="How can I help you?"
-                               Foreground="{StaticResource PrimaryTextBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="20" FontWeight="SemiBold"
                                HorizontalAlignment="Center"/>
                     <TextBlock Text="Ask me anything — I can help with code, writing, analysis, and more."
-                               Foreground="{StaticResource TertiaryTextBrush}"
+                               Foreground="{DynamicResource TertiaryTextBrush}"
                                FontSize="13"
                                HorizontalAlignment="Center"
                                Margin="0,6,0,0"
@@ -233,16 +233,16 @@
                 <TextBlock Text="&#xE896;"
                            FontFamily="Segoe MDL2 Assets"
                            FontSize="48"
-                           Foreground="{StaticResource PrimaryAccentBrush}"
+                           Foreground="{DynamicResource PrimaryAccentBrush}"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,12"/>
                 <TextBlock Text="Drop files here"
-                           Foreground="{StaticResource PrimaryTextBrush}"
+                           Foreground="{DynamicResource PrimaryTextBrush}"
                            FontSize="18"
                            FontWeight="SemiBold"
                            HorizontalAlignment="Center"/>
                 <TextBlock Text="Files will be attached to your message"
-                           Foreground="{StaticResource SecondaryTextBrush}"
+                           Foreground="{DynamicResource SecondaryTextBrush}"
                            FontSize="13"
                            HorizontalAlignment="Center"
                            Margin="0,4,0,0"/>
@@ -260,7 +260,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                    <Border Background="{DynamicResource TertiaryBackgroundBrush}"
                             CornerRadius="8"
                             Padding="10,6"
                             Margin="0,0,6,6">
@@ -268,17 +268,17 @@
                             <TextBlock Text="&#xE7C3;"
                                        FontFamily="Segoe MDL2 Assets"
                                        FontSize="14"
-                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
                                        VerticalAlignment="Center"
                                        Margin="0,0,6,0"/>
                             <TextBlock Text="{Binding FileName}"
-                                       Foreground="{StaticResource PrimaryTextBrush}"
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="12"
                                        VerticalAlignment="Center"
                                        MaxWidth="150"
                                        TextTrimming="CharacterEllipsis"/>
                             <TextBlock Text="{Binding FileSizeDisplay}"
-                                       Foreground="{StaticResource TertiaryTextBrush}"
+                                       Foreground="{DynamicResource TertiaryTextBrush}"
                                        FontSize="11"
                                        VerticalAlignment="Center"
                                        Margin="8,0,4,0"/>
@@ -296,10 +296,10 @@
 
         <Border Grid.Row="3"
                 Padding="20,8,20,16"
-                BorderBrush="{StaticResource BorderBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="0,1,0,0">
-            <Border Background="{StaticResource InputBackgroundBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
+            <Border Background="{DynamicResource InputBackgroundBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1"
                     CornerRadius="14">
                 <Grid Margin="4">
@@ -327,7 +327,7 @@
                                  Grid.Column="1"
                                  Background="Transparent"
                                  BorderThickness="0"
-                                 Foreground="{StaticResource PrimaryTextBrush}"
+                                 Foreground="{DynamicResource PrimaryTextBrush}"
                                  FontSize="13"
                                  AcceptsReturn="True"
                                  TextWrapping="Wrap"
@@ -349,7 +349,7 @@
 
                         <TextBlock Grid.Column="0"
                                    Text="Enter to send • Shift+Enter for new line"
-                                   Foreground="{StaticResource TertiaryTextBrush}"
+                                   Foreground="{DynamicResource TertiaryTextBrush}"
                                    FontSize="11"
                                    VerticalAlignment="Center"
                                    Margin="4,0,0,8"/>
@@ -357,14 +357,14 @@
                         <StackPanel Grid.Column="2"
                                     Orientation="Horizontal"
                                     VerticalAlignment="Center">
-                            <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                            <Border Background="{DynamicResource TertiaryBackgroundBrush}"
                                     CornerRadius="6"
                                     Padding="8,4"
                                     Margin="0,0,8,0"
                                     VerticalAlignment="Center">
                                 <TextBlock x:Name="InputModelBadge"
                                            Text="Model A"
-                                           Foreground="{StaticResource SecondaryTextBrush}"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
                                            FontSize="11"
                                            VerticalAlignment="Center"/>
                             </Border>
@@ -384,7 +384,7 @@
                                     Style="{StaticResource GhostButtonStyle}"
                                     Padding="12,8"
                                     Visibility="{Binding IsStreaming, Converter={StaticResource BoolToVis}}"
-                                    Foreground="{StaticResource ErrorAccentBrush}">
+                                    Foreground="{DynamicResource ErrorAccentBrush}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="&#xE71A;"
                                                FontFamily="Segoe MDL2 Assets"

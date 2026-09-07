@@ -8,12 +8,13 @@ public partial class SettingsViewModel : ObservableObject
 {
     private readonly IBackendService _backendService;
     private readonly IToastService _toastService;
+    private readonly ThemeManager _themeManager;
 
     [ObservableProperty]
     private string _selectedSection = "General";
 
     [ObservableProperty]
-    private string _backendUrl = "localhost"; // пока что для тестов localhost
+    private string _backendUrl = "localhost";
 
     [ObservableProperty]
     private bool _isDarkTheme = true;
@@ -45,10 +46,23 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private int _fontSize = 13;
 
-    public SettingsViewModel(IBackendService backendService, IToastService toastService)
+    public SettingsViewModel(IBackendService backendService, IToastService toastService, ThemeManager themeManager)
     {
         _backendService = backendService;
         _toastService = toastService;
+        _themeManager = themeManager;
+        _isDarkTheme = themeManager.CurrentTheme == AppTheme.Dark;
+    }
+
+    partial void OnIsDarkThemeChanged(bool value)
+    {
+        _themeManager.SwitchTheme(value ? AppTheme.Dark : AppTheme.Light);
+    }
+
+    [RelayCommand]
+    private void ToggleDarkTheme()
+    {
+        IsDarkTheme = !IsDarkTheme;
     }
 
     [RelayCommand]

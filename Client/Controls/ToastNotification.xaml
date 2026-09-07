@@ -22,8 +22,8 @@
     </UserControl.Resources>
 
     <Border x:Name="ToastBorder"
-            Background="{StaticResource SurfaceBackgroundBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
+            Background="{DynamicResource SurfaceBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
             CornerRadius="10"
             Padding="14,10"
@@ -46,7 +46,7 @@
 
             <TextBlock x:Name="MessageText"
                        Grid.Column="1"
-                       Foreground="{StaticResource PrimaryTextBrush}"
+                       Foreground="{DynamicResource PrimaryTextBrush}"
                        FontSize="13"
                        VerticalAlignment="Center"
                        TextWrapping="Wrap"/>

@@ -10,10 +10,10 @@
                 <ControlTemplate TargetType="ToggleButton">
                     <Grid>
                         <Border x:Name="track"
-                                Background="{StaticResource TertiaryBackgroundBrush}"
+                                Background="{DynamicResource TertiaryBackgroundBrush}"
                                 CornerRadius="12"
                                 Width="44" Height="24"
-                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="1"/>
                         <Border x:Name="thumb"
                                 Background="White"
@@ -25,9 +25,9 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="track" Property="Background"
-                                    Value="{StaticResource PrimaryAccentBrush}"/>
+                                    Value="{DynamicResource PrimaryAccentBrush}"/>
                             <Setter TargetName="track" Property="BorderBrush"
-                                    Value="{StaticResource PrimaryAccentBrush}"/>
+                                    Value="{DynamicResource PrimaryAccentBrush}"/>
                             <Setter TargetName="thumb" Property="HorizontalAlignment"
                                     Value="Right"/>
                             <Setter TargetName="thumb" Property="Margin" Value="0,0,3,0"/>
@@ -42,9 +42,9 @@
     </Style>
 
     <Style TargetType="ComboBox">
-        <Setter Property="Background" Value="{StaticResource InputBackgroundBrush}"/>
-        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="10,8"/>
         <Setter Property="FontSize" Value="13"/>
@@ -64,7 +64,7 @@
                                                   VerticalAlignment="Center"/>
                                 <TextBlock x:Name="placeholder"
                                            Text="{TemplateBinding Tag}"
-                                           Foreground="{StaticResource TertiaryTextBrush}"
+                                           Foreground="{DynamicResource TertiaryTextBrush}"
                                            VerticalAlignment="Center"
                                            Visibility="Collapsed"/>
                             </Grid>
@@ -78,7 +78,7 @@
                             <TextBlock Text="&#xE70D;"
                                        FontFamily="Segoe MDL2 Assets"
                                        FontSize="10"
-                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"/>
                         </ToggleButton>
@@ -87,8 +87,8 @@
                                Placement="Bottom"
                                AllowsTransparency="True"
                                Focusable="False">
-                            <Border Background="{StaticResource SurfaceBackgroundBrush}"
-                                    BorderBrush="{StaticResource BorderBrush}"
+                            <Border Background="{DynamicResource SurfaceBackgroundBrush}"
+                                    BorderBrush="{DynamicResource BorderBrush}"
                                     BorderThickness="1"
                                     CornerRadius="8"
                                     Padding="4"
@@ -103,7 +103,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="BorderBrush"
-                                    Value="{StaticResource BorderHoverBrush}"/>
+                                    Value="{DynamicResource BorderHoverBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -113,7 +113,7 @@
 
     <Style TargetType="ComboBoxItem">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="Padding" Value="10,8"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
@@ -128,13 +128,13 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="Background"
-                                    Value="{StaticResource TertiaryBackgroundBrush}"/>
+                                    Value="{DynamicResource TertiaryBackgroundBrush}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="border" Property="Background"
-                                    Value="{StaticResource TertiaryBackgroundBrush}"/>
+                                    Value="{DynamicResource TertiaryBackgroundBrush}"/>
                             <Setter Property="Foreground"
-                                    Value="{StaticResource PrimaryAccentBrush}"/>
+                                    Value="{DynamicResource PrimaryAccentBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

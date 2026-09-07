@@ -15,7 +15,7 @@
         <converters:ConnectionStatusToColorConverter x:Key="StatusColor"/>
     </UserControl.Resources>
 
-    <Border Background="{StaticResource PrimaryBackgroundBrush}">
+    <Border Background="{DynamicResource PrimaryBackgroundBrush}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" MinWidth="160" MaxWidth="220"/>
@@ -23,12 +23,12 @@
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0"
-                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="0,0,1,0"
                     Padding="16,20">
                 <StackPanel>
                     <TextBlock Text="Settings"
-                               Foreground="{StaticResource PrimaryTextBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="18"
                                FontWeight="Bold"
                                Margin="0,0,0,20"/>
@@ -116,12 +116,12 @@
                 <!-- General -->
                 <StackPanel x:Name="GeneralPanel" Visibility="Visible">
                     <TextBlock Text="General Settings"
-                               Foreground="{StaticResource PrimaryTextBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
 
                     <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
                         <StackPanel>
-                            <TextBlock Text="Backend URL" Foreground="{StaticResource PrimaryTextBrush}"
+                            <TextBlock Text="Backend URL" Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
                             <TextBox Text="{Binding BackendUrl, UpdateSourceTrigger=PropertyChanged}"
                                      HorizontalAlignment="Stretch" Margin="0,0,0,12"/>
@@ -152,10 +152,10 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Enable Streaming" Foreground="{StaticResource PrimaryTextBrush}"
+                                <TextBlock Text="Enable Streaming" Foreground="{DynamicResource PrimaryTextBrush}"
                                            FontSize="13" FontWeight="SemiBold"/>
                                 <TextBlock Text="Receive responses token by token"
-                                           Foreground="{StaticResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
+                                           Foreground="{DynamicResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
                             </StackPanel>
                             <ToggleButton Grid.Column="1" IsChecked="{Binding EnableStreaming}"
                                           Style="{StaticResource ToggleSwitchStyle}" VerticalAlignment="Center"/>
@@ -169,10 +169,10 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Show Token Count" Foreground="{StaticResource PrimaryTextBrush}"
+                                <TextBlock Text="Show Token Count" Foreground="{DynamicResource PrimaryTextBrush}"
                                            FontSize="13" FontWeight="SemiBold"/>
                                 <TextBlock Text="Display token usage per message"
-                                           Foreground="{StaticResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
+                                           Foreground="{DynamicResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
                             </StackPanel>
                             <ToggleButton Grid.Column="1" IsChecked="{Binding ShowTokenCount}"
                                           Style="{StaticResource ToggleSwitchStyle}" VerticalAlignment="Center"/>
@@ -186,10 +186,10 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Show Cost Info" Foreground="{StaticResource PrimaryTextBrush}"
+                                <TextBlock Text="Show Cost Info" Foreground="{DynamicResource PrimaryTextBrush}"
                                            FontSize="13" FontWeight="SemiBold"/>
                                 <TextBlock Text="Display cost per request"
-                                           Foreground="{StaticResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
+                                           Foreground="{DynamicResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
                             </StackPanel>
                             <ToggleButton Grid.Column="1" IsChecked="{Binding ShowCostInfo}"
                                           Style="{StaticResource ToggleSwitchStyle}" VerticalAlignment="Center"/>
@@ -200,24 +200,72 @@
                 <!-- Appearance -->
                 <StackPanel x:Name="AppearancePanel" Visibility="Collapsed">
                     <TextBlock Text="Appearance"
-                               Foreground="{StaticResource PrimaryTextBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
 
                     <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Dark Theme" Foreground="{StaticResource PrimaryTextBrush}"
-                                           FontSize="13" FontWeight="SemiBold"/>
-                                <TextBlock Text="Use dark color scheme"
-                                           Foreground="{StaticResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
-                            </StackPanel>
-                            <ToggleButton Grid.Column="1" IsChecked="{Binding IsDarkTheme}"
-                                          Style="{StaticResource ToggleSwitchStyle}" VerticalAlignment="Center"/>
-                        </Grid>
+                        <StackPanel>
+                            <TextBlock Text="Theme" Foreground="{DynamicResource PrimaryTextBrush}"
+                                       FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" CornerRadius="8,0,0,8" Padding="0" Cursor="Hand"
+                                        Background="{DynamicResource TertiaryBackgroundBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1,1,0,1">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDarkTheme}" Value="True">
+                                                    <Setter Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Border.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{Binding ToggleDarkThemeCommand}"/>
+                                    </Border.InputBindings>
+                                    <StackPanel HorizontalAlignment="Center" Margin="0,10">
+                                        <Border Background="#0D0F18" CornerRadius="6" Width="48" Height="32"
+                                                HorizontalAlignment="Center" Margin="0,0,0,6">
+                                            <TextBlock Text="&#xE771;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                       Foreground="#E8E8F0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="Dark" HorizontalAlignment="Center" FontSize="12"
+                                                   Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="1" CornerRadius="0,8,8,0" Padding="0" Cursor="Hand"
+                                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,1,1">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDarkTheme}" Value="False">
+                                                    <Setter Property="Background" Value="{DynamicResource TertiaryBackgroundBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Border.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{Binding ToggleDarkThemeCommand}"/>
+                                    </Border.InputBindings>
+                                    <StackPanel HorizontalAlignment="Center" Margin="0,10">
+                                        <Border Background="#F6F7FB" CornerRadius="6" Width="48" Height="32"
+                                                HorizontalAlignment="Center" Margin="0,0,0,6"
+                                                BorderBrush="#E1E3EB" BorderThickness="1">
+                                            <TextBlock Text="&#xE771;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                       Foreground="#171827" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="Light" HorizontalAlignment="Center" FontSize="12"
+                                                   Foreground="{DynamicResource PrimaryTextBrush}"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
                     </Border>
 
                     <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
@@ -227,10 +275,10 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Compact Mode" Foreground="{StaticResource PrimaryTextBrush}"
+                                <TextBlock Text="Compact Mode" Foreground="{DynamicResource PrimaryTextBrush}"
                                            FontSize="13" FontWeight="SemiBold"/>
                                 <TextBlock Text="Reduce spacing between elements"
-                                           Foreground="{StaticResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
+                                           Foreground="{DynamicResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
                             </StackPanel>
                             <ToggleButton Grid.Column="1" IsChecked="{Binding CompactMode}"
                                           Style="{StaticResource ToggleSwitchStyle}" VerticalAlignment="Center"/>
@@ -239,10 +287,10 @@
 
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="Font Size" Foreground="{StaticResource PrimaryTextBrush}"
+                            <TextBlock Text="Font Size" Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="13" FontWeight="SemiBold" Margin="0,0,0,8"/>
                             <TextBlock Text="{Binding FontSize, StringFormat='Current: {0}px'}"
-                                       Foreground="{StaticResource SecondaryTextBrush}" FontSize="12"/>
+                                       Foreground="{DynamicResource SecondaryTextBrush}" FontSize="12"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -250,19 +298,19 @@
                 <!-- Models -->
                 <StackPanel x:Name="ModelsPanel" Visibility="Collapsed">
                     <TextBlock Text="AI Models"
-                               Foreground="{StaticResource PrimaryTextBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
 
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="Available Models" Foreground="{StaticResource PrimaryTextBrush}"
+                            <TextBlock Text="Available Models" Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="13" FontWeight="SemiBold" Margin="0,0,0,12"/>
                             <TextBlock Text="Models are configured on the backend. Contact your administrator to add or modify models."
-                                       Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" TextWrapping="Wrap"/>
-                            <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                                       Foreground="{DynamicResource SecondaryTextBrush}" FontSize="12" TextWrapping="Wrap"/>
+                            <Border Background="{DynamicResource TertiaryBackgroundBrush}"
                                     CornerRadius="8" Padding="14,10" Margin="0,12,0,0">
                                 <TextBlock Text="Desktop Client → Backend → AI Provider"
-                                           Foreground="{StaticResource TertiaryTextBrush}" FontSize="11"
+                                           Foreground="{DynamicResource TertiaryTextBrush}" FontSize="11"
                                            FontFamily="{StaticResource MonoFont}" HorizontalAlignment="Center"/>
                             </Border>
                         </StackPanel>
@@ -272,26 +320,26 @@
                 <!-- Backend -->
                 <StackPanel x:Name="BackendPanel" Visibility="Collapsed">
                     <TextBlock Text="Backend Configuration"
-                               Foreground="{StaticResource PrimaryTextBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
 
                     <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
                         <StackPanel>
-                            <TextBlock Text="SECURITY:" Foreground="{StaticResource WarningAccentBrush}"
+                            <TextBlock Text="SECURITY:" Foreground="{DynamicResource WarningAccentBrush}"
                                        FontSize="12" FontWeight="Bold" Margin="0,0,0,6"/>
                             <TextBlock Text="API keys of AI providers should NEVER be stored in the desktop frontend. All secrets and authorization must be handled by the backend."
-                                       Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" TextWrapping="Wrap"/>
+                                       Foreground="{DynamicResource SecondaryTextBrush}" FontSize="12" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Border>
 
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="Connection Architecture" Foreground="{StaticResource PrimaryTextBrush}"
+                            <TextBlock Text="Connection Architecture" Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10"/>
-                            <Border Background="{StaticResource TertiaryBackgroundBrush}"
+                            <Border Background="{DynamicResource TertiaryBackgroundBrush}"
                                     CornerRadius="8" Padding="14,10">
                                 <TextBlock Text="Desktop Client → Backend API → AI Provider"
-                                           Foreground="{StaticResource PrimaryAccentBrush}" FontSize="12"
+                                           Foreground="{DynamicResource PrimaryAccentBrush}" FontSize="12"
                                            FontFamily="{StaticResource MonoFont}" HorizontalAlignment="Center"/>
                             </Border>
                         </StackPanel>
@@ -301,7 +349,7 @@
                 <!-- Notifications -->
                 <StackPanel x:Name="NotificationsPanel" Visibility="Collapsed">
                     <TextBlock Text="Notifications"
-                               Foreground="{StaticResource PrimaryTextBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
 
                     <Border Style="{StaticResource CardStyle}">
@@ -311,10 +359,10 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Enable Notifications" Foreground="{StaticResource PrimaryTextBrush}"
+                                <TextBlock Text="Enable Notifications" Foreground="{DynamicResource PrimaryTextBrush}"
                                            FontSize="13" FontWeight="SemiBold"/>
                                 <TextBlock Text="Show toast notifications for actions"
-                                           Foreground="{StaticResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
+                                           Foreground="{DynamicResource TertiaryTextBrush}" FontSize="11" Margin="0,2,0,0"/>
                             </StackPanel>
                             <ToggleButton Grid.Column="1" IsChecked="{Binding EnableNotifications}"
                                           Style="{StaticResource ToggleSwitchStyle}" VerticalAlignment="Center"/>
@@ -325,23 +373,23 @@
                 <!-- About -->
                 <StackPanel x:Name="AboutPanel" Visibility="Collapsed">
                     <TextBlock Text="About"
-                               Foreground="{StaticResource PrimaryTextBrush}"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
 
                     <Border Style="{StaticResource CardStyle}">
                         <StackPanel HorizontalAlignment="Center" Margin="20">
-                            <Border Background="{StaticResource AccentGradient}"
+                            <Border Background="{DynamicResource AccentGradient}"
                                     CornerRadius="16" Width="60" Height="60"
                                     HorizontalAlignment="Center" Margin="0,0,0,12">
                                 <TextBlock Text="&#xE99A;" FontFamily="Segoe MDL2 Assets" FontSize="28"
                                            Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock Text="AI Desktop Client" Foreground="{StaticResource PrimaryTextBrush}"
+                            <TextBlock Text="AI Desktop Client" Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Version 1.0.0" Foreground="{StaticResource SecondaryTextBrush}"
+                            <TextBlock Text="Version 1.0.0" Foreground="{DynamicResource SecondaryTextBrush}"
                                        FontSize="13" HorizontalAlignment="Center" Margin="0,4,0,0"/>
                             <TextBlock Text="Modern AI desktop application frontend"
-                                       Foreground="{StaticResource TertiaryTextBrush}" FontSize="12"
+                                       Foreground="{DynamicResource TertiaryTextBrush}" FontSize="12"
                                        HorizontalAlignment="Center" Margin="0,12,0,0"/>
                         </StackPanel>
                     </Border>

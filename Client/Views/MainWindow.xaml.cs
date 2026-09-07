@@ -156,8 +156,8 @@ public partial class MainWindow : Window
             Width = 350,
             Height = 150,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#131620")),
-            BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A2D3E")),
+            Background = (Application.Current.FindResource("PrimaryBackgroundBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#131620")),
+            BorderBrush = (Application.Current.FindResource("BorderBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A2D3E")),
             BorderThickness = new Thickness(1),
             ResizeMode = ResizeMode.NoResize,
             WindowStyle = WindowStyle.ToolWindow
@@ -169,9 +169,9 @@ public partial class MainWindow : Window
         {
             Text = defaultValue,
             Margin = new Thickness(0, 0, 0, 12),
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A1D2E")),
-            Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8E8F0")),
-            BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A2D3E")),
+            Background = (Application.Current.FindResource("InputBackgroundBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A1D2E")),
+            Foreground = (Application.Current.FindResource("PrimaryTextBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8E8F0")),
+            BorderBrush = (Application.Current.FindResource("BorderBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2A2D3E")),
             BorderThickness = new Thickness(1),
             Padding = new Thickness(8, 6, 8, 6)
         };
@@ -183,7 +183,7 @@ public partial class MainWindow : Window
             Content = "OK",
             Width = 70,
             Margin = new Thickness(0, 0, 8, 0),
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC")),
+            Background = (Application.Current.FindResource("PrimaryAccentBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC")),
             Foreground = Brushes.White,
             BorderThickness = new Thickness(0)
         };
@@ -193,8 +193,8 @@ public partial class MainWindow : Window
         {
             Content = "Cancel",
             Width = 70,
-            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A1D2E")),
-            Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B8D9E")),
+            Background = (Application.Current.FindResource("TertiaryBackgroundBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A1D2E")),
+            Foreground = (Application.Current.FindResource("SecondaryTextBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#8B8D9E")),
             BorderThickness = new Thickness(0)
         };
         cancelButton.Click += (s, e) => dialog.DialogResult = false;

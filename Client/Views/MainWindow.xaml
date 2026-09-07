@@ -12,7 +12,7 @@
         Height="800" Width="1400"
         MinHeight="600" MinWidth="900"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource PrimaryBackgroundBrush}"
+        Background="{DynamicResource PrimaryBackgroundBrush}"
         WindowStyle="None"
         AllowsTransparency="True"
         ResizeMode="CanResizeWithGrip">
@@ -39,15 +39,15 @@
         </DataTemplate>
 
         <ContextMenu x:Key="ChatContextMenu"
-                     Background="{StaticResource SurfaceBackgroundBrush}"
-                     BorderBrush="{StaticResource BorderBrush}"
+                     Background="{DynamicResource SurfaceBackgroundBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}"
                      BorderThickness="1">
             <MenuItem Header="Rename"
                       Click="RenameChat_Click"
                       FontFamily="{StaticResource PrimaryFont}">
                 <MenuItem.Icon>
                     <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14"
-                               Foreground="{StaticResource SecondaryTextBrush}"/>
+                               Foreground="{DynamicResource SecondaryTextBrush}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Pin"
@@ -55,7 +55,7 @@
                       FontFamily="{StaticResource PrimaryFont}">
                 <MenuItem.Icon>
                     <TextBlock Text="&#xE840;" FontFamily="Segoe MDL2 Assets" FontSize="14"
-                               Foreground="{StaticResource SecondaryTextBrush}"/>
+                               Foreground="{DynamicResource SecondaryTextBrush}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem Header="Add to Favorites"
@@ -63,25 +63,25 @@
                       FontFamily="{StaticResource PrimaryFont}">
                 <MenuItem.Icon>
                     <TextBlock Text="&#xE734;" FontFamily="Segoe MDL2 Assets" FontSize="14"
-                               Foreground="{StaticResource SecondaryTextBrush}"/>
+                               Foreground="{DynamicResource SecondaryTextBrush}"/>
                 </MenuItem.Icon>
             </MenuItem>
-            <Separator Background="{StaticResource BorderBrush}"/>
+            <Separator Background="{DynamicResource BorderBrush}"/>
             <MenuItem Header="Delete"
                       Click="DeleteChat_Click"
                       FontFamily="{StaticResource PrimaryFont}">
                 <MenuItem.Icon>
                     <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="14"
-                               Foreground="{StaticResource ErrorAccentBrush}"/>
+                               Foreground="{DynamicResource ErrorAccentBrush}"/>
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
     </Window.Resources>
 
     <Grid>
-    <Border Background="{StaticResource PrimaryBackgroundBrush}"
+    <Border Background="{DynamicResource PrimaryBackgroundBrush}"
             CornerRadius="10"
-            BorderBrush="{StaticResource BorderBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
@@ -90,7 +90,7 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0"
-                  Background="{StaticResource PrimaryBackgroundBrush}"
+                  Background="{DynamicResource PrimaryBackgroundBrush}"
                   MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -111,11 +111,11 @@
                     <TextBlock Text="&#xE99A;"
                                FontFamily="Segoe MDL2 Assets"
                                FontSize="13"
-                               Foreground="{StaticResource PrimaryAccentBrush}"
+                               Foreground="{DynamicResource PrimaryAccentBrush}"
                                VerticalAlignment="Center"
                                Margin="0,0,8,0"/>
                     <TextBlock Text="AI Desktop Client"
-                               Foreground="{StaticResource SecondaryTextBrush}"
+                               Foreground="{DynamicResource SecondaryTextBrush}"
                                FontSize="12"
                                VerticalAlignment="Center"/>
                 </StackPanel>
@@ -157,8 +157,8 @@
 
                 <Border Grid.Column="0"
                         Width="270"
-                        Background="{StaticResource SidebarBackgroundBrush}"
-                        BorderBrush="{StaticResource BorderBrush}"
+                        Background="{DynamicResource SidebarBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="0,0,1,0">
                     <Border.Style>
                         <Style TargetType="Border">
@@ -183,7 +183,7 @@
                         <StackPanel Grid.Row="0"
                                     Margin="16,16,16,8">
                             <StackPanel Orientation="Horizontal">
-                                <Border Background="{StaticResource AccentGradient}"
+                                <Border Background="{DynamicResource AccentGradient}"
                                         CornerRadius="10"
                                         Width="36" Height="36"
                                         VerticalAlignment="Center">
@@ -196,11 +196,11 @@
                                 </Border>
                                 <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="AI Desktop"
-                                               Foreground="{StaticResource PrimaryTextBrush}"
+                                               Foreground="{DynamicResource PrimaryTextBrush}"
                                                FontSize="14"
                                                FontWeight="SemiBold"/>
                                     <TextBlock Text="Your AI Assistant"
-                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               Foreground="{DynamicResource TertiaryTextBrush}"
                                                FontSize="11"/>
                                 </StackPanel>
                             </StackPanel>
@@ -274,7 +274,7 @@
                                     </RadioButton>
                                 </StackPanel>
 
-                                <Border Height="1" Background="{StaticResource BorderBrush}" Margin="16,10"
+                                <Border Height="1" Background="{DynamicResource BorderBrush}" Margin="16,10"
                                         Visibility="{Binding HasChats, Converter={StaticResource BoolToVis}}"/>
 
                                 <TextBlock Text="CHATS"
@@ -298,11 +298,11 @@
 
                                                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                                         <TextBlock Text="{Binding Title}"
-                                                                   Foreground="{StaticResource PrimaryTextBrush}"
+                                                                   Foreground="{DynamicResource PrimaryTextBrush}"
                                                                    FontSize="13"
                                                                    TextTrimming="CharacterEllipsis"
                                                                    MaxWidth="180"/>
-                                                        <TextBlock Foreground="{StaticResource TertiaryTextBrush}"
+                                                        <TextBlock Foreground="{DynamicResource TertiaryTextBrush}"
                                                                    FontSize="11"
                                                                    Margin="0,2,0,0">
                                                             <TextBlock.Text>
@@ -316,7 +316,7 @@
                                                                    Text="&#xE734;"
                                                                    FontFamily="Segoe MDL2 Assets"
                                                                    FontSize="10"
-                                                                   Foreground="{StaticResource WarningAccentBrush}"
+                                                                   Foreground="{DynamicResource WarningAccentBrush}"
                                                                    Visibility="Collapsed"
                                                                    Margin="4,0,0,0"/>
                                                     </StackPanel>
@@ -331,16 +331,16 @@
                                     <TextBlock Text="&#xE8F1;"
                                                FontFamily="Segoe MDL2 Assets"
                                                FontSize="32"
-                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               Foreground="{DynamicResource TertiaryTextBrush}"
                                                HorizontalAlignment="Center"
                                                Margin="0,0,0,12"/>
                                     <TextBlock Text="Prompt Templates"
-                                               Foreground="{StaticResource PrimaryTextBrush}"
+                                               Foreground="{DynamicResource PrimaryTextBrush}"
                                                FontSize="14"
                                                FontWeight="SemiBold"
                                                HorizontalAlignment="Center"/>
                                     <TextBlock Text="Coming soon"
-                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               Foreground="{DynamicResource TertiaryTextBrush}"
                                                FontSize="12"
                                                HorizontalAlignment="Center"
                                                Margin="0,4,0,0"/>
@@ -351,7 +351,7 @@
                         <Border Grid.Row="3"
                                 Margin="12,8"
                                 Padding="12,10"
-                                Background="{StaticResource TertiaryBackgroundBrush}"
+                                Background="{DynamicResource TertiaryBackgroundBrush}"
                                 CornerRadius="10">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
@@ -364,7 +364,7 @@
                                         </Ellipse.Fill>
                                     </Ellipse>
                                     <TextBlock x:Name="StatusText"
-                                               Foreground="{StaticResource PrimaryTextBrush}"
+                                               Foreground="{DynamicResource PrimaryTextBrush}"
                                                FontSize="12"
                                                FontWeight="SemiBold"
                                                VerticalAlignment="Center">
@@ -375,16 +375,16 @@
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                                     <TextBlock Text="Backend"
-                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               Foreground="{DynamicResource TertiaryTextBrush}"
                                                FontSize="11"/>
                                     <TextBlock Text=" • "
-                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               Foreground="{DynamicResource TertiaryTextBrush}"
                                                FontSize="11"/>
                                     <TextBlock Text="API"
-                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               Foreground="{DynamicResource TertiaryTextBrush}"
                                                FontSize="11"/>
                                     <TextBlock x:Name="LatencyText"
-                                               Foreground="{StaticResource TertiaryTextBrush}"
+                                               Foreground="{DynamicResource TertiaryTextBrush}"
                                                FontSize="11">
                                         <TextBlock.Text>
                                             <Binding Path="BackendStatus.LatencyMs" StringFormat="• {0:F0}ms"/>
@@ -396,7 +396,7 @@
 
                         <TextBlock Grid.Row="4"
                                    Text="v1.0.0"
-                                   Foreground="{StaticResource TertiaryTextBrush}"
+                                   Foreground="{DynamicResource TertiaryTextBrush}"
                                    FontSize="10"
                                    HorizontalAlignment="Center"
                                    Margin="0,0,0,8"/>

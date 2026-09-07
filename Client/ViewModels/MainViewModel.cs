@@ -77,7 +77,7 @@ public partial class MainViewModel : ObservableObject
         _toastService = toastService;
         _usageService = usageService;
         _backendService = backendService;
-        _currentChatViewModel = new ChatViewModel(chatService, modelService, toastService, this);
+        _currentChatViewModel = new ChatViewModel(chatService, modelService, toastService, usageService, this);
         _currentView = _currentChatViewModel;
         _backendStatus = new BackendConnectionStatus { Status = Contracts.BackendStatus.Connecting };
 
@@ -137,12 +137,20 @@ public partial class MainViewModel : ObservableObject
         AvailableModels = new ObservableCollection<ModelInfo>(models);
         SelectedModel = AvailableModels.FirstOrDefault();
 
+        await RefreshUsageAsync();
+    }
+
+    public async Task RefreshUsageAsync()
+    {
         var usage = await _usageService.GetUsageAsync();
         UsageInfo = usage;
 
         var modelStats = await _usageService.GetModelStatsAsync();
         ModelStats = new ObservableCollection<ModelUsageStat>(modelStats);
         UsageInfo.ModelStats = ModelStats;
+
+        var dailyCosts = await _usageService.GetDailyCostsAsync(7);
+        UsageInfo.DailyCosts = new ObservableCollection<DailyCostPoint>(dailyCosts);
     }
 
     private async Task CheckBackendHealthAsync()

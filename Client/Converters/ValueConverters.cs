@@ -38,7 +38,14 @@ public sealed class DecimalToCurrencyConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is decimal d)
+        {
+            if (d == 0) return "$0.00";
+            if (Math.Abs(d) < 0.01m) return $"${d:F4}";
+            if (Math.Abs(d) < 1m) return $"${d:F3}";
+            if (Math.Abs(d) >= 1_000_000m) return $"${d / 1_000_000m:F2}M";
+            if (Math.Abs(d) >= 1_000m) return $"${d / 1_000m:F1}K";
             return $"${d:F2}";
+        }
         return "$0.00";
     }
 
@@ -54,6 +61,8 @@ public sealed class IntToFormattedStringConverter : IValueConverter
     {
         if (value is int i)
             return i.ToString("N0");
+        if (value is long l)
+            return l.ToString("N0");
         return "0";
     }
 
@@ -117,10 +126,10 @@ public sealed class ChangePercentToDisplayConverter : IValueConverter
     {
         if (value is decimal d)
         {
-            var arrow = d >= 0 ? "↑" : "↓";
+            var arrow = d >= 0 ? "\u2191" : "\u2193";
             return $"{arrow} {Math.Abs(d):F0}%";
         }
-        return "↑ 0%";
+        return "\u2191 0%";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

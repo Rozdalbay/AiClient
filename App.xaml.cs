@@ -43,7 +43,7 @@ public partial class App : Application
         });
         services.AddSingleton<IChatService, SseChatService>();
         services.AddSingleton<IModelService, MockModelService>();
-        services.AddSingleton<IUsageService, MockUsageService>();
+        services.AddSingleton<IUsageService, LocalUsageService>();
         services.AddSingleton<IBackendService, BackendHealthService>();
 
         services.AddTransient<MainViewModel>();

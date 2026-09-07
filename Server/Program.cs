@@ -9,13 +9,13 @@ app.MapPost("/stream", async (
     CancellationToken cancellationToken) =>
 {
     response.ContentType = "text/event-stream";
-
     response.Headers.CacheControl = "no-cache";
 
-    Console.WriteLine($"Получено сообщение: {request.Message}");
-    Console.WriteLine($"Модель: {request.ModelId}");
-    Console.WriteLine($"Чат: {request.ChatId}");
+    Console.WriteLine($"Received message: {request.Message}");
+    Console.WriteLine($"Model: {request.ModelId}");
+    Console.WriteLine($"Chat: {request.ChatId}");
 
+    var inputTokens = request.Message.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2;
     string[] chunks =
     [
         "hi ",
@@ -23,6 +23,9 @@ app.MapPost("/stream", async (
         "working ",
         "good."
     ];
+
+    var outputText = string.Concat(chunks);
+    var outputTokens = outputText.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2;
 
     foreach (var chunk in chunks)
     {
@@ -41,6 +44,21 @@ app.MapPost("/stream", async (
 
         await Task.Delay(500, cancellationToken);
     }
+
+    var usageEvent = JsonSerializer.Serialize(new
+    {
+        usage = new
+        {
+            input_tokens = inputTokens,
+            output_tokens = outputTokens
+        }
+    });
+
+    await response.WriteAsync(
+        $"data: {usageEvent}\n\n",
+        cancellationToken);
+
+    await response.Body.FlushAsync(cancellationToken);
 
     await response.WriteAsync(
         "data: [DONE]\n\n",

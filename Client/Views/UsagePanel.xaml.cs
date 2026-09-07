@@ -29,8 +29,7 @@ public partial class UsagePanel : UserControl
         var dailyCosts = usage.DailyCosts;
         if (dailyCosts is null || dailyCosts.Count < 2)
         {
-            var costs = new double[] { 0.4, 1.2, 0.8, 1.5, 0.6, 1.8, 1.42 };
-            DrawGraphInternal(costs);
+            DrawEmptyGraph();
             return;
         }
 
@@ -38,22 +37,70 @@ public partial class UsagePanel : UserControl
         DrawGraphInternal(values);
     }
 
-    private void DrawGraphInternal(double[] costs)
+    private void DrawEmptyGraph()
     {
-        var maxCost = costs.Max();
         var canvasWidth = 290.0;
         var canvasHeight = 110.0;
         var padding = 10.0;
 
         var accentColor = (Color)ColorConverter.ConvertFromString("#7C5CFC");
-        var bgColor = (Application.Current.FindResource("PrimaryBackgroundBrush") as SolidColorBrush)?.Color ?? (Color)ColorConverter.ConvertFromString("#0D0F18");
+        var bgColor = (Application.Current.FindResource("PrimaryBackgroundBrush") as SolidColorBrush)?.Color
+            ?? (Color)ColorConverter.ConvertFromString("#0D0F18");
 
-        var points = new List<Point>();
-        for (int i = 0; i < costs.Length; i++)
+        var centerY = canvasHeight - padding;
+
+        var lineGeometry = new StreamGeometry();
+        using (var ctx = lineGeometry.Open())
         {
-            var x = padding + (i * (canvasWidth - 2 * padding) / (costs.Length - 1));
-            var y = canvasHeight - padding - ((costs[i] / maxCost) * (canvasHeight - 2 * padding));
-            points.Add(new Point(x, y));
+            ctx.BeginFigure(new Point(padding, centerY), false, false);
+            ctx.LineTo(new Point(canvasWidth - padding, centerY), true, false);
+        }
+        lineGeometry.Freeze();
+
+        var linePath = new Path
+        {
+            Data = lineGeometry,
+            Stroke = new SolidColorBrush(Color.FromArgb(80, accentColor.R, accentColor.G, accentColor.B)),
+            StrokeThickness = 1.5,
+            StrokeDashArray = new DoubleCollection { 4, 4 }
+        };
+        GraphCanvas.Children.Add(linePath);
+    }
+
+    private void DrawGraphInternal(double[] costs)
+    {
+        var canvasWidth = 290.0;
+        var canvasHeight = 110.0;
+        var padding = 10.0;
+
+        var accentColor = (Color)ColorConverter.ConvertFromString("#7C5CFC");
+        var bgColor = (Application.Current.FindResource("PrimaryBackgroundBrush") as SolidColorBrush)?.Color
+            ?? (Color)ColorConverter.ConvertFromString("#0D0F18");
+
+        var allZero = costs.All(c => c <= 0);
+
+        List<Point> points = new();
+
+        if (allZero)
+        {
+            for (int i = 0; i < costs.Length; i++)
+            {
+                var x = padding + (i * (canvasWidth - 2 * padding) / Math.Max(costs.Length - 1, 1));
+                var y = canvasHeight - padding;
+                points.Add(new Point(x, y));
+            }
+        }
+        else
+        {
+            var maxCost = costs.Max();
+            if (maxCost <= 0) maxCost = 1.0;
+
+            for (int i = 0; i < costs.Length; i++)
+            {
+                var x = padding + (i * (canvasWidth - 2 * padding) / Math.Max(costs.Length - 1, 1));
+                var y = canvasHeight - padding - ((costs[i] / maxCost) * (canvasHeight - 2 * padding));
+                points.Add(new Point(x, y));
+            }
         }
 
         var fillBrush = new LinearGradientBrush

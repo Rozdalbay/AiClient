@@ -1,6 +1,6 @@
 namespace AiDesktopClient.Contracts;
 
-/// Backend owns token accounting — frontend only displays what the backend reports.
+// для еблана: токены считает БЭКЕНД, фронт только красиво показывает - не перекладывай эту работу на клиент, у него и так дел по горло
 public sealed class TokenUsageDto
 {
     public int InputTokens { get; init; }

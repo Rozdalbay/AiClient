@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AiDesktopClient.Views;
 
+// код-behind главного окна: тосты, drag-перетаскивание титульной панели, контекстные меню чатов и строчка входа в разметке
 public partial class MainWindow : Window
 {
     private MainViewModel ViewModel => (MainViewModel)DataContext;

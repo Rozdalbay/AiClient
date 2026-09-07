@@ -2,6 +2,7 @@ using AiDesktopClient.Contracts;
 
 namespace AiDesktopClient.Services;
 
+// мок-пинг: рандомно врёт статус соединения, чтобы UI в деве без сервера выглядел живым
 public sealed class MockBackendService : IBackendService
 {
     private readonly Random _random = new();

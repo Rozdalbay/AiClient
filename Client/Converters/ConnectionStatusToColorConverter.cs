@@ -4,6 +4,7 @@ using System.Windows.Media;
 
 namespace AiDesktopClient.Converters;
 
+// строка статуса "Success/Failed" → цвет; больще ничё, работать с нею легко как с клизмой
 public sealed class ConnectionStatusToColorConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

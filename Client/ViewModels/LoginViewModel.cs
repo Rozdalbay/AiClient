@@ -4,6 +4,7 @@ using AiDesktopClient.Services;
 
 namespace AiDesktopClient.ViewModels;
 
+// VM логин/регистрации: пока вся аутентификация локальная (PBKDF2 + users.json), бэкенд в лоб взаимодействует с OpenAI, но юзеров он не ебёт
 public partial class LoginViewModel : ObservableObject
 {
     private readonly AuthService _authService;
@@ -77,6 +78,7 @@ public partial class LoginViewModel : ObservableObject
             Login();
     }
 
+    // логин: проверяем пароль против хранилища, валид - пишем сессию и радуем юзера переходом в главное окно
     private void Login()
     {
         if (string.IsNullOrWhiteSpace(Username))
@@ -107,6 +109,7 @@ public partial class LoginViewModel : ObservableObject
         IsProcessing = false;
     }
 
+    // регистрация: мин-длина имени и пароля, пароли должны совпадать - для ебланов поясняю: точку с запятой здесь писать не надо
     private void Register()
     {
         if (string.IsNullOrWhiteSpace(Username) || Username.Length < 3)

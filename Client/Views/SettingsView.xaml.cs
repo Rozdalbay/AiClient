@@ -3,6 +3,7 @@ using System.Windows.Controls;
 
 namespace AiDesktopClient.Views;
 
+// код-behind настроек: радио-кнопки слева переключают видимость панелей справа, одна хрень без логики
 public partial class SettingsView : UserControl
 {
     private StackPanel[] _panels;

@@ -9,9 +9,11 @@ using AiDesktopClient.Models;
 
 namespace AiDesktopClient.Services;
 
+// SSE-клиент к бэкенду: читает поток data: {...}\n\n, ловит delta текста и usage в конце; для ебланов: без этого ни информирования, ни денег
 public sealed class SseChatService : IChatService
 {
     private readonly HttpClient _httpClient;
+    // словарик chatId -> usage на случай, если SendMessageAsync спросит после стрима; хранение временное
     private readonly ConcurrentDictionary<string, StreamUsage?> _usageResults = new();
 
     public SseChatService(HttpClient httpClient)
@@ -53,6 +55,7 @@ public sealed class SseChatService : IChatService
 
         using var reader = new StreamReader(stream);
 
+        // чанки текста отдаём наружу as-yield возвращая, а usage складываем в словарь и в конце отдаём отдельным чанком - чтобы VM не гадала
         StreamUsage? capturedUsage = null;
 
         while (true)
@@ -70,6 +73,7 @@ public sealed class SseChatService : IChatService
 
             var data = line["data:".Length..].TrimStart();
 
+            // маркер конца стрима; [DONE] - всё, шабаш; иначе распарсили JSON и раздали по карманам (delta → текст, usage → словарь)
             if (data == "[DONE]")
                 break;
 
@@ -119,6 +123,7 @@ public sealed class SseChatService : IChatService
                 content.Append(chunk.Text);
         }
 
+        // не-стрим метод: собирает всё в кучу и забирает usage из словаря по chatId; не забудь TryRemove, иначе словарь раздуется как бюджет маркетинга
         var usage = _usageResults.TryRemove(chatId, out var u) ? u : null;
 
         return new ChatResponse

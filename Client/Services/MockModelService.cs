@@ -2,6 +2,7 @@ using AiDesktopClient.Models;
 
 namespace AiDesktopClient.Services;
 
+// мокаем каталог моделей, чтобы UI жил без реального бэкенда; названия - выдуманные, а не из реального API
 public sealed class MockModelService : IModelService
 {
     private static readonly List<ModelInfo> MockModels =

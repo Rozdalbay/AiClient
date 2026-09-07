@@ -2,6 +2,7 @@ using AiDesktopClient.Models;
 
 namespace AiDesktopClient.Services;
 
+// контракт чат-сервиса: стрим (для "живой" печати) и цельнометаллический запрос (для статики); StreamChunk несёт текст ИЛИ usage - не оба сразу, учи матчасть
 public interface IChatService
 {
     IAsyncEnumerable<StreamChunk> StreamResponseAsync(
@@ -19,6 +20,7 @@ public interface IChatService
         CancellationToken cancellationToken = default);
 }
 
+// кусок потока: либо текстовый delta, либо usage (в конце стрима) - как два мужика в одном кресле, но по очереди
 public sealed class StreamChunk
 {
     public string? Text { get; init; }

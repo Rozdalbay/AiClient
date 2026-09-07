@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AiDesktopClient.Controls;
 
+// блок кода в сообщении: нумерация строк, кнопки copy/save; расширение файла выводится по языку, без сео
 public partial class CodeBlockControl : UserControl
 {
     public static readonly DependencyProperty CodeProperty =

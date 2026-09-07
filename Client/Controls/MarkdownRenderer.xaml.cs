@@ -6,6 +6,7 @@ using System.Windows.Media;
 
 namespace AiDesktopClient.Controls;
 
+// доморощенный markdown-рендер в FlowDocument: заголовки, списки, таблицы-на редаче, блоки кода с номерами строк - без внешних либ, чистая на коленке самописная хрень
 public partial class MarkdownRenderer : UserControl
 {
     public static readonly DependencyProperty MarkdownProperty =

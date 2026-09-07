@@ -1,5 +1,6 @@
 namespace AiDesktopClient.Models;
 
+// одна запись потраченного запроса: requestId - джентльменский набор для идемпотентности; CAUTION: duplicate requestId игнорируется намеренно
 public sealed class UsageRecord
 {
     public string RequestId { get; set; } = string.Empty;
@@ -13,6 +14,7 @@ public sealed class UsageRecord
     public double ResponseTimeMs { get; set; }
 }
 
+// сам сраный файл usage.json: хранит итоги, дневные агрегаты и все записи; BudgetLimit живёт здесь же (сейчас 10 баксов по дефолту)
 public sealed class UsageDataStore
 {
     public decimal TotalCost { get; set; }
@@ -29,6 +31,7 @@ public sealed class UsageDataStore
     public List<DailyCostEntry> DailyCosts { get; set; } = [];
 }
 
+// дневная точка для графика, где date - начало бакета, cost - сумма в нём
 public sealed class DailyCostEntry
 {
     public DateTime Date { get; set; }

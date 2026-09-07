@@ -1,5 +1,6 @@
 namespace AiDesktopClient.Contracts;
 
+// представление модели на фронт с сервера; пока сервер моделей не отдаёт - клиент живёт на MockModelService
 public sealed class ModelInfoDto
 {
     public required string Id { get; init; }

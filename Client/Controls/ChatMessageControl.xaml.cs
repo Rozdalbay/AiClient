@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AiDesktopClient.Controls;
 
+// контрол одного сообщения: следит за ChatMessage через событие PropertyChanged, перерисовывает при Increment; стили юзера/ассистента, токены/стоимость/время
 public partial class ChatMessageControl : UserControl
 {
     public static readonly DependencyProperty MessageProperty =

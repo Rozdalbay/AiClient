@@ -1,5 +1,6 @@
 namespace AiDesktopClient.Contracts;
 
+// ответ чата целиком: текст, токены, стоимость и время ответа; это для не-стримового режима, который пока никто не грузит
 public sealed class ChatResponse
 {
     public required string ChatId { get; init; }

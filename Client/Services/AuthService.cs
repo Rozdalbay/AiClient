@@ -6,6 +6,7 @@ using AiDesktopClient.Models;
 
 namespace AiDesktopClient.Services;
 
+// локальная авторизация: users.json с PBKDF2 (100k итераций, соль на юзера), сессии в session.json; бэкенд про юзеров НИЧЕГО не знает - пока так, потом переедет
 public sealed class AuthService
 {
     private static readonly string DataDir = Path.Combine(
@@ -176,6 +177,7 @@ public sealed class AuthService
         return salt;
     }
 
+    // пароль хэшируем PBKDF2-SHA256 с персональной солью; FixedTimeEquals - чтобы не слилось через тайминг, для параноиков
     private static byte[] HashPassword(string password, byte[] salt)
     {
         return Rfc2898DeriveBytes.Pbkdf2(

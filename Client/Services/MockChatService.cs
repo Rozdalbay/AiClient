@@ -2,6 +2,7 @@ using AiDesktopClient.Models;
 
 namespace AiDesktopClient.Services;
 
+// мок-чат для разработки без сервера: хранит заготовленные простыни с markdown, хрюкает токены "на глаз"
 public sealed class MockChatService : IChatService
 {
     private static readonly string[] MockResponses =
@@ -19,6 +20,7 @@ public sealed class MockChatService : IChatService
 
     private readonly Random _random = new();
 
+    // эмуляция стрима: по токену с рандомной паузой, в конце - usage, вычисленный на глаз по словам (норм для координал)
     public async IAsyncEnumerable<StreamChunk> StreamResponseAsync(
         string chatId,
         string modelId,

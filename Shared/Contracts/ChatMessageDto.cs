@@ -1,5 +1,6 @@
 namespace AiDesktopClient.Contracts;
 
+// DTO сообщения для передачи туда-обратно; вложения - список AttachmentDto, TokenUsage опциональный - бэкенд может его не слать
 public sealed class ChatMessageDto
 {
     public required string Id { get; init; }

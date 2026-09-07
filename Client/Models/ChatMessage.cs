@@ -10,6 +10,7 @@ public enum MessageRole
     System
 }
 
+// одно сообщение в ленте: роль, текст, токены/стоимость/время ответа (заполняется после стрима) и состояния генерации/ошибки
 public partial class ChatMessage : ObservableObject
 {
     [ObservableProperty]

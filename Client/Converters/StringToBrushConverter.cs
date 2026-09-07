@@ -4,6 +4,7 @@ using System.Windows.Media;
 
 namespace AiDesktopClient.Converters;
 
+// hex-строка → кисть; если мусор в строке - прозрачный, чтобы не уронить рендер
 public sealed class StringToBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

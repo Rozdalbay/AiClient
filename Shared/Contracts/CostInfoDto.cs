@@ -1,6 +1,6 @@
 namespace AiDesktopClient.Contracts;
 
-/// Backend calculates cost from model pricing and actual token usage — frontend only displays it.
+// стоимость считает тоже бэкенд: по прайсу модели и честному usage; фронт - чисто витрина, не считай деньги на клиенте, скурвишься
 public sealed class CostInfoDto
 {
     public decimal InputCost { get; init; }

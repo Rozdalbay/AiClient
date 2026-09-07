@@ -7,6 +7,7 @@ using AiDesktopClient.ViewModels;
 
 namespace AiDesktopClient.Views;
 
+// graph drawing для UsagePanel: берёт DailyCosts из VM и рисует вручную канвой (одна точка → продавленный шар, много → гладкий безье), для ебланов честно: это не график, это рукожопный арт
 public partial class UsagePanel : UserControl
 {
     private UsageViewModel? _viewModel;
@@ -65,6 +66,7 @@ public partial class UsagePanel : UserControl
             _viewModel.DataRefreshed += OnDataRefreshed;
     }
 
+    // подписка на DataRefreshed VM - иначе после обновления данных график останется старым, tanum, грусть
     private void OnDataRefreshed(object? sender, EventArgs e)
     {
         if (!Dispatcher.CheckAccess())
@@ -75,6 +77,7 @@ public partial class UsagePanel : UserControl
         Redraw();
     }
 
+    // чистим канву и решаем: пусто → подпись "No data", одна точка → шарик, много → ломаная; нули не рисуем столбиками
     private void Redraw()
     {
         if (_viewModel is null || !IsLoaded)
@@ -167,6 +170,7 @@ public partial class UsagePanel : UserControl
         GraphCanvas.Children.Add(dot);
     }
 
+    // ломаная + заливка через CubicBezier: тут контрольные точки на трети сегмента, чтобы кривая была гладкой как жопа новорождённого
     private void DrawPolyline(List<double> costs, double canvasWidth, double canvasHeight)
     {
         var accentColor = GetAccentColor();

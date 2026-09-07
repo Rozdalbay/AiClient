@@ -1,5 +1,6 @@
 namespace AiDesktopClient.Models;
 
+// периоды аналитики: Today/Week/Month/AllTime, порядок имеет значение для switch'ей ниже - не переставь по приколу
 public enum UsagePeriod
 {
     Today,
@@ -8,6 +9,7 @@ public enum UsagePeriod
     AllTime
 }
 
+// immutable-пакет данных для UI: один объект - вся аналитика за период + предыдущий период для процентов; это АКТУАЛЬНАЯ модель, а не та статика в UsageInfo
 public sealed class UsagePeriodData
 {
     public UsagePeriod Period { get; init; }

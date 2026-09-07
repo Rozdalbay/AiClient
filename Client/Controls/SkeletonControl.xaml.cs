@@ -5,6 +5,7 @@ using System.Windows.Media.Animation;
 
 namespace AiDesktopClient.Controls;
 
+// скелетон-плейсхолдер на время загрузки: бегущий блик, бесконечная анимация; если сотрёшь - юзер увидит белые прямоугольники вместо страницы
 public partial class SkeletonControl : UserControl
 {
     public static readonly DependencyProperty CornerRadiusProperty =

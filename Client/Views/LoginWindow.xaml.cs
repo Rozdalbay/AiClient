@@ -8,6 +8,7 @@ using AiDesktopClient.ViewModels;
 
 namespace AiDesktopClient.Views;
 
+// код-behind логина: зеркалит PasswordBox в VM, Enter=Отправить, переключение режима регистра/логина и видимость пароля
 public partial class LoginWindow : Window
 {
     private LoginViewModel ViewModel => (LoginViewModel)DataContext;

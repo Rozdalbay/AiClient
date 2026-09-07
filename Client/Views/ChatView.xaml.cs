@@ -10,6 +10,7 @@ using AiDesktopClient.ViewModels;
 
 namespace AiDesktopClient.Views;
 
+// код-behind чата: скролл-трейлинг (сносит к низу при новых сообщениях), drag&drop файлов, селектор модели и скелетон при загрузке
 public partial class ChatView : UserControl
 {
     private ChatViewModel ViewModel => (ChatViewModel)DataContext;

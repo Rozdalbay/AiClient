@@ -224,7 +224,7 @@
                                Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="20" FontWeight="SemiBold"
                                HorizontalAlignment="Center"/>
-                    <TextBlock Text="Ask me anything — I can help with code, writing, analysis, and more."
+                    <TextBlock Text="Ask me anything - I can help with code, writing, analysis, and more."
                                Foreground="{DynamicResource TertiaryTextBrush}"
                                FontSize="13"
                                HorizontalAlignment="Center"

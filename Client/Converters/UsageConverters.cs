@@ -3,6 +3,7 @@ using System.Windows.Data;
 
 namespace AiDesktopClient.Converters;
 
+// конвертеры для аналитической панели: null значит "не с чем сравнивать" - рисуем "-" серым, чтобы юзер не пугался
 public sealed class NullableChangePercentToDisplayConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -21,6 +22,7 @@ public sealed class NullableChangePercentToDisplayConverter : IValueConverter
     }
 }
 
+// зеленый рост - растем в плюс, красный падение; для ебланов, которые спрашивают "почему стрелка вверх красная": потому что это про cтоимость, дудня
 public sealed class NullableChangePercentToColorConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -36,6 +38,7 @@ public sealed class NullableChangePercentToColorConverter : IValueConverter
     }
 }
 
+// процент → ScaleX (0..1) для баров бюджета; RenderTransformOrigin стоит у бара слева, так что масштабируется от края, а не из центра
 public sealed class PercentToScaleXConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -53,6 +56,7 @@ public sealed class PercentToScaleXConverter : IValueConverter
     }
 }
 
+// первая заглавная буква имени для аватарки в блоке аккаунта; без этого ресурса MainWindow не соберётся - КЛЮЧЕВАЯ ССЫЛКА УЖЕ БЫЛА ЗАБЫТА И ЛОВИЛАСЬ В СКЕЛЕТОНЕ ИНФИНИТИ СПЛЕША
 public sealed class InitialConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -68,6 +72,7 @@ public sealed class InitialConverter : IValueConverter
     }
 }
 
+// компактные числа: миллион+ → "1.2M", иначе "1 248"; для ебланов: 1000000 похоже на цену за курс у Гуру по вендингу, а тут просто токены
 public sealed class CompactTokenCountConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

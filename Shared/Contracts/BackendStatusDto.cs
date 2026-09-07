@@ -8,6 +8,7 @@ public enum BackendStatus
     Error
 }
 
+// сводка здоровья бэкенда; статусы Connected/Connecting/Disconnected/Error - как светофор перед будкой с кефиром
 public sealed class BackendStatusDto
 {
     public BackendStatus Status { get; init; }

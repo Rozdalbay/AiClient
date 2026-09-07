@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AiDesktopClient.Models;
 
+// прикреплённый файл: локальный путь, размер, mime; FileSizeDisplay красиво форматирует байты в KB/MB/GB без костылей
 public partial class Attachment : ObservableObject
 {
     [ObservableProperty]

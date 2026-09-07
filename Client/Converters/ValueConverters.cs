@@ -3,6 +3,7 @@ using System.Windows.Data;
 
 namespace AiDesktopClient.Converters;
 
+// мелочёвка: on/off для opacity и проценты, читай и не трогай лишнего - каждая утка на своём месте повол
 public sealed class BoolToOpacityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

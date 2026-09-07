@@ -6,6 +6,7 @@ using AiDesktopClient.Services;
 
 namespace AiDesktopClient.Controls;
 
+// сами тосты: фейд-ин/фейд-аут, автоскрытие по таймеру и иконки успеха/ошибки/предупреждения
 public partial class ToastNotification : UserControl
 {
     private System.Windows.Threading.DispatcherTimer? _timer;

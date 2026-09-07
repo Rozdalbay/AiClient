@@ -4,6 +4,7 @@ using System.Windows.Data;
 
 namespace AiDesktopClient.Converters;
 
+// пустая строка - прячем элемент, непустая - показываем; классика жанра для лейблов
 public sealed class StringToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

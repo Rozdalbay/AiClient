@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AiDesktopClient.Models;
 
+// модель в выпадашке чата: имя, провайдер, цены за токен и контекстное окно; IsAvailable=false - модель серая и недоступная
 public partial class ModelInfo : ObservableObject
 {
     [ObservableProperty]

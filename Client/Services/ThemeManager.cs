@@ -13,6 +13,7 @@ public enum AppTheme
     Light
 }
 
+// подменяет ResourceDictionary (DarkTheme/LightTheme) в рантайме с wipe-анимацией; настройка темы хранится в settings.json
 public sealed class ThemeManager
 {
     private static readonly string SettingsPath = Path.Combine(
@@ -50,6 +51,7 @@ public sealed class ThemeManager
         ApplyThemeInternal(theme, false);
     }
 
+    // убираем старый словарь, добавляем новый; при animate=true налегаем на шторку, чтобы глаза не болели
     private void ApplyThemeInternal(AppTheme theme, bool animate)
     {
         var app = Application.Current;

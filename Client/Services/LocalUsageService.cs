@@ -4,8 +4,10 @@ using AiDesktopClient.Models;
 
 namespace AiDesktopClient.Services;
 
+// хранилище usage в %APPDATA%\AiDesktopClient\usage.json: по-хорошему это должен вести бэкенд, но у нас пока пингвины-интранет, так что жрём диск клиента
 public sealed class LocalUsageService : IUsageService
 {
+    // для ебланов: добежался до SPECIAL_FOLDER.ApplicationData, файл называется usage.json, НЕ МЕНЯЙ ПУТЬ без миграции старых данных
     private static readonly string UsagePath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "AiDesktopClient",
@@ -19,6 +21,7 @@ public sealed class LocalUsageService : IUsageService
     private readonly object _lock = new();
     private UsageDataStore _store;
 
+    // цвета для статистики по моделям; подобраны под обе темы, не ебаль их по приколу - будет вырвиглаз
     private static readonly string[] ModelColors =
     [
         "#7C5CFC", "#5CA0FC", "#5CFCB0", "#FC5CA0",
@@ -30,11 +33,14 @@ public sealed class LocalUsageService : IUsageService
         _store = Load();
     }
 
+    // запись одного запроса; СМОТРИ: если requestId уже существует в истории - тихо выходим, чтобы ретрай стрима не задвоил деньги юзеру
     public void RecordRequest(string requestId, string modelId, string modelName, int inputTokens, int outputTokens, double responseTimeMs)
     {
+        // фронт вдруг забыл прислать id - сами наколбасим guid, иначе идемпотентность полетит в топку
         if (string.IsNullOrWhiteSpace(requestId))
             requestId = Guid.NewGuid().ToString("N");
 
+        // цена считается по каталогу за МИЛЛИОН токенов; если модели в прайсе нет - стоимость 0, юзер получит "бесплатно", халявщик обрадуется
         var totalTokens = inputTokens + outputTokens;
         var pricing = PricingCatalog.GetPricing(modelId);
         var cost = pricing is not null
@@ -54,8 +60,10 @@ public sealed class LocalUsageService : IUsageService
             ResponseTimeMs = responseTimeMs
         };
 
+        // лок обязателен: сюда могут прилететь запросы из разных стримов одновременно, иначе список рекордов поедет под гору
         lock (_lock)
         {
+            // та самая магия идемпотентности: уже видели этот requestId - мимо, двойной платёж не пройдёт
             if (_store.Records.Any(r => r.RequestId == requestId))
                 return;
 
@@ -81,12 +89,14 @@ public sealed class LocalUsageService : IUsageService
                 _store.DailyCosts.Add(new DailyCostEntry { Date = recordDate, Cost = (decimal)cost });
             }
 
+            // собрали и сохранили - но сначала пересчитали проценты изменения к вчерашнему дню, чтобы стрелочки в UI не врали
             UpdateChangePercentages();
         }
 
         Save();
     }
 
+    // главный метод для UI: агрегат за период + тот же период раньше для процентов; синхронно под локом, Task.FromResult чтобы не плодить потоки ради хуйни
     public Task<UsagePeriodData> GetPeriodDataAsync(UsagePeriod period, CancellationToken cancellationToken = default)
     {
         lock (_lock)
@@ -96,6 +106,7 @@ public sealed class LocalUsageService : IUsageService
             DateTime periodFrom;
             int maxBuckets;
 
+            // окно периода и макс. число точек графика; AllTime - от первой записи, но не больше 90 бакетов, чтобы график не стал простынёй
             switch (period)
             {
                 case UsagePeriod.Today:
@@ -122,6 +133,7 @@ public sealed class LocalUsageService : IUsageService
                 .Where(r => r.Timestamp >= periodFrom && r.Timestamp < periodTo)
                 .ToList();
 
+            // берём ПРЕДЫДУЩИЙ такой же период для сравнения и честных процентов роста; у AllTime прошлого нет, поэтому пусто
             var previousFrom = period == UsagePeriod.AllTime
                 ? periodFrom
                 : periodFrom - (periodTo - periodFrom);
@@ -140,6 +152,7 @@ public sealed class LocalUsageService : IUsageService
             var previousTokens = previousRecords.Sum(r => (long)r.TotalTokens);
             var previousRequests = previousRecords.Count;
 
+            // если в прошлом периоде ноль затрат, а сейчас больше нуля - отдаём 100%, иначе null (хрен его знает, на сколько выросло от нуля)
             decimal? costChange = previousCost > 0
                 ? Math.Round((cost - previousCost) / previousCost * 100, 1)
                 : cost > 0 ? 100m : null;
@@ -184,12 +197,14 @@ public sealed class LocalUsageService : IUsageService
                 File.WriteAllText(UsagePath, json);
             }
         }
+        // запись на диск: молчим о провалах, лучше потерять историю, чем уронить GUI исключением из-за полного диска
         catch
         {
-            // Silently ignore save failures
+            // хрюкаем в тишину
         }
     }
 
+    // группировка по модели для карточки "Статистика моделей": сортируем по деньгам, красим из палитры
     private List<ModelUsageStat> BuildModelStats(List<UsageRecord> records)
     {
         var modelGroups = records
@@ -226,6 +241,7 @@ public sealed class LocalUsageService : IUsageService
         return stats;
     }
 
+    // карта точек для графика: скатываем N дней в бакеты, чтобы кривая не была похожа на ЭКГ мёртвого пациента
     private List<DailyCostPoint> BuildDailyPoints(DateTime from, DateTime to, int maxBuckets)
     {
         var points = new List<DailyCostPoint>();
@@ -253,6 +269,7 @@ public sealed class LocalUsageService : IUsageService
         return points;
     }
 
+    // чтение файла: если usage.json битый или его нет - начинаем с пустого стора, юзер даже не заметит, что мы всё потеряли
     private UsageDataStore Load()
     {
         try
@@ -263,6 +280,7 @@ public sealed class LocalUsageService : IUsageService
                 var data = JsonSerializer.Deserialize<UsageDataStore>(json);
                 if (data is not null)
                 {
+                    // при загрузке пересчитываем "сегодня" и проценты, в файле они могут быть устаревшие как прошлогодний отчёт мамы
                     var today = DateTime.Today;
                     var todayRecords = data.Records.Where(r => r.Timestamp.Date == today).ToList();
                     data.DailyCost = todayRecords.Sum(r => (decimal)r.Cost);
@@ -287,6 +305,7 @@ public sealed class LocalUsageService : IUsageService
         UpdateChangePercentagesForStore(_store);
     }
 
+    // пересчёт дельты день-к-дню; если вчера ничего не было, а сегодня есть - гордо ставим 100%, ну а если всё пусто - 0
     private static void UpdateChangePercentagesForStore(UsageDataStore store)
     {
         var today = DateTime.Today;

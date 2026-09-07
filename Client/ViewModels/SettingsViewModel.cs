@@ -4,6 +4,7 @@ using AiDesktopClient.Services;
 
 namespace AiDesktopClient.ViewModels;
 
+// VM настроек: темы, бэкенд-URL, тумблеры; аккаунт тут тоже локальный, потому что нормального бэкенд-профиля всё ещё нет
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly IBackendService _backendService;
@@ -64,6 +65,7 @@ public partial class SettingsViewModel : ObservableObject
         _currentUsername = session?.Username ?? string.Empty;
     }
 
+    // тема переключилась - уведомляем ThemeManager, он сам сделает wipe-анимацию; без него тема сменится разве что после перезапуска
     partial void OnIsDarkThemeChanged(bool value)
     {
         _themeManager.SwitchTheme(value ? AppTheme.Dark : AppTheme.Light);
@@ -75,6 +77,7 @@ public partial class SettingsViewModel : ObservableObject
         IsDarkTheme = !IsDarkTheme;
     }
 
+    // тестовая проверка связи с будущим бэкендом: метаем GET и показываем "Success/Failed", морока с таймаутом - внутри BackendHealthService
     [RelayCommand]
     private async Task TestConnectionAsync()
     {
@@ -106,6 +109,7 @@ public partial class SettingsViewModel : ObservableObject
         _toastService.ShowSuccess("Settings saved");
     }
 
+    // сброс в дефолт: по сути рандомное гадание на кофейной гуще, реального хранилища настроек всё ещё нет
     [RelayCommand]
     private void ResetSettings()
     {

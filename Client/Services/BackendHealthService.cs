@@ -4,6 +4,7 @@ using AiDesktopClient.Contracts;
 
 namespace AiDesktopClient.Services;
 
+// здоровье бэкенда: GET / раз в 5 секунд (см. MainViewModel), мерим пинг и отдаём статус-сводку; если бросить путь - бросит исключение, тут всё обработано
 public sealed class BackendHealthService : IBackendService
 {
     private readonly HttpClient _httpClient;
@@ -13,6 +14,7 @@ public sealed class BackendHealthService : IBackendService
         _httpClient = httpClient;
     }
 
+    // статус с замером времени через Stopwatch; умное условие: 4хх тоже считаем "подключем" потому что сервер жив, просто злой
     public async Task<BackendStatusDto> GetStatusAsync(CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();

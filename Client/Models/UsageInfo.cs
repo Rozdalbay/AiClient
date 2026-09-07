@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AiDesktopClient.Models;
 
+// АХТУНГ ЛЕГАСИ: этот класс - реликвия от старого учёта, теперь всё валится в UsagePeriodData; не чини тут ничего, пусть стоит памятником, прям как дуб
 public partial class UsageInfo : ObservableObject
 {
     [ObservableProperty]
@@ -44,6 +45,7 @@ public partial class UsageInfo : ObservableObject
     public decimal BudgetProgress => BudgetLimit > 0 ? Math.Min(DailyCost / BudgetLimit, 1m) : 0;
 }
 
+// статистика по одной модели для карточки в Usage: доля, запросы, токены и цвет-стикер
 public partial class ModelUsageStat : ObservableObject
 {
     [ObservableProperty]
@@ -68,6 +70,7 @@ public partial class ModelUsageStat : ObservableObject
     private string _color = "#7C5CFC";
 }
 
+// точка дня для графика затрат, pair (дата, стоимость)
 public partial class DailyCostPoint : ObservableObject
 {
     [ObservableProperty]

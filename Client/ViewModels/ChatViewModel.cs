@@ -8,6 +8,7 @@ using AiDesktopClient.Services;
 
 namespace AiDesktopClient.ViewModels;
 
+// VM чата: ездит по стриму ответа, собирает токены/время и пишет один usage-рекорд через requestId (иди читай LocalUsageService, там мясо)
 public partial class ChatViewModel : ObservableObject
 {
     private readonly IChatService _chatService;
@@ -75,6 +76,7 @@ public partial class ChatViewModel : ObservableObject
             : AvailableModels.FirstOrDefault();
     }
 
+    // ВНИМАНИЕ: requestId генерим ДО стрима и тащим через весь метод, по нему usage пишется идемпотентно - это защита от задвоения при ретраях
     [RelayCommand]
     private async Task SendMessageAsync()
     {
@@ -132,6 +134,7 @@ public partial class ChatViewModel : ObservableObject
             var fullContent = string.Empty;
             StreamUsage? streamUsage = null;
 
+            // крутим стрим: куски текста клеим в ответ, usage приходит отдельным chunk'ом в самом конце - запоминай на будущее
             await foreach (var chunk in _chatService.StreamResponseAsync(
                 CurrentChat.Id.ToString(),
                 SelectedModel?.Id ?? "model-a",
@@ -157,6 +160,7 @@ public partial class ChatViewModel : ObservableObject
             var modelId = SelectedModel?.Id ?? "model-a";
             var modelName = SelectedModel?.DisplayName ?? assistantMessage.ModelName;
 
+            // если бэкенд реальный прислал usage - берём его; если нет (сервер лежит или мок) - считаем токены "на глаз" по словам, чтобы юзер видел хоть какие-то цифры
             if (streamUsage is not null)
             {
                 assistantMessage.InputTokens = streamUsage.InputTokens;
@@ -183,6 +187,7 @@ public partial class ChatViewModel : ObservableObject
                 }
             }
 
+            // ВОТ ОНО МЕСТО ВСТРЕЧИ: один запрос = одна запись usage, requestId сверху; без него учёт будет дублировать каждую перегенерацию
             _usageService.RecordRequest(
                 requestId,
                 modelId,
@@ -191,13 +196,16 @@ public partial class ChatViewModel : ObservableObject
                 assistantMessage.OutputTokens,
                 elapsed);
 
+            // после записи обновляем Usage-панель, чтобы цифры ожили сразу без перезапуска приложения
             await _mainViewModel.Usage.RefreshAsync();
         }
+        // юзер сам отменил генерацию - пишем это в ответ и спокойно заканчиваем, токены тут уже не записываются (ок, записываются, но частичные)
         catch (OperationCanceledException)
         {
             assistantMessage.Content += "\n\n*[Generation stopped]*";
             assistantMessage.IsGenerating = false;
         }
+        // сервер не доступен - сообщаем юзеру человеческими словами, а не стектрейсом; напоминаем про dotnet run Server
         catch (HttpRequestException ex)
         {
             assistantMessage.Content = $"Connection error: {ex.Message}\n\nMake sure the backend server is running.";
@@ -205,6 +213,7 @@ public partial class ChatViewModel : ObservableObject
             assistantMessage.IsError = true;
             _toastService.ShowError("Backend connection failed");
         }
+        // любой другой сюрприз - это тоже ошибка, но кой-как обработанная, чтобы апп не падал с матом в консоль
         catch (Exception ex)
         {
             assistantMessage.Content = $"Error: {ex.Message}";

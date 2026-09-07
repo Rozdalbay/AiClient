@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AiDesktopClient.Models;
 
+// сущность чата: сообщения, флажок Favorite (для закладок в сайдбаре), Pin и привязанная модель; UpdatedAt живёт сам при смене Title
 public partial class Chat : ObservableObject
 {
     [ObservableProperty]

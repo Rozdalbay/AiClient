@@ -4,6 +4,7 @@ using System.Windows.Data;
 
 namespace AiDesktopClient.Converters;
 
+// bool → Visibility и обратно, главные конвертеры для скелетонов/пустых состояний; не менять поведение: UI на этом держится
 public sealed class BoolToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

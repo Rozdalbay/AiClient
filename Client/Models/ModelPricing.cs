@@ -2,6 +2,7 @@
 
 namespace AiDesktopClient.Models;
 
+// прайс одной модели: цена ПЕР МИЛЛИОН токенов, как в забегаловке на заправке - усреднённо и без НДС
 public sealed class ModelPricing
 {
     public required string ModelId { get; init; }
@@ -10,6 +11,7 @@ public sealed class ModelPricing
     public double OutputPricePerMillion { get; init; }
 }
 
+// каталог прайсов в памяти; id моделей JST 'model-a/b/c/d', менять их сюда и в MockModelService НАДО ВМЕСТЕ, иначе статистика не сойдётся
 public static class PricingCatalog
 {
     private static readonly FrozenDictionary<string, ModelPricing> PricingMap;

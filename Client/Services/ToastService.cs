@@ -27,6 +27,7 @@ public interface IToastService
     void ShowInfo(string message, int durationMs = 3000);
 }
 
+// тосты: событие ToastRequested ловит MainWindow и рисует уведомление; поток профессионалов: если вызвали не с UI-потока - завернём в Dispatcher
 public sealed class ToastService : IToastService
 {
     private readonly Dispatcher _dispatcher;
@@ -50,6 +51,7 @@ public sealed class ToastService : IToastService
     public void ShowInfo(string message, int durationMs = 3000)
         => RaiseToast(message, ToastType.Info, durationMs);
 
+    // смотри дураку: это Dispatch - если мы не на UI-потоке, тащим событие туда, инчае WPF взвоет эксепшенами
     private void RaiseToast(string message, ToastType type, int durationMs)
     {
         var args = new ToastEventArgs { Message = message, Type = type, DurationMs = durationMs };

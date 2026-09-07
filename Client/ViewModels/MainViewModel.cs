@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AiDesktopClient.ViewModels;
 
+// главная VM окна: тут навигация по Чат/Промпты/Настройки, список чатов, состояние бэкенда и pinned-блок аккаунта в сайдбаре
 public partial class MainViewModel : ObservableObject
 {
     private readonly IModelService _modelService;
@@ -74,6 +75,7 @@ public partial class MainViewModel : ObservableObject
 
     public ICollectionView ChatsView { get; }
 
+    // конструктор: собираем чат-VM, usage-VM, подтягиваем имя юзера из сессии и заводим таймер проверки бэкенда раз в 5 секунд
     public MainViewModel(
         IChatService chatService,
         IModelService modelService,
@@ -149,6 +151,7 @@ public partial class MainViewModel : ObservableObject
         _currentChatViewModel.IsModelsLoading = value;
     }
 
+    // стартовая загрузка: сначала модели (показываем скелетон списка), потом usage; если модель приедет криво - IsModelsLoading всё равно снимется через finally
     private async void InitializeAsync()
     {
         IsModelsLoading = true;
@@ -166,12 +169,14 @@ public partial class MainViewModel : ObservableObject
         await Usage.RefreshAsync();
     }
 
+    // разлогин: стираем сессию, показываем LoginWindow, закрываем главное окно; вся магия в App.Logout, не вздумай тут писать свою удалёжку
     [RelayCommand]
     private void Logout()
     {
         App.Logout();
     }
 
+    // счётчик здоровья бэкенда: дёргаем статус раз в 5 секунд и показываем в сайдбаре (зелёный онлайн / красный офлайн - как светофор для оптимистов)
     private async Task CheckBackendHealthAsync()
     {
         var result = await _backendService.GetStatusAsync();
@@ -187,6 +192,7 @@ public partial class MainViewModel : ObservableObject
         SelectedNavigation = view;
     }
 
+    // новая болтовня: создаём чат, подсовываем выбранную модель и переключаем окно на неё
     [RelayCommand]
     private void CreateNewChat()
     {
@@ -259,6 +265,7 @@ public partial class MainViewModel : ObservableObject
     }
 }
 
+// статус подключения к бэкенду, который таскается в сайдбар и светится как ночник
 public partial class BackendConnectionStatus : ObservableObject
 {
     [ObservableProperty]

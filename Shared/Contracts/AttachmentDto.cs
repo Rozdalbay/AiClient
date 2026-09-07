@@ -1,5 +1,6 @@
 namespace AiDesktopClient.Contracts;
 
+// файл в запросе/ответе; Base64Content тащим только когда нужен реальный контент - иначе сервер захлебнётся байтами
 public sealed class AttachmentDto
 {
     public required string Id { get; init; }

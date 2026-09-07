@@ -5,6 +5,7 @@ using System.Windows.Media.Animation;
 
 namespace AiDesktopClient.Views;
 
+// сплэш на старте: анимации фейда/зума лого, прогресс-бар и закрытие с фейдаутом; AnimateClose(completed) зовёт колбэк ПЕРЕД Close
 public partial class SplashWindow : Window
 {
     private static readonly Duration AnimDuration = new(TimeSpan.FromMilliseconds(450));
@@ -38,6 +39,7 @@ public partial class SplashWindow : Window
             SetStatus(status);
     }
 
+    // анимированное закрытие - вызывается ОДИН раз в конце RunStartupCore; а по ошибке - в catch RunStartupSequenceAsync, чтобы не зависнуть навечно
     public void AnimateClose(Action? completed)
     {
         var fade = new DoubleAnimation(1.0, 0.0, new Duration(TimeSpan.FromMilliseconds(300)))

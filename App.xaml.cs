@@ -7,6 +7,7 @@ using AiDesktopClient.Views;
 
 namespace AiDesktopClient;
 
+// ТОЧКА ВХОДА ВСЕЙ ХУЙНИ: настраиваем DI, тему, потом сплэш; предупреждаю - тут уже жили баги с висящим сплэшем, веди себя сдержанно
 public partial class App : Application
 {
     public static IServiceProvider? ServiceProvider { get; private set; }
@@ -14,12 +15,14 @@ public partial class App : Application
 
     private MainWindow? _mainWindow;
     private LoginWindow? _loginWindow;
+    // сплэш живёт только во время старта; после AnimateClose он обнуляется, поинты никто не хранит
     private SplashWindow? _splash;
 
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
+        // ручной режим закрытия: закрытие одного окна не убьёт апп, это фича чтобы у сплэша был свой жизненный цикл
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
         var services = new ServiceCollection();
@@ -36,6 +39,7 @@ public partial class App : Application
     {
         _splash = new SplashWindow();
         _splash.Show();
+        // fire-and-forget: если внутри что-то упадёт, спасёт try/catch в RunStartupSequenceAsync; забудешь его - юзер увидит вечное окно загрузки и проклянёт твой род
         _ = RunStartupSequenceAsync();
     }
 
@@ -50,6 +54,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
+            // пишем ошибку в startup_error.log рядом с exe; кто забыл такую обёртку - тот и чинил бесконечный сплэш
             try
             {
                 var diag = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "startup_error.log");
@@ -84,6 +89,7 @@ public partial class App : Application
         _splash.SetStatus("Preparing workspace...");
         _splash.UpdateProgress(0.85);
 
+        // rememberMe через поребрик: сессия есть, но юзер не отметил чекбокс - ну извини, привет логин; живая сессия при этом стирается
         bool rememberMe = session is { IsAuthenticated: true, RememberMe: true };
         if (!rememberMe && session is { IsAuthenticated: true })
             authService.ClearSession();
@@ -95,6 +101,7 @@ public partial class App : Application
         _splash.AnimateClose(() => _splash = null);
     }
 
+    // выбор места назначения: rememberMe=true - главное окно, иначе форма логина; сюда можно хоть экран-умирающего пингвина воткнуть
     private void PrepareTargetWindow(bool showMain)
     {
         if (showMain)
@@ -138,6 +145,7 @@ public partial class App : Application
         _loginWindow.Show();
     }
 
+    // ShowMainWindow создаёт MainWindow через DI - если конструктор или XAML что-то не найдёт (ПРИВЕТ InitialConverter), тут грохнется
     private void ShowMainWindow()
     {
         _mainWindow = ServiceProvider!.GetRequiredService<MainWindow>();
@@ -157,6 +165,7 @@ public partial class App : Application
         _mainWindow.Show();
     }
 
+    // разлогин глобально: чистим сессию, показываем логин-окно и закрываем главное; не дублируй это в каждой VM, зови сюда
     public static void Logout()
     {
         var instance = (App)Current;
@@ -171,6 +180,7 @@ public partial class App : Application
         mainWindow?.Close();
     }
 
+    // РЕЕСТР ЗАВИСИМОСТЕЙ, тут важное: IModelService замокан (MockModelService), usage локальный на диске, чат ходит SSE на бэкенд 127.0.0.1:5000 - меняешь моки на реальные СМОТРИ на сигнатуры IUsageService/IChatService
     private static void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton<ThemeManager>();

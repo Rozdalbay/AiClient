@@ -3,6 +3,7 @@ using System.Windows.Data;
 
 namespace AiDesktopClient.Converters;
 
+// percent → ширина бара, зажатая 0..100; легась от старого дизайна, новая логика на ScaleX - убирать можно после удаления старых баров
 public sealed class PercentToWidthConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

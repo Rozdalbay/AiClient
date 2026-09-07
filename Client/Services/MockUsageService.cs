@@ -2,10 +2,12 @@ using AiDesktopClient.Models;
 
 namespace AiDesktopClient.Services;
 
+// мокаем учёт для девелопмента без реального бэкенда: всегда пусто и девственно чисто, будто юзер вообще ничего не жёг
 public sealed class MockUsageService : IUsageService
 {
     public Task<UsagePeriodData> GetPeriodDataAsync(UsagePeriod period, CancellationToken cancellationToken = default)
     {
+        // для ебланов: BudgetLimit тут 10 баксов чтобы пустая панель не выглядела совсем мёртвой, но данные всё равно пустые
         return Task.FromResult(new UsagePeriodData
         {
             Period = period,

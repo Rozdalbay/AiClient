@@ -3,6 +3,7 @@ using System.Windows.Data;
 
 namespace AiDesktopClient.Converters;
 
+// dailyCost / budgetLimit → ScaleX (0..1); легаси, но живёт - новая панель использует PercentToScaleXConverter
 public sealed class RatioToScaleXConverter : IMultiValueConverter
 {
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

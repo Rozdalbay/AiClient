@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AiDesktopClient.Models;
 
+// проект для группировки чатов: на данный момент декоративный, в UI почти не используется, но пусть живёт
 public partial class Project : ObservableObject
 {
     [ObservableProperty]

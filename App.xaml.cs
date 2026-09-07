@@ -14,6 +14,7 @@ public partial class App : Application
 
     private MainWindow? _mainWindow;
     private LoginWindow? _loginWindow;
+    private SplashWindow? _splash;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -28,25 +29,55 @@ public partial class App : Application
         ThemeManager = ServiceProvider.GetRequiredService<ThemeManager>();
         ThemeManager.ApplyInitialTheme();
 
+        ShowSplashWindow();
+    }
+
+    private void ShowSplashWindow()
+    {
+        _splash = new SplashWindow();
+        _splash.Show();
+        _ = RunStartupSequenceAsync();
+    }
+
+    private async Task RunStartupSequenceAsync()
+    {
+        if (ServiceProvider is null || _splash is null)
+            return;
+
         var authService = ServiceProvider.GetRequiredService<AuthService>();
+
+        _splash.SetStatus("Loading configuration...");
+        _splash.UpdateProgress(0.15);
+
+        _splash.SetStatus("Restoring session...");
+        _splash.UpdateProgress(0.35);
         var session = authService.LoadSession();
 
-        if (session is { IsAuthenticated: true })
-        {
-            if (!session.RememberMe)
-            {
-                authService.ClearSession();
-                ShowLoginWindow();
-            }
-            else
-            {
-                ShowMainWindow();
-            }
-        }
+        _splash.SetStatus("Loading models...");
+        _splash.UpdateProgress(0.55);
+        var modelService = ServiceProvider.GetRequiredService<IModelService>();
+        await modelService.GetModelsAsync();
+
+        _splash.SetStatus("Preparing workspace...");
+        _splash.UpdateProgress(0.85);
+
+        bool rememberMe = session is { IsAuthenticated: true, RememberMe: true };
+        if (!rememberMe && session is { IsAuthenticated: true })
+            authService.ClearSession();
+
+        PrepareTargetWindow(rememberMe);
+
+        _splash.SetStatus("Ready");
+        _splash.UpdateProgress(1.0);
+        _splash.AnimateClose(() => _splash = null);
+    }
+
+    private void PrepareTargetWindow(bool showMain)
+    {
+        if (showMain)
+            ShowMainWindow();
         else
-        {
             ShowLoginWindow();
-        }
     }
 
     private void ShowLoginWindow()

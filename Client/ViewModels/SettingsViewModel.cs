@@ -9,6 +9,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IBackendService _backendService;
     private readonly IToastService _toastService;
     private readonly ThemeManager _themeManager;
+    private readonly AuthService _authService;
 
     [ObservableProperty]
     private string _selectedSection = "General";
@@ -46,12 +47,21 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private int _fontSize = 13;
 
-    public SettingsViewModel(IBackendService backendService, IToastService toastService, ThemeManager themeManager)
+    [ObservableProperty]
+    private string _currentUsername = string.Empty;
+
+    public string AccountStatus => "Local account";
+
+    public SettingsViewModel(IBackendService backendService, IToastService toastService, ThemeManager themeManager, AuthService authService)
     {
         _backendService = backendService;
         _toastService = toastService;
         _themeManager = themeManager;
+        _authService = authService;
         _isDarkTheme = themeManager.CurrentTheme == AppTheme.Dark;
+
+        var session = authService.LoadSession();
+        _currentUsername = session?.Username ?? string.Empty;
     }
 
     partial void OnIsDarkThemeChanged(bool value)
@@ -108,5 +118,11 @@ public partial class SettingsViewModel : ObservableObject
         CompactMode = false;
         FontSize = 13;
         _toastService.ShowInfo("Settings reset to defaults");
+    }
+
+    [RelayCommand]
+    private void Logout()
+    {
+        App.Logout();
     }
 }

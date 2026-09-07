@@ -16,6 +16,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IToastService _toastService;
     private readonly IUsageService _usageService;
     private readonly IBackendService _backendService;
+    private readonly AuthService _authService;
     private readonly DispatcherTimer _healthCheckTimer;
 
     [ObservableProperty]
@@ -71,12 +72,14 @@ public partial class MainViewModel : ObservableObject
         IModelService modelService,
         IUsageService usageService,
         IBackendService backendService,
-        IToastService toastService)
+        IToastService toastService,
+        AuthService authService)
     {
         _modelService = modelService;
         _toastService = toastService;
         _usageService = usageService;
         _backendService = backendService;
+        _authService = authService;
         _currentChatViewModel = new ChatViewModel(chatService, modelService, toastService, usageService, this);
         _currentView = _currentChatViewModel;
         _backendStatus = new BackendConnectionStatus { Status = Contracts.BackendStatus.Connecting };
@@ -144,6 +147,10 @@ public partial class MainViewModel : ObservableObject
     {
         var usage = await _usageService.GetUsageAsync();
         UsageInfo = usage;
+
+        var session = _authService.LoadSession();
+        UsageInfo.AccountUsername = session?.Username ?? string.Empty;
+        UsageInfo.AccountStatus = "Local account";
 
         var modelStats = await _usageService.GetModelStatsAsync();
         ModelStats = new ObservableCollection<ModelUsageStat>(modelStats);

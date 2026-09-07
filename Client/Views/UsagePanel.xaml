@@ -269,12 +269,12 @@
                                        Foreground="{DynamicResource SuccessAccentBrush}"
                                        FontSize="14"
                                        FontWeight="Bold"/>
-                            <TextBlock Text="Backend Online"
+                            <TextBlock Text="{Binding AccountUsername, FallbackValue=Account}"
                                        Foreground="{DynamicResource PrimaryTextBrush}"
                                        FontSize="13"
                                        FontWeight="SemiBold"/>
                         </StackPanel>
-                        <TextBlock Text="Requests are processed through backend API."
+                        <TextBlock Text="{Binding AccountStatus, FallbackValue=Local account}"
                                    Foreground="{DynamicResource SecondaryTextBrush}"
                                    FontSize="11"
                                    TextWrapping="Wrap"
@@ -282,7 +282,7 @@
                         <Border Background="{DynamicResource TertiaryBackgroundBrush}"
                                 CornerRadius="6"
                                 Padding="10,8">
-                            <TextBlock Text="Desktop Client → Backend → AI Provider"
+                            <TextBlock Text="Signed in locally · data stays on this device"
                                        Foreground="{DynamicResource TertiaryTextBrush}"
                                        FontSize="10"
                                        FontFamily="{StaticResource MonoFont}"

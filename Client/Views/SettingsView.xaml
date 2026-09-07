@@ -94,6 +94,18 @@
                         </StackPanel>
                     </RadioButton>
 
+                    <RadioButton x:Name="NavAccount"
+                                 Style="{StaticResource SidebarItemStyle}"
+                                 Click="Nav_Click"
+                                 Tag="Account"
+                                 Margin="0,1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="Account" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
                     <RadioButton x:Name="NavAbout"
                                  Style="{StaticResource SidebarItemStyle}"
                                  Click="Nav_Click"
@@ -367,6 +379,86 @@
                             <ToggleButton Grid.Column="1" IsChecked="{Binding EnableNotifications}"
                                           Style="{StaticResource ToggleSwitchStyle}" VerticalAlignment="Center"/>
                         </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Account -->
+                <StackPanel x:Name="AccountPanel" Visibility="Collapsed">
+                    <TextBlock Text="Account"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
+                               FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
+
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                <Border Background="{DynamicResource AccentGradient}"
+                                        CornerRadius="22" Width="44" Height="44"
+                                        VerticalAlignment="Center" Margin="0,0,14,0">
+                                    <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="20"
+                                               Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding CurrentUsername}"
+                                               Foreground="{DynamicResource PrimaryTextBrush}"
+                                               FontSize="16" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding AccountStatus}"
+                                               Foreground="{DynamicResource TertiaryTextBrush}"
+                                               FontSize="12" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Border Background="{DynamicResource TertiaryBackgroundBrush}"
+                                    CornerRadius="8" Padding="12,10" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Username" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="11"/>
+                                        <TextBlock Text="{Binding CurrentUsername}" Foreground="{DynamicResource PrimaryTextBrush}"
+                                                   FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Background="{DynamicResource TertiaryBackgroundBrush}"
+                                    CornerRadius="8" Padding="12,10" Margin="0,4,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Status" Foreground="{DynamicResource SecondaryTextBrush}" FontSize="11"/>
+                                        <TextBlock Text="{Binding AccountStatus}" Foreground="{DynamicResource SuccessAccentBrush}"
+                                                   FontSize="13" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Session" Foreground="{DynamicResource PrimaryTextBrush}"
+                                       FontSize="13" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                            <TextBlock Text="Signing out will return you to the login screen. Your account and settings will be preserved."
+                                       Foreground="{DynamicResource SecondaryTextBrush}" FontSize="12" TextWrapping="Wrap"
+                                       Margin="0,0,0,12"/>
+                            <Button Command="{Binding LogoutCommand}"
+                                    HorizontalAlignment="Left"
+                                    Padding="16,9">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                               VerticalAlignment="Center" Margin="0,0,8,0"
+                                               Foreground="{DynamicResource ErrorAccentBrush}"/>
+                                    <TextBlock Text="Logout" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource ErrorAccentBrush}"
+                                               FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                     </Border>
                 </StackPanel>
 

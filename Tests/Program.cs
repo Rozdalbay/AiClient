@@ -44,7 +44,7 @@ internal static class Program
     static void TestCardsAndStreaming()
     {
         var service = new ControlledChatService();
-        var main = new MainViewModel(service, new MockModelService(), new MockUsageService(), new MockBackendService(), new ToastService());
+        var main = new MainViewModel(service, new MockModelService(), new MockUsageService(), new MockBackendService(), new ToastService(), new AuthService());
         var vm = main.CurrentChatViewModel;
         var view = new ChatView { DataContext = vm, Width = 900, Height = 650 };
         view.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));

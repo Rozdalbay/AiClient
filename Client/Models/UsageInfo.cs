@@ -27,6 +27,12 @@ public partial class UsageInfo : ObservableObject
     private decimal _budgetLimit = 10.0m;
 
     [ObservableProperty]
+    private string _accountUsername = string.Empty;
+
+    [ObservableProperty]
+    private string _accountStatus = "Local account";
+
+    [ObservableProperty]
     private decimal _costChangePercent;
 
     [ObservableProperty]

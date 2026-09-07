@@ -10,7 +10,7 @@ public partial class SettingsView : UserControl
     public SettingsView()
     {
         InitializeComponent();
-        _panels = [GeneralPanel, AppearancePanel, ModelsPanel, BackendPanel, NotificationsPanel, AboutPanel];
+        _panels = [GeneralPanel, AppearancePanel, ModelsPanel, BackendPanel, NotificationsPanel, AccountPanel, AboutPanel];
     }
 
     private void Nav_Click(object sender, RoutedEventArgs e)
@@ -36,6 +36,9 @@ public partial class SettingsView : UserControl
                     break;
                 case "Notifications":
                     NotificationsPanel.Visibility = Visibility.Visible;
+                    break;
+                case "Account":
+                    AccountPanel.Visibility = Visibility.Visible;
                     break;
                 case "About":
                     AboutPanel.Visibility = Visibility.Visible;

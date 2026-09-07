@@ -62,10 +62,10 @@ internal static class Program
         Check("Debug overlay removed", assistant.FindName("DebugText") is null && view.FindName("DebugCountText") is null);
         Check("Actions hidden while streaming", VisibilityOf(assistant, "ActionButtons") == Visibility.Collapsed);
 
-        service.Chunks.Writer.TryWrite("Привет ");
+        service.Chunks.Writer.TryWrite(new StreamChunk { Text = "Привет " });
         WaitUntil(() => assistant.Message!.Content == "Привет ", view);
         Check("First chunk rendered before response ends", Renderer(assistant).Markdown == "Привет " && !send.IsCompleted);
-        service.Chunks.Writer.TryWrite("**мир**!");
+        service.Chunks.Writer.TryWrite(new StreamChunk { Text = "**мир**!" });
         WaitUntil(() => assistant.Message!.Content.EndsWith("**мир**!"), view);
         Check("Second chunk rendered on same card", ReferenceEquals(assistant, Descendants<ChatMessageControl>(view).Last()) && Renderer(assistant).Markdown == "Привет **мир**!");
         var document = (FlowDocument)Renderer(assistant).FindName("Document");
@@ -100,7 +100,7 @@ internal static class Program
         var cancel = vm.SendMessageCommand.ExecuteAsync(null);
         Layout(view);
         var canceledCard = Descendants<ChatMessageControl>(view).Last();
-        service.Chunks.Writer.TryWrite("Partial text");
+        service.Chunks.Writer.TryWrite(new StreamChunk { Text = "Partial text" });
         WaitUntil(() => canceledCard.Message!.Content == "Partial text", view);
         vm.StopGenerationCommand.Execute(null);
         WaitUntil(() => cancel.IsCompleted, view);
@@ -155,7 +155,8 @@ internal static class Program
         using var http = new HttpClient(new SseHandler()) { BaseAddress = new Uri("http://localhost/") };
         var collect = Collect(new SseChatService(http));
         WaitUntil(() => collect.IsCompleted);
-        Check("Actual SSE parser decodes JSON, Cyrillic, comments and DONE", collect.GetAwaiter().GetResult().SequenceEqual(new[] { "Привет ", "world!" }));
+        var chunks = collect.GetAwaiter().GetResult();
+        Check("Actual SSE parser decodes JSON, Cyrillic, comments and DONE", chunks.SequenceEqual(new[] { "Привет ", "world!" }));
     }
 
     static void TestLiveBackend()
@@ -171,7 +172,11 @@ internal static class Program
     static async Task<List<string>> Collect(IChatService service)
     {
         var chunks = new List<string>();
-        await foreach (var chunk in service.StreamResponseAsync("test", "model-a", "GUI regression test")) chunks.Add(chunk);
+        await foreach (var chunk in service.StreamResponseAsync("test", "model-a", "GUI regression test"))
+        {
+            if (chunk.Text is not null)
+                chunks.Add(chunk.Text);
+        }
         return chunks;
     }
     static object? Subscription(ChatView view) => typeof(ChatView).GetField("_subscribedMessages", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.GetValue(view);
@@ -202,9 +207,9 @@ internal static class Program
     }
     sealed class ControlledChatService : IChatService
     {
-        public Channel<string> Chunks { get; private set; } = Channel.CreateUnbounded<string>();
-        public void Reset() => Chunks = Channel.CreateUnbounded<string>();
-        public IAsyncEnumerable<string> StreamResponseAsync(string chatId, string modelId, string message, IReadOnlyList<Attachment>? attachments = null, CancellationToken cancellationToken = default) => Chunks.Reader.ReadAllAsync(cancellationToken);
+        public Channel<StreamChunk> Chunks { get; private set; } = Channel.CreateUnbounded<StreamChunk>();
+        public void Reset() => Chunks = Channel.CreateUnbounded<StreamChunk>();
+        public IAsyncEnumerable<StreamChunk> StreamResponseAsync(string chatId, string modelId, string message, IReadOnlyList<Attachment>? attachments = null, CancellationToken cancellationToken = default) => Chunks.Reader.ReadAllAsync(cancellationToken);
         public Task<AiDesktopClient.Services.ChatResponse> SendMessageAsync(string chatId, string modelId, string message, IReadOnlyList<Attachment>? attachments = null, CancellationToken cancellationToken = default) => throw new NotSupportedException();
     }
     sealed class SseHandler : HttpMessageHandler

@@ -9,7 +9,7 @@ public partial class UsageInfo : ObservableObject
     private decimal _totalCost;
 
     [ObservableProperty]
-    private int _totalTokens;
+    private long _totalTokens;
 
     [ObservableProperty]
     private int _totalRequests;
@@ -18,7 +18,7 @@ public partial class UsageInfo : ObservableObject
     private decimal _dailyCost;
 
     [ObservableProperty]
-    private int _dailyTokens;
+    private long _dailyTokens;
 
     [ObservableProperty]
     private int _dailyRequests;
@@ -41,7 +41,7 @@ public partial class UsageInfo : ObservableObject
     [ObservableProperty]
     private ObservableCollection<DailyCostPoint> _dailyCosts = [];
 
-    public decimal BudgetProgress => BudgetLimit > 0 ? Math.Min((decimal)DailyCost / BudgetLimit, 1m) : 0;
+    public decimal BudgetProgress => BudgetLimit > 0 ? Math.Min(DailyCost / BudgetLimit, 1m) : 0;
 }
 
 public partial class ModelUsageStat : ObservableObject
@@ -50,10 +50,19 @@ public partial class ModelUsageStat : ObservableObject
     private string _modelName = string.Empty;
 
     [ObservableProperty]
+    private string _modelId = string.Empty;
+
+    [ObservableProperty]
     private decimal _cost;
 
     [ObservableProperty]
     private double _percentage;
+
+    [ObservableProperty]
+    private int _requestCount;
+
+    [ObservableProperty]
+    private long _totalTokens;
 
     [ObservableProperty]
     private string _color = "#7C5CFC";

@@ -37,13 +37,13 @@ public partial class App : Application
             var handler = new HttpClientHandler { UseProxy = false };
             return new HttpClient(handler)
             {
-                BaseAddress = new Uri("http://localhost:5000/"),
+                BaseAddress = new Uri("http://127.0.0.1:5000/"),
                 Timeout = Timeout.InfiniteTimeSpan
             };
         });
         services.AddSingleton<IChatService, SseChatService>();
         services.AddSingleton<IModelService, MockModelService>();
-        services.AddSingleton<IUsageService, MockUsageService>();
+        services.AddSingleton<IUsageService, LocalUsageService>();
         services.AddSingleton<IBackendService, BackendHealthService>();
 
         services.AddTransient<MainViewModel>();

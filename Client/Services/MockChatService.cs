@@ -19,7 +19,7 @@ public sealed class MockChatService : IChatService
 
     private readonly Random _random = new();
 
-    public async IAsyncEnumerable<string> StreamResponseAsync(
+    public async IAsyncEnumerable<StreamChunk> StreamResponseAsync(
         string chatId,
         string modelId,
         string message,
@@ -32,9 +32,21 @@ public sealed class MockChatService : IChatService
         for (int i = 0; i < words.Length; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            yield return words[i] + " ";
+            yield return new StreamChunk { Text = words[i] + " " };
             await Task.Delay(_random.Next(20, 80), cancellationToken);
         }
+
+        var inputTokens = Math.Max(1, message.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2);
+        var outputTokens = Math.Max(1, response.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2);
+
+        yield return new StreamChunk
+        {
+            Usage = new StreamUsage
+            {
+                InputTokens = inputTokens,
+                OutputTokens = outputTokens
+            }
+        };
     }
 
     public async Task<ChatResponse> SendMessageAsync(
@@ -48,8 +60,8 @@ public sealed class MockChatService : IChatService
 
         await Task.Delay(_random.Next(500, 2000), cancellationToken);
 
-        var inputTokens = message.Split(' ').Length * 2;
-        var outputTokens = response.Split(' ').Length * 2;
+        var inputTokens = Math.Max(1, message.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2);
+        var outputTokens = Math.Max(1, response.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2);
 
         return new ChatResponse
         {

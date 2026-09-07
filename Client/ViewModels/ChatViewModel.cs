@@ -13,6 +13,7 @@ public partial class ChatViewModel : ObservableObject
     private readonly IChatService _chatService;
     private readonly IModelService _modelService;
     private readonly IToastService _toastService;
+    private readonly IUsageService _usageService;
     private readonly MainViewModel _mainViewModel;
     private CancellationTokenSource? _streamingCts;
 
@@ -49,11 +50,13 @@ public partial class ChatViewModel : ObservableObject
         IChatService chatService,
         IModelService modelService,
         IToastService toastService,
+        IUsageService usageService,
         MainViewModel mainViewModel)
     {
         _chatService = chatService;
         _modelService = modelService;
         _toastService = toastService;
+        _usageService = usageService;
         _mainViewModel = mainViewModel;
     }
 
@@ -120,6 +123,7 @@ public partial class ChatViewModel : ObservableObject
         {
             var startTime = DateTime.Now;
             var fullContent = string.Empty;
+            StreamUsage? streamUsage = null;
 
             await foreach (var chunk in _chatService.StreamResponseAsync(
                 CurrentChat.Id.ToString(),
@@ -128,27 +132,58 @@ public partial class ChatViewModel : ObservableObject
                 null,
                 _streamingCts.Token))
             {
-                fullContent += chunk;
-                assistantMessage.Content = fullContent;
+                if (chunk.Usage is not null)
+                {
+                    streamUsage = chunk.Usage;
+                }
+                else if (chunk.Text is not null)
+                {
+                    fullContent += chunk.Text;
+                    assistantMessage.Content = fullContent;
+                }
             }
 
             var elapsed = (DateTime.Now - startTime).TotalMilliseconds;
             assistantMessage.ResponseTimeMs = elapsed;
             assistantMessage.IsGenerating = false;
 
-            // Backend must return actual token counts — mock estimates shown here.
-            assistantMessage.InputTokens = messageText.Split(' ').Length * 2;
-            assistantMessage.OutputTokens = fullContent.Split(' ').Length * 2;
-            assistantMessage.TotalTokens = assistantMessage.InputTokens + assistantMessage.OutputTokens;
+            var modelId = SelectedModel?.Id ?? "model-a";
+            var modelName = SelectedModel?.DisplayName ?? assistantMessage.ModelName;
 
-            // Backend must calculate cost from model pricing and actual usage.
-            var model = AvailableModels.FirstOrDefault(m => m.Id == assistantMessage.ModelName);
-            if (SelectedModel is not null)
+            if (streamUsage is not null)
             {
-                assistantMessage.Cost =
-                    assistantMessage.InputTokens * SelectedModel.InputTokenPrice +
-                    assistantMessage.OutputTokens * SelectedModel.OutputTokenPrice;
+                assistantMessage.InputTokens = streamUsage.InputTokens;
+                assistantMessage.OutputTokens = streamUsage.OutputTokens;
+                assistantMessage.TotalTokens = streamUsage.InputTokens + streamUsage.OutputTokens;
+
+                var cost = PricingCatalog.CalculateCost(modelId, streamUsage.InputTokens, streamUsage.OutputTokens);
+                if (cost >= 0)
+                {
+                    assistantMessage.Cost = cost;
+                }
             }
+            else
+            {
+                assistantMessage.InputTokens = Math.Max(1, messageText.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2);
+                assistantMessage.OutputTokens = Math.Max(1, fullContent.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2);
+                assistantMessage.TotalTokens = assistantMessage.InputTokens + assistantMessage.OutputTokens;
+
+                if (SelectedModel is not null)
+                {
+                    assistantMessage.Cost =
+                        assistantMessage.InputTokens * SelectedModel.InputTokenPrice +
+                        assistantMessage.OutputTokens * SelectedModel.OutputTokenPrice;
+                }
+            }
+
+            _usageService.RecordRequest(
+                modelId,
+                modelName,
+                assistantMessage.InputTokens,
+                assistantMessage.OutputTokens,
+                elapsed);
+
+            await _mainViewModel.RefreshUsageAsync();
         }
         catch (OperationCanceledException)
         {

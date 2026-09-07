@@ -10,16 +10,16 @@ public sealed class MockUsageService : IUsageService
     {
         var usage = new UsageInfo
         {
-            TotalCost = 12.45m,
-            TotalTokens = 842150,
-            TotalRequests = 1273,
-            DailyCost = 1.42m,
-            DailyTokens = 84215,
-            DailyRequests = 127,
+            TotalCost = 0m,
+            TotalTokens = 0,
+            TotalRequests = 0,
+            DailyCost = 0m,
+            DailyTokens = 0,
+            DailyRequests = 0,
             BudgetLimit = 10.0m,
-            CostChangePercent = -12,
-            TokenChangePercent = -18,
-            RequestChangePercent = 6
+            CostChangePercent = 0,
+            TokenChangePercent = 0,
+            RequestChangePercent = 0
         };
 
         return Task.FromResult(usage);
@@ -27,14 +27,7 @@ public sealed class MockUsageService : IUsageService
 
     public Task<IReadOnlyList<ModelUsageStat>> GetModelStatsAsync(CancellationToken cancellationToken = default)
     {
-        var stats = new List<ModelUsageStat>
-        {
-            new() { ModelName = "Model A", Cost = 0.84m, Percentage = 59, Color = "#7C5CFC" },
-            new() { ModelName = "Model B", Cost = 0.31m, Percentage = 22, Color = "#5CA0FC" },
-            new() { ModelName = "Model C", Cost = 0.27m, Percentage = 19, Color = "#5CFCB0" }
-        };
-
-        return Task.FromResult<IReadOnlyList<ModelUsageStat>>(stats.AsReadOnly());
+        return Task.FromResult<IReadOnlyList<ModelUsageStat>>(new List<ModelUsageStat>().AsReadOnly());
     }
 
     public Task<IReadOnlyList<DailyCostPoint>> GetDailyCostsAsync(int days = 7, CancellationToken cancellationToken = default)
@@ -45,10 +38,20 @@ public sealed class MockUsageService : IUsageService
             costs.Add(new DailyCostPoint
             {
                 Date = DateTime.Now.AddDays(-i),
-                Cost = (decimal)(_random.NextDouble() * 2.0 + 0.1)
+                Cost = 0m
             });
         }
 
         return Task.FromResult<IReadOnlyList<DailyCostPoint>>(costs.AsReadOnly());
+    }
+
+    public void RecordRequest(string modelId, string modelName, int inputTokens, int outputTokens, double responseTimeMs)
+    {
+        // No-op for mock
+    }
+
+    public void Save()
+    {
+        // No-op for mock
     }
 }

@@ -1,0 +1,136 @@
+[1mdiff --cc Client/Services/SseChatService.cs[m
+[1mindex cd670a3,1c7e02d..0000000[m
+[1m--- a/Client/Services/SseChatService.cs[m
+[1m+++ b/Client/Services/SseChatService.cs[m
+[36m@@@ -92,11 -80,23 +80,29 @@@[m [mpublic sealed class SseChatService : IC[m
+                      PropertyNameCaseInsensitive = true[m
+                  });[m
+  [m
+[32m++<<<<<<< HEAD[m
+[32m +            if (sseChunk?.Delta is not null)[m
+[32m +            {[m
+[32m +                yield return sseChunk.Delta;[m
+[32m++=======[m
+[32m+             if (sseEvent is null)[m
+[32m+                 continue;[m
+[32m+ [m
+[32m+             if (sseEvent.Usage is not null)[m
+[32m+             {[m
+[32m+                 capturedUsage = sseEvent.Usage;[m
+[32m+             }[m
+[32m+ [m
+[32m+             if (sseEvent.Chunk is not null)[m
+[32m+             {[m
+[32m+                 yield return new StreamChunk { Text = sseEvent.Chunk };[m
+[32m++>>>>>>> de9053342a5ad45f6fd65e19f3e47371c691cd48[m
+              }[m
+          }[m
+[32m+ [m
+[32m+         _usageResults[chatId] = capturedUsage;[m
+[32m+ [m
+[32m+         yield return new StreamChunk { Usage = capturedUsage };[m
+      }[m
+  [m
+      public async Task<ChatResponse> SendMessageAsync([m
+[36m@@@ -125,8 -129,9 +135,13 @@@[m
+          };[m
+      }[m
+  [m
+[31m-     private sealed class SseChunk[m
+[32m+     private sealed class SseEvent[m
+      {[m
+[32m++<<<<<<< HEAD[m
+[32m +        public string? Delta { get; init; }[m
+[32m++=======[m
+[32m+         public string? Chunk { get; init; }[m
+[32m+         public StreamUsage? Usage { get; init; }[m
+[32m++>>>>>>> de9053342a5ad45f6fd65e19f3e47371c691cd48[m
+      }[m
+[31m- }[m
+[32m+ }[m
+[1mdiff --cc Server/Program.cs[m
+[1mindex a940178,94fdcda..0000000[m
+[1m--- a/Server/Program.cs[m
+[1m+++ b/Server/Program.cs[m
+[36m@@@ -22,37 -9,57 +22,67 @@@[m [mapp.MapPost("/stream", async [m
+      CancellationToken cancellationToken) =>[m
+  {[m
+      response.ContentType = "text/event-stream";[m
+[31m- [m
+      response.Headers.CacheControl = "no-cache";[m
+  [m
+[31m-     Console.WriteLine($"Получено сообщение: {request.Message}");[m
+[31m-     Console.WriteLine($"Модель: {request.ModelId}");[m
+[31m-     Console.WriteLine($"Чат: {request.ChatId}");[m
+[32m+     Console.WriteLine($"Received message: {request.Message}");[m
+[32m+     Console.WriteLine($"Model: {request.ModelId}");[m
+[32m+     Console.WriteLine($"Chat: {request.ChatId}");[m
+  [m
+[32m++<<<<<<< HEAD[m
+[32m +    var stream = GetOpenAiStream(request.Message);[m
+[32m +[m
+[32m +    await foreach (StreamingResponseUpdate rsp in stream)[m
+[32m++=======[m
+[32m+     var inputTokens = request.Message.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2;[m
+[32m+     string[] chunks =[m
+[32m+     [[m
+[32m+         "hi ",[m
+[32m+         "see",[m
+[32m+         "working ",[m
+[32m+         "good."[m
+[32m+     ];[m
+[32m+ [m
+[32m+     var outputText = string.Concat(chunks);[m
+[32m+     var outputTokens = outputText.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length * 2;[m
+[32m+ [m
+[32m+     foreach (var chunk in chunks)[m
+[32m++>>>>>>> de9053342a5ad45f6fd65e19f3e47371c691cd48[m
+      {[m
+[31m -        cancellationToken.ThrowIfCancellationRequested();[m
+[31m -[m
+[31m -        var json = JsonSerializer.Serialize(new[m
+[32m +        if (rsp is StreamingResponseOutputTextDeltaUpdate delta)[m
+          {[m
+[31m -            chunk[m
+[31m -        });[m
+[32m +            cancellationToken.ThrowIfCancellationRequested();[m
+[32m +[m
+[32m +            var json = JsonSerializer.Serialize(new[m
+[32m +            {[m
+[32m +                delta.Delta[m
+[32m +            });[m
+[32m +[m
+[32m +            await response.WriteAsync([m
+[32m +                $"data: {json}\n\n",[m
+[32m +                cancellationToken);[m
+  [m
+[31m -        await response.WriteAsync([m
+[31m -            $"data: {json}\n\n",[m
+[31m -            cancellationToken);[m
+[32m +            await response.Body.FlushAsync(cancellationToken);[m
+  [m
+[31m -        await response.Body.FlushAsync(cancellationToken);[m
+[32m +            await Task.Delay(500, cancellationToken);[m
+[32m +            }[m
+  [m
+[31m -        await Task.Delay(500, cancellationToken);[m
+      }[m
+  [m
+[32m+     var usageEvent = JsonSerializer.Serialize(new[m
+[32m+     {[m
+[32m+         usage = new[m
+[32m+         {[m
+[32m+             input_tokens = inputTokens,[m
+[32m+             output_tokens = outputTokens[m
+[32m+         }[m
+[32m+     });[m
+[32m+ [m
+[32m+     await response.WriteAsync([m
+[32m+         $"data: {usageEvent}\n\n",[m
+[32m+         cancellationToken);[m
+[32m+ [m
+[32m+     await response.Body.FlushAsync(cancellationToken);[m
+[32m+ [m
+      await response.WriteAsync([m
+          "data: [DONE]\n\n",[m
+          cancellationToken);[m

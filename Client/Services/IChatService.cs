@@ -4,7 +4,7 @@ namespace AiDesktopClient.Services;
 
 public interface IChatService
 {
-    IAsyncEnumerable<string> StreamResponseAsync(
+    IAsyncEnumerable<StreamChunk> StreamResponseAsync(
         string chatId,
         string modelId,
         string message,
@@ -17,6 +17,18 @@ public interface IChatService
         string message,
         IReadOnlyList<Attachment>? attachments = null,
         CancellationToken cancellationToken = default);
+}
+
+public sealed class StreamChunk
+{
+    public string? Text { get; init; }
+    public StreamUsage? Usage { get; init; }
+}
+
+public sealed class StreamUsage
+{
+    public int InputTokens { get; init; }
+    public int OutputTokens { get; init; }
 }
 
 public sealed class ChatResponse

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -11,13 +12,14 @@ namespace AiDesktopClient.Services;
 public sealed class SseChatService : IChatService
 {
     private readonly HttpClient _httpClient;
+    private readonly ConcurrentDictionary<string, StreamUsage?> _usageResults = new();
 
     public SseChatService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
 
-    public async IAsyncEnumerable<string> StreamResponseAsync(
+    public async IAsyncEnumerable<StreamChunk> StreamResponseAsync(
         string chatId,
         string modelId,
         string message,
@@ -25,7 +27,6 @@ public sealed class SseChatService : IChatService
         [EnumeratorCancellation]
         CancellationToken cancellationToken = default)
     {
-        // Это объект, который мы отправим бэку.
         var requestBody = new
         {
             chatId,
@@ -33,70 +34,69 @@ public sealed class SseChatService : IChatService
             message
         };
 
-        // Пост.
         using var request = new HttpRequestMessage(
             HttpMethod.Post,
             "stream");
 
-        // Превращаем requestBody в JSON.
         request.Content = JsonContent.Create(requestBody);
-
-        // Говорим серверу, что хотим получить SSE.
         request.Headers.Accept.ParseAdd("text/event-stream");
 
-        // Отправляем запрос.
         using var response = await _httpClient.SendAsync(
             request,
             HttpCompletionOption.ResponseHeadersRead,
             cancellationToken);
 
-        // Если сервер вернул 404, 500 и тому подобное то плачем и сжимаем кулаки от злости
         response.EnsureSuccessStatusCode();
 
-        // Хватаем поток.
         await using var stream =
             await response.Content.ReadAsStreamAsync(cancellationToken);
 
         using var reader = new StreamReader(stream);
 
-        // Читаем пока не опрокинут.
+        StreamUsage? capturedUsage = null;
+
         while (true)
         {
             var line = await reader.ReadLineAsync(cancellationToken);
 
-            // Вот тут если нас опрокинули.
             if (line is null)
-                yield break;
+                break;
 
-            // Оно срёт говном
             if (string.IsNullOrWhiteSpace(line))
                 continue;
 
-            // Хаваем всё что дата.
             if (!line.StartsWith("data:"))
                 continue;
 
-            // Убираем дату и получаем содержимое события.
             var data = line["data:".Length..].TrimStart();
 
-            // Сервер сообщил, что генерация закончена.
             if (data == "[DONE]")
-                yield break;
+                break;
 
-            // Превращаем JSON в объект SseChunk.
-
-            var sseChunk = JsonSerializer.Deserialize<SseChunk>(
+            var sseEvent = JsonSerializer.Deserialize<SseEvent>(
                 data,
                 new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
 
-            if (sseChunk?.Chunk is not null)
+            if (sseEvent is null)
+                continue;
+
+            if (sseEvent.Usage is not null)
             {
-                yield return sseChunk.Chunk;
+                capturedUsage = sseEvent.Usage;
+            }
+
+            if (sseEvent.Delta is not null)
+            {
+                yield return new StreamChunk { Text = sseEvent.Delta };
             }
         }
+
+        _usageResults[chatId] = capturedUsage;
+
+        yield return new StreamChunk { Usage = capturedUsage };
     }
 
     public async Task<ChatResponse> SendMessageAsync(
@@ -106,7 +106,6 @@ public sealed class SseChatService : IChatService
         IReadOnlyList<Attachment>? attachments = null,
         CancellationToken cancellationToken = default)
     {
-        // гуишная залупенция, гуи хуи соси
         var content = new StringBuilder();
 
         await foreach (var chunk in StreamResponseAsync(
@@ -116,17 +115,23 @@ public sealed class SseChatService : IChatService
             attachments,
             cancellationToken))
         {
-            content.Append(chunk);
+            if (chunk.Text is not null)
+                content.Append(chunk.Text);
         }
+
+        var usage = _usageResults.TryRemove(chatId, out var u) ? u : null;
 
         return new ChatResponse
         {
-            Content = content.ToString()
+            Content = content.ToString(),
+            InputTokens = usage?.InputTokens ?? 0,
+            OutputTokens = usage?.OutputTokens ?? 0
         };
     }
 
-    private sealed class SseChunk
+    private sealed class SseEvent
     {
-        public string? Chunk { get; init; }
+        public string? Delta { get; init; }
+        public StreamUsage? Usage { get; init; }
     }
 }

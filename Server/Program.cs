@@ -1,7 +1,19 @@
 using System.Text.Json;
+using OpenAI.Responses;
+#pragma warning disable OPENAI001
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
+
+
+
+string key = Environment.GetEnvironmentVariable("OPENAI_API_KEY")!;
+ResponsesClient client = new(key);
+
+IAsyncEnumerable<StreamingResponseUpdate> GetOpenAiStream(string prompt)
+{
+    return client.CreateResponseStreamingAsync("gpt-5.6-luna", prompt);
+}
 
 app.MapPost("/stream", async (
     ChatRequest request,
@@ -16,30 +28,28 @@ app.MapPost("/stream", async (
     Console.WriteLine($"Модель: {request.ModelId}");
     Console.WriteLine($"Чат: {request.ChatId}");
 
-    string[] chunks =
-    [
-        "hi ",
-        "see",
-        "working ",
-        "good."
-    ];
+    var stream = GetOpenAiStream(request.Message);
 
-    foreach (var chunk in chunks)
+    await foreach (StreamingResponseUpdate rsp in stream)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        var json = JsonSerializer.Serialize(new
+        if (rsp is StreamingResponseOutputTextDeltaUpdate delta)
         {
-            chunk
-        });
+            cancellationToken.ThrowIfCancellationRequested();
 
-        await response.WriteAsync(
-            $"data: {json}\n\n",
-            cancellationToken);
+            var json = JsonSerializer.Serialize(new
+            {
+                delta.Delta
+            });
 
-        await response.Body.FlushAsync(cancellationToken);
+            await response.WriteAsync(
+                $"data: {json}\n\n",
+                cancellationToken);
 
-        await Task.Delay(500, cancellationToken);
+            await response.Body.FlushAsync(cancellationToken);
+
+            await Task.Delay(500, cancellationToken);
+            }
+
     }
 
     await response.WriteAsync(

@@ -62,6 +62,8 @@ public partial class MainViewModel : ObservableObject
 
     public bool HasChats => Chats.Count > 0;
 
+    public void NotifyHasChatsChanged() => OnPropertyChanged(nameof(HasChats));
+
     public ICollectionView ChatsView { get; }
 
     public MainViewModel(
@@ -168,7 +170,7 @@ public partial class MainViewModel : ObservableObject
             ModelName = SelectedModel?.DisplayName ?? "Model A"
         };
         Chats.Insert(0, newChat);
-        OnPropertyChanged(nameof(HasChats));
+        NotifyHasChatsChanged();
         ChatsView.Refresh();
         CurrentChatViewModel.LoadChat(newChat);
         CurrentView = CurrentChatViewModel;
@@ -206,7 +208,7 @@ public partial class MainViewModel : ObservableObject
     private void DeleteChat(Chat chat)
     {
         Chats.Remove(chat);
-        OnPropertyChanged(nameof(HasChats));
+        NotifyHasChatsChanged();
         ChatsView.Refresh();
         if (CurrentChatViewModel.CurrentChat == chat)
         {

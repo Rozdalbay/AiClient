@@ -69,11 +69,25 @@ public partial class ChatViewModel : ObservableObject
     [RelayCommand]
     private async Task SendMessageAsync()
     {
-        if (string.IsNullOrWhiteSpace(InputMessage) || CurrentChat is null || IsStreaming)
+        if (string.IsNullOrWhiteSpace(InputMessage) || IsStreaming)
             return;
 
         var messageText = InputMessage.Trim();
         InputMessage = string.Empty;
+
+        if (CurrentChat is null)
+        {
+            var newChat = new Chat
+            {
+                Title = messageText.Length > 50 ? messageText[..50] + "..." : messageText,
+                ModelId = SelectedModel?.Id ?? _mainViewModel.SelectedModel?.Id ?? "model-a",
+                ModelName = SelectedModel?.DisplayName ?? _mainViewModel.SelectedModel?.DisplayName ?? "Model A"
+            };
+            _mainViewModel.Chats.Insert(0, newChat);
+            _mainViewModel.NotifyHasChatsChanged();
+            LoadChat(newChat);
+            _mainViewModel.CurrentView = this;
+        }
 
         var userMessage = new ChatMessage
         {
@@ -83,15 +97,8 @@ public partial class ChatViewModel : ObservableObject
             Attachments = new ObservableCollection<Attachment>(PendingAttachments)
         };
 
-        CurrentChat.Messages.Add(userMessage);
+        CurrentChat!.Messages.Add(userMessage);
         PendingAttachments.Clear();
-
-        if (CurrentChat.Title == "New Chat")
-        {
-            CurrentChat.Title = messageText.Length > 50
-                ? messageText[..50] + "..."
-                : messageText;
-        }
 
         var assistantMessage = new ChatMessage
         {

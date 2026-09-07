@@ -116,20 +116,13 @@ public partial class ChatView : UserControl
         if (e.Key == Key.Enter && !Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
         {
             e.Handled = true;
+            if (!ViewModel.IsStreaming && !string.IsNullOrWhiteSpace(ViewModel.InputMessage))
+                ViewModel.SendMessageCommand.Execute(null);
         }
     }
 
     private void MessageInput_KeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Enter)
-        {
-            if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
-                return;
-
-            e.Handled = true;
-            if (!ViewModel.IsStreaming && !string.IsNullOrWhiteSpace(ViewModel.InputMessage))
-                ViewModel.SendMessageCommand.Execute(null);
-        }
     }
 
     private void ModelSelector_Click(object sender, MouseButtonEventArgs e)

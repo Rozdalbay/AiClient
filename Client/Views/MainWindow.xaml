@@ -156,7 +156,6 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0"
-                        Width="270"
                         Background="{DynamicResource SidebarBackgroundBrush}"
                         BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="0,0,1,0">

@@ -9,8 +9,8 @@ public sealed class MockModelService : IModelService
         new()
         {
             Id = "model-a",
-            DisplayName = "Model A",
-            Provider = "Provider X",
+            DisplayName = "GPT-5.6 Luna",
+            Provider = "OpenAI",
             InputTokenPrice = 0.000003,
             OutputTokenPrice = 0.000015,
             IsAvailable = true,
@@ -20,8 +20,8 @@ public sealed class MockModelService : IModelService
         new()
         {
             Id = "model-b",
-            DisplayName = "Model B",
-            Provider = "Provider Y",
+            DisplayName = "GPT-6 Astra Fast",
+            Provider = "OpenAI",
             InputTokenPrice = 0.000001,
             OutputTokenPrice = 0.000002,
             IsAvailable = true,
@@ -31,8 +31,8 @@ public sealed class MockModelService : IModelService
         new()
         {
             Id = "model-c",
-            DisplayName = "Model C",
-            Provider = "Provider Z",
+            DisplayName = "MiMo V2.5",
+            Provider = "Xiaomi",
             InputTokenPrice = 0.000010,
             OutputTokenPrice = 0.000030,
             IsAvailable = true,
@@ -42,8 +42,8 @@ public sealed class MockModelService : IModelService
         new()
         {
             Id = "model-d",
-            DisplayName = "Model D",
-            Provider = "Provider W",
+            DisplayName = "Claude Opus 4.5",
+            Provider = "Anthropic",
             InputTokenPrice = 0.000005,
             OutputTokenPrice = 0.000010,
             IsAvailable = false,

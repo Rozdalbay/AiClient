@@ -44,6 +44,29 @@ public partial class App : Application
         if (ServiceProvider is null || _splash is null)
             return;
 
+        try
+        {
+            await RunStartupCore();
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                var diag = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "startup_error.log");
+                System.IO.File.WriteAllText(diag, ex.ToString());
+            }
+            catch { }
+            _splash.SetStatus("Startup error");
+            _splash.UpdateProgress(1.0);
+            _splash.AnimateClose(() => { _splash = null; Shutdown(); });
+        }
+    }
+
+    private async Task RunStartupCore()
+    {
+        if (ServiceProvider is null || _splash is null)
+            return;
+
         var authService = ServiceProvider.GetRequiredService<AuthService>();
 
         _splash.SetStatus("Loading configuration...");

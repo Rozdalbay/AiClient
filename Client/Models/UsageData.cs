@@ -2,6 +2,7 @@ namespace AiDesktopClient.Models;
 
 public sealed class UsageRecord
 {
+    public string RequestId { get; set; } = string.Empty;
     public DateTime Timestamp { get; set; }
     public string ModelId { get; set; } = string.Empty;
     public string ModelName { get; set; } = string.Empty;

@@ -14,7 +14,6 @@ public partial class MainViewModel : ObservableObject
 {
     private readonly IModelService _modelService;
     private readonly IToastService _toastService;
-    private readonly IUsageService _usageService;
     private readonly IBackendService _backendService;
     private readonly AuthService _authService;
     private readonly DispatcherTimer _healthCheckTimer;
@@ -35,16 +34,16 @@ public partial class MainViewModel : ObservableObject
     private ObservableCollection<ModelInfo> _availableModels = [];
 
     [ObservableProperty]
-    private ObservableCollection<ModelUsageStat> _modelStats = [];
-
-    [ObservableProperty]
     private ModelInfo? _selectedModel;
 
     [ObservableProperty]
     private BackendConnectionStatus _backendStatus = new();
 
     [ObservableProperty]
-    private UsageInfo _usageInfo = new();
+    private string _accountUsername = string.Empty;
+
+    [ObservableProperty]
+    private string _accountStatus = "Local account";
 
     [ObservableProperty]
     private bool _isSidebarCollapsed;
@@ -61,9 +60,17 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isUsagePanelOpen = true;
 
+    [ObservableProperty]
+    private bool _isModelsLoading;
+
+    [ObservableProperty]
+    private bool _isChatsLoading;
+
     public bool HasChats => Chats.Count > 0;
 
     public void NotifyHasChatsChanged() => OnPropertyChanged(nameof(HasChats));
+
+    public UsageViewModel Usage { get; }
 
     public ICollectionView ChatsView { get; }
 
@@ -77,12 +84,15 @@ public partial class MainViewModel : ObservableObject
     {
         _modelService = modelService;
         _toastService = toastService;
-        _usageService = usageService;
         _backendService = backendService;
         _authService = authService;
         _currentChatViewModel = new ChatViewModel(chatService, modelService, toastService, usageService, this);
         _currentView = _currentChatViewModel;
         _backendStatus = new BackendConnectionStatus { Status = Contracts.BackendStatus.Connecting };
+        Usage = new UsageViewModel(usageService);
+
+        var session = authService.LoadSession();
+        AccountUsername = session?.Username ?? string.Empty;
 
         ChatsView = CollectionViewSource.GetDefaultView(Chats);
         ChatsView.Filter = FilterChats;
@@ -134,30 +144,32 @@ public partial class MainViewModel : ObservableObject
             view.Refresh();
     }
 
-    private async void InitializeAsync()
+    partial void OnIsModelsLoadingChanged(bool value)
     {
-        var models = await _modelService.GetModelsAsync();
-        AvailableModels = new ObservableCollection<ModelInfo>(models);
-        SelectedModel = AvailableModels.FirstOrDefault();
-
-        await RefreshUsageAsync();
+        _currentChatViewModel.IsModelsLoading = value;
     }
 
-    public async Task RefreshUsageAsync()
+    private async void InitializeAsync()
     {
-        var usage = await _usageService.GetUsageAsync();
-        UsageInfo = usage;
+        IsModelsLoading = true;
+        try
+        {
+            var models = await _modelService.GetModelsAsync();
+            AvailableModels = new ObservableCollection<ModelInfo>(models);
+            SelectedModel = AvailableModels.FirstOrDefault();
+        }
+        finally
+        {
+            IsModelsLoading = false;
+        }
 
-        var session = _authService.LoadSession();
-        UsageInfo.AccountUsername = session?.Username ?? string.Empty;
-        UsageInfo.AccountStatus = "Local account";
+        await Usage.RefreshAsync();
+    }
 
-        var modelStats = await _usageService.GetModelStatsAsync();
-        ModelStats = new ObservableCollection<ModelUsageStat>(modelStats);
-        UsageInfo.ModelStats = ModelStats;
-
-        var dailyCosts = await _usageService.GetDailyCostsAsync(7);
-        UsageInfo.DailyCosts = new ObservableCollection<DailyCostPoint>(dailyCosts);
+    [RelayCommand]
+    private void Logout()
+    {
+        App.Logout();
     }
 
     private async Task CheckBackendHealthAsync()
@@ -182,7 +194,7 @@ public partial class MainViewModel : ObservableObject
         {
             Title = "New Chat",
             ModelId = SelectedModel?.Id ?? "model-a",
-            ModelName = SelectedModel?.DisplayName ?? "Model A"
+            ModelName = SelectedModel?.DisplayName ?? "GPT-5.6 Luna"
         };
         Chats.Insert(0, newChat);
         NotifyHasChatsChanged();

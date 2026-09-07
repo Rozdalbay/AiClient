@@ -27,4 +27,11 @@
     <SolidColorBrush x:Key="CodeHeaderBackgroundBrush" Color="#E6E8EE"/>
     <SolidColorBrush x:Key="LineNumberBrush" Color="#9CA0B0"/>
 
+    <SolidColorBrush x:Key="SkeletonBaseBrush" Color="#E3E5EC"/>
+    <LinearGradientBrush x:Key="SkeletonShimmerBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#E3E5EC" Offset="0.0"/>
+        <GradientStop Color="#F5F6FA" Offset="0.5"/>
+        <GradientStop Color="#E3E5EC" Offset="1.0"/>
+    </LinearGradientBrush>
+
 </ResourceDictionary>

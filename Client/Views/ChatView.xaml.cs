@@ -59,6 +59,8 @@ public partial class ChatView : UserControl
     {
         if (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(ChatViewModel.Messages))
             AttachMessages();
+        else if (e.PropertyName == nameof(ChatViewModel.IsMessagesLoading))
+            UpdateEmptyState();
     }
 
     private void AttachMessages()
@@ -75,9 +77,12 @@ public partial class ChatView : UserControl
 
     private void UpdateEmptyState()
     {
+        var loading = _subscribedViewModel?.IsMessagesLoading == true;
         var hasMessages = _subscribedMessages is not null && _subscribedMessages.Count > 0;
-        EmptyState.Visibility = hasMessages ? Visibility.Collapsed : Visibility.Visible;
-        MessagesList.Visibility = hasMessages ? Visibility.Visible : Visibility.Collapsed;
+
+        MessagesSkeleton.Visibility = loading ? Visibility.Visible : Visibility.Collapsed;
+        EmptyState.Visibility = !loading && !hasMessages ? Visibility.Visible : Visibility.Collapsed;
+        MessagesList.Visibility = !loading && hasMessages ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void Messages_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

@@ -10,288 +10,407 @@
     <UserControl.Resources>
         <converters:DecimalToCurrencyConverter x:Key="D2C"/>
         <converters:IntToFormattedStringConverter x:Key="I2S"/>
-        <converters:ChangePercentToDisplayConverter x:Key="CP2D"/>
-        <converters:ChangePercentToColorConverter x:Key="CP2C"/>
-        <converters:DoubleToPercentConverter x:Key="D2P"/>
-        <converters:RatioToScaleXConverter x:Key="RatioToScaleX"/>
+        <converters:CompactTokenCountConverter x:Key="TokenCount"/>
+        <converters:NullableChangePercentToDisplayConverter x:Key="NCP2D"/>
+        <converters:NullableChangePercentToColorConverter x:Key="NCP2C"/>
+        <converters:PercentToScaleXConverter x:Key="P2SX"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
 
     <Border Background="{DynamicResource PrimaryBackgroundBrush}"
             BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1,0,0,0">
-        <ScrollViewer VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="20,16">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-                <Grid Margin="0,0,0,16">
+            <Border Grid.Row="0"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,0,0,1"
+                    Padding="20,14">
+                <Grid>
                     <TextBlock Text="Usage"
                                Foreground="{DynamicResource PrimaryTextBrush}"
                                FontSize="15"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
-                    <Border HorizontalAlignment="Right"
+                    <Border x:Name="PeriodToggle"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
                             Background="{DynamicResource TertiaryBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
                             CornerRadius="6"
-                            Padding="8,4">
-                        <TextBlock Text="Today"
-                                   Foreground="{DynamicResource SecondaryTextBrush}"
-                                   FontSize="11"/>
+                            Padding="8,4"
+                            Cursor="Hand"
+                            MouseLeftButtonDown="PeriodToggle_MouseLeftButtonDown">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding SelectedPeriodLabel}"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="&#xE70D;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="8"
+                                       Foreground="{DynamicResource TertiaryTextBrush}"
+                                       VerticalAlignment="Center"
+                                       Margin="4,0,0,0"/>
+                        </StackPanel>
                     </Border>
+                    <Popup x:Name="PeriodPopup"
+                           PlacementTarget="{Binding ElementName=PeriodToggle}"
+                           Placement="Bottom"
+                           StaysOpen="False"
+                           AllowsTransparency="True">
+                        <Border Style="{StaticResource CardStyle}"
+                                Padding="4"
+                                Background="{DynamicResource SurfaceBackgroundBrush}">
+                            <StackPanel MinWidth="130">
+                                <Button Content="Today"
+                                        Tag="Today"
+                                        Click="PeriodItem_Click"
+                                        Style="{StaticResource MenuItemButtonStyle}"/>
+                                <Button Content="7 days"
+                                        Tag="7 days"
+                                        Click="PeriodItem_Click"
+                                        Style="{StaticResource MenuItemButtonStyle}"/>
+                                <Button Content="30 days"
+                                        Tag="30 days"
+                                        Click="PeriodItem_Click"
+                                        Style="{StaticResource MenuItemButtonStyle}"/>
+                                <Button Content="All time"
+                                        Tag="All time"
+                                        Click="PeriodItem_Click"
+                                        Style="{StaticResource MenuItemButtonStyle}"/>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
                 </Grid>
+            </Border>
 
-                <Border Style="{StaticResource CardStyle}"
-                        Margin="0,0,0,12">
-                    <StackPanel>
-                        <TextBlock Text="Spent"
-                                   Foreground="{DynamicResource SecondaryTextBrush}"
-                                   FontSize="12"
-                                   Margin="0,0,0,6"/>
-                        <Grid Margin="0,0,0,10">
+            <Grid Grid.Row="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="20,16">
+
+                        <Grid Margin="0,0,0,12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0"
-                                       Text="{Binding DailyCost, Converter={StaticResource D2C}}"
-                                       Foreground="{DynamicResource PrimaryTextBrush}"
-                                       FontSize="28"
-                                       FontWeight="Bold"/>
-                            <StackPanel Grid.Column="1"
-                                        Orientation="Horizontal"
-                                        VerticalAlignment="Bottom"
-                                        Margin="0,0,0,4">
-                                <TextBlock Text="↓ "
-                                           Foreground="{DynamicResource SuccessAccentBrush}"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"/>
-                                <TextBlock Foreground="{DynamicResource SuccessAccentBrush}"
-                                           FontSize="12"
-                                           FontWeight="SemiBold">
-                                    <TextBlock.Text>
-                                        <Binding Path="CostChangePercent" Converter="{StaticResource CP2D}"/>
-                                    </TextBlock.Text>
-                                </TextBlock>
-                            </StackPanel>
-                        </Grid>
 
-                        <Grid Margin="0,0,0,4">
-                            <TextBlock Text="of "
-                                       Foreground="{DynamicResource TertiaryTextBrush}"
-                                       FontSize="11"/>
-                            <TextBlock HorizontalAlignment="Right"
-                                       Foreground="{DynamicResource TertiaryTextBrush}"
-                                       FontSize="11">
-                                <TextBlock.Text>
-                                    <Binding Path="BudgetLimit" Converter="{StaticResource D2C}"/>
-                                </TextBlock.Text>
-                            </TextBlock>
-                        </Grid>
+                            <Border Grid.Column="0"
+                                    Style="{StaticResource CardStyle}"
+                                    Padding="10,10">
+                                <StackPanel>
+                                    <TextBlock Text="Spent"
+                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                               FontSize="11"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding Data.Cost, Converter={StaticResource D2C}}"
+                                               Foreground="{DynamicResource PrimaryTextBrush}"
+                                               FontSize="20"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Foreground="{Binding Data.CostChangePercent, Converter={StaticResource NCP2C}}"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               Margin="0,0,0,4">
+                                        <TextBlock.Text>
+                                            <Binding Path="Data.CostChangePercent" Converter="{StaticResource NCP2D}"/>
+                                        </TextBlock.Text>
+                                    </TextBlock>
 
-                        <Border Background="{DynamicResource TertiaryBackgroundBrush}"
-                                CornerRadius="3"
-                                Height="6">
-                            <Border HorizontalAlignment="Left"
-                                    CornerRadius="3"
-                                    Background="{DynamicResource AccentGradient}">
-                                <Border.RenderTransform>
-                                    <ScaleTransform>
-                                        <ScaleTransform.ScaleX>
-                                            <MultiBinding Converter="{StaticResource RatioToScaleX}">
-                                                <Binding Path="DailyCost"/>
-                                                <Binding Path="BudgetLimit"/>
-                                            </MultiBinding>
-                                        </ScaleTransform.ScaleX>
-                                    </ScaleTransform>
-                                </Border.RenderTransform>
-                            </Border>
-                        </Border>
-                    </StackPanel>
-                </Border>
-
-                <Grid Margin="0,0,0,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border Grid.Column="0"
-                            Style="{StaticResource CardStyle}">
-                        <StackPanel>
-                            <TextBlock Text="Tokens"
-                                       Foreground="{DynamicResource SecondaryTextBrush}"
-                                       FontSize="11"
-                                       Margin="0,0,0,4"/>
-                            <TextBlock Text="{Binding DailyTokens, Converter={StaticResource I2S}}"
-                                       Foreground="{DynamicResource PrimaryTextBrush}"
-                                       FontSize="18"
-                                       FontWeight="Bold"
-                                       Margin="0,0,0,4"/>
-                            <TextBlock Foreground="{DynamicResource SuccessAccentBrush}"
-                                       FontSize="11"
-                                       FontWeight="SemiBold">
-                                <TextBlock.Text>
-                                    <Binding Path="TokenChangePercent" Converter="{StaticResource CP2D}"/>
-                                </TextBlock.Text>
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-
-                    <Border Grid.Column="2"
-                            Style="{StaticResource CardStyle}">
-                        <StackPanel>
-                            <TextBlock Text="Requests"
-                                       Foreground="{DynamicResource SecondaryTextBrush}"
-                                       FontSize="11"
-                                       Margin="0,0,0,4"/>
-                            <TextBlock Text="{Binding DailyRequests, Converter={StaticResource I2S}}"
-                                       Foreground="{DynamicResource PrimaryTextBrush}"
-                                       FontSize="18"
-                                       FontWeight="Bold"
-                                       Margin="0,0,0,4"/>
-                            <TextBlock Foreground="{DynamicResource SuccessAccentBrush}"
-                                       FontSize="11"
-                                       FontWeight="SemiBold">
-                                <TextBlock.Text>
-                                    <Binding Path="RequestChangePercent" Converter="{StaticResource CP2D}"/>
-                                </TextBlock.Text>
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-                </Grid>
-
-                <Border Style="{StaticResource CardStyle}"
-                        Margin="0,0,0,12">
-                    <StackPanel>
-                        <TextBlock Text="Model Statistics"
-                                   Foreground="{DynamicResource PrimaryTextBrush}"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"
-                                   Margin="0,0,0,12"/>
-
-                        <ItemsControl ItemsSource="{Binding ModelStats}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel>
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <TextBlock Grid.Column="0"
-                                                   Text="{Binding ModelName}"
-                                                   Foreground="{DynamicResource PrimaryTextBrush}"
-                                                   FontSize="12"
-                                                   VerticalAlignment="Center"/>
-
-                                        <TextBlock Grid.Column="1"
-                                                   Text="{Binding Cost, Converter={StaticResource D2C}}"
-                                                   Foreground="{DynamicResource SecondaryTextBrush}"
-                                                   FontSize="12"
-                                                   VerticalAlignment="Center"
-                                                   Margin="0,0,8,0"/>
-
-                                        <TextBlock Grid.Column="2"
-                                                   Foreground="{DynamicResource SecondaryTextBrush}"
-                                                   FontSize="12"
-                                                   VerticalAlignment="Center"
-                                                   MinWidth="36"
-                                                   HorizontalAlignment="Right">
+                                    <StackPanel Visibility="{Binding HasBudget, Converter={StaticResource BoolToVis}}">
+                                        <TextBlock Foreground="{DynamicResource TertiaryTextBrush}"
+                                                   FontSize="10"
+                                                   Margin="0,2,0,3">
                                             <TextBlock.Text>
-                                                <Binding Path="Percentage" StringFormat="{}{0:F0}%"/>
+                                                <Binding Path="Data.BudgetLimit" Converter="{StaticResource D2C}" StringFormat="of {0}"/>
                                             </TextBlock.Text>
                                         </TextBlock>
-                                    </Grid>
-
-                                    <Border Background="{DynamicResource TertiaryBackgroundBrush}"
-                                            CornerRadius="2"
-                                            Height="4"
-                                            Margin="0,0,0,4">
-                                        <Border HorizontalAlignment="Left"
+                                        <Border Background="{DynamicResource TertiaryBackgroundBrush}"
                                                 CornerRadius="2"
-                                                Background="{DynamicResource PrimaryAccentBrush}">
-                                            <Border.Width>
-                                                <Binding Path="Percentage">
-                                                    <Binding.Converter>
-                                                        <converters:PercentToWidthConverter/>
-                                                    </Binding.Converter>
-                                                </Binding>
-                                            </Border.Width>
+                                                Height="4">
+                                            <Border HorizontalAlignment="Stretch"
+                                                    Background="{DynamicResource AccentGradient}"
+                                                    CornerRadius="2"
+                                                    RenderTransformOrigin="0,0.5">
+                                                <Border.RenderTransform>
+                                                    <ScaleTransform>
+                                                        <ScaleTransform.ScaleX>
+                                                            <Binding Path="BudgetUsedPercent" Converter="{StaticResource P2SX}"/>
+                                                        </ScaleTransform.ScaleX>
+                                                    </ScaleTransform>
+                                                </Border.RenderTransform>
+                                            </Border>
                                         </Border>
-                                    </Border>
+                                        <TextBlock HorizontalAlignment="Right"
+                                                   Foreground="{DynamicResource TertiaryTextBrush}"
+                                                   FontSize="9"
+                                                   Margin="0,3,0,0">
+                                            <TextBlock.Text>
+                                                <Binding Path="BudgetUsedPercent" StringFormat="{}{0:F0}% used"/>
+                                            </TextBlock.Text>
+                                        </TextBlock>
                                     </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2"
+                                    Style="{StaticResource CardStyle}"
+                                    Padding="10,10">
+                                <StackPanel>
+                                    <TextBlock Text="Tokens"
+                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                               FontSize="11"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding Data.Tokens, Converter={StaticResource TokenCount}}"
+                                               Foreground="{DynamicResource PrimaryTextBrush}"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Foreground="{Binding Data.TokenChangePercent, Converter={StaticResource NCP2C}}"
+                                               FontSize="11"
+                                               FontWeight="SemiBold">
+                                        <TextBlock.Text>
+                                            <Binding Path="Data.TokenChangePercent" Converter="{StaticResource NCP2D}"/>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="4"
+                                    Style="{StaticResource CardStyle}"
+                                    Padding="10,10">
+                                <StackPanel>
+                                    <TextBlock Text="Requests"
+                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                               FontSize="11"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding Data.Requests, Converter={StaticResource I2S}}"
+                                               Foreground="{DynamicResource PrimaryTextBrush}"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Foreground="{Binding Data.RequestChangePercent, Converter={StaticResource NCP2C}}"
+                                               FontSize="11"
+                                               FontWeight="SemiBold">
+                                        <TextBlock.Text>
+                                            <Binding Path="Data.RequestChangePercent" Converter="{StaticResource NCP2D}"/>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Border Style="{StaticResource CardStyle}"
+                                Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="Model Statistics"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,12"/>
+
+                                <ItemsControl ItemsSource="{Binding Data.ModelStats}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <Grid Margin="0,0,0,8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="{Binding ModelName}"
+                                                               Foreground="{DynamicResource PrimaryTextBrush}"
+                                                               FontSize="12"
+                                                               VerticalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Margin="0,0,8,0"/>
+
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding Cost, Converter={StaticResource D2C}}"
+                                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                                               FontSize="12"
+                                                               VerticalAlignment="Center"
+                                                               Margin="0,0,8,0"/>
+
+                                                    <TextBlock Grid.Column="2"
+                                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                                               FontSize="11"
+                                                               VerticalAlignment="Center"
+                                                               MinWidth="36"
+                                                               HorizontalAlignment="Right">
+                                                        <TextBlock.Text>
+                                                            <Binding Path="Percentage" StringFormat="{}{0:F0}%"/>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </Grid>
+
+                                                <Border Background="{DynamicResource TertiaryBackgroundBrush}"
+                                                        CornerRadius="2"
+                                                        Height="4"
+                                                        Margin="0,0,0,4">
+                                                    <Border HorizontalAlignment="Stretch"
+                                                            CornerRadius="2"
+                                                            Background="{Binding Color}"
+                                                            RenderTransformOrigin="0,0.5">
+                                                        <Border.RenderTransform>
+                                                            <ScaleTransform>
+                                                                <ScaleTransform.ScaleX>
+                                                                    <Binding Path="Percentage" Converter="{StaticResource P2SX}"/>
+                                                                </ScaleTransform.ScaleX>
+                                                            </ScaleTransform>
+                                                        </Border.RenderTransform>
+                                                    </Border>
+                                                </Border>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Text="No requests in this period"
+                                           Foreground="{DynamicResource TertiaryTextBrush}"
+                                           FontSize="11"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,8,0,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HasModelStats}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding HasAnyUsage}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Cost Dynamics"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,12"/>
+
+                                <Grid Height="120" Margin="0,0,0,4">
+                                    <TextBlock x:Name="GraphEmptyLabel"
+                                               Text="No usage data yet&#x2026;"
+                                               Foreground="{DynamicResource TertiaryTextBrush}"
+                                               FontSize="11"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Visibility="Collapsed"/>
+                                    <Canvas x:Name="GraphCanvas"/>
+                                </Grid>
+
+                                <StackPanel x:Name="GraphLabels"
+                                            Orientation="Horizontal"/>
+                            </StackPanel>
+                        </Border>
+
                     </StackPanel>
+                </ScrollViewer>
+
+                <Border Background="{DynamicResource PrimaryBackgroundBrush}"
+                        IsHitTestVisible="False">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <ContentControl Template="{StaticResource SkeletonUsageScene}" Focusable="False"/>
                 </Border>
 
-                <Border Style="{StaticResource CardStyle}"
-                        Margin="0,0,0,12">
-                    <StackPanel>
-                        <TextBlock Text="Cost Dynamics"
+                <Border Background="{DynamicResource PrimaryBackgroundBrush}">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsError}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="&#x26A0;"
+                                   FontSize="28"
+                                   Foreground="{DynamicResource WarningAccentBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="Unable to load usage data"
                                    Foreground="{DynamicResource PrimaryTextBrush}"
                                    FontSize="13"
                                    FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
                                    Margin="0,0,0,12"/>
-
-                        <Grid Height="120" Margin="0,0,0,4">
-                            <Canvas x:Name="GraphCanvas"/>
-                        </Grid>
-
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Mon" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" Text="Tue" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="2" Text="Wed" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="3" Text="Thu" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="4" Text="Fri" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="5" Text="Sat" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="6" Text="Sun" Foreground="{DynamicResource TertiaryTextBrush}" FontSize="10" HorizontalAlignment="Center"/>
-                        </Grid>
+                        <Button Style="{StaticResource PrimaryButtonStyle}"
+                                Command="{Binding RefreshUsageCommand}"
+                                Content="Retry"
+                                Padding="20,8"
+                                HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Border>
 
-                <Border Style="{StaticResource CardStyle}">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                            <TextBlock Text="✓ "
-                                       Foreground="{DynamicResource SuccessAccentBrush}"
-                                       FontSize="14"
-                                       FontWeight="Bold"/>
-                            <TextBlock Text="{Binding AccountUsername, FallbackValue=Account}"
-                                       Foreground="{DynamicResource PrimaryTextBrush}"
-                                       FontSize="13"
-                                       FontWeight="SemiBold"/>
-                        </StackPanel>
-                        <TextBlock Text="{Binding AccountStatus, FallbackValue=Local account}"
-                                   Foreground="{DynamicResource SecondaryTextBrush}"
-                                   FontSize="11"
-                                   TextWrapping="Wrap"
+                <Border Background="{DynamicResource PrimaryBackgroundBrush}">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasAnyUsage}" Value="False">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsError}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="&#xE9D9;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="28"
+                                   Foreground="{DynamicResource TertiaryTextBrush}"
+                                   HorizontalAlignment="Center"
                                    Margin="0,0,0,8"/>
-                        <Border Background="{DynamicResource TertiaryBackgroundBrush}"
-                                CornerRadius="6"
-                                Padding="10,8">
-                            <TextBlock Text="Signed in locally · data stays on this device"
-                                       Foreground="{DynamicResource TertiaryTextBrush}"
-                                       FontSize="10"
-                                       FontFamily="{StaticResource MonoFont}"
-                                       HorizontalAlignment="Center"/>
-                        </Border>
+                        <TextBlock Text="No usage data yet"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Requests you make will appear here"
+                                   Foreground="{DynamicResource TertiaryTextBrush}"
+                                   FontSize="11"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
-
-            </StackPanel>
-        </ScrollViewer>
+            </Grid>
+        </Grid>
     </Border>
 </UserControl>

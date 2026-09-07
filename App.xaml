@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="Client/Themes/Buttons.xaml"/>
                 <ResourceDictionary Source="Client/Themes/Cards.xaml"/>
                 <ResourceDictionary Source="Client/Themes/Controls.xaml"/>
+                <ResourceDictionary Source="Client/Themes/Skeleton.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

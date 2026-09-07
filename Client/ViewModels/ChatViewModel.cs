@@ -44,6 +44,12 @@ public partial class ChatViewModel : ObservableObject
     [ObservableProperty]
     private ChatMessage? _currentStreamingMessage;
 
+    [ObservableProperty]
+    private bool _isModelsLoading;
+
+    [ObservableProperty]
+    private bool _isMessagesLoading;
+
     public ObservableCollection<ModelInfo> AvailableModels => _mainViewModel.AvailableModels;
 
     public ChatViewModel(
@@ -75,6 +81,7 @@ public partial class ChatViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(InputMessage) || IsStreaming)
             return;
 
+        var requestId = Guid.NewGuid().ToString("N");
         var messageText = InputMessage.Trim();
         InputMessage = string.Empty;
 
@@ -84,7 +91,7 @@ public partial class ChatViewModel : ObservableObject
             {
                 Title = messageText.Length > 50 ? messageText[..50] + "..." : messageText,
                 ModelId = SelectedModel?.Id ?? _mainViewModel.SelectedModel?.Id ?? "model-a",
-                ModelName = SelectedModel?.DisplayName ?? _mainViewModel.SelectedModel?.DisplayName ?? "Model A"
+                ModelName = SelectedModel?.DisplayName ?? _mainViewModel.SelectedModel?.DisplayName ?? "GPT-5.6 Luna"
             };
             _mainViewModel.Chats.Insert(0, newChat);
             _mainViewModel.NotifyHasChatsChanged();
@@ -108,7 +115,7 @@ public partial class ChatViewModel : ObservableObject
             Role = MessageRole.Assistant,
             Content = string.Empty,
             CreatedAt = DateTime.Now,
-            ModelName = SelectedModel?.DisplayName ?? "Model A",
+            ModelName = SelectedModel?.DisplayName ?? "GPT-5.6 Luna",
             IsGenerating = true
         };
 
@@ -177,13 +184,14 @@ public partial class ChatViewModel : ObservableObject
             }
 
             _usageService.RecordRequest(
+                requestId,
                 modelId,
                 modelName,
                 assistantMessage.InputTokens,
                 assistantMessage.OutputTokens,
                 elapsed);
 
-            await _mainViewModel.RefreshUsageAsync();
+            await _mainViewModel.Usage.RefreshAsync();
         }
         catch (OperationCanceledException)
         {

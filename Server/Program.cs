@@ -29,9 +29,21 @@ app.MapPost("/stream", async (
 
     var stream = GetOpenAiStream(request.Message);
 
+    int inputTokens = 0;
+    int outputTokens = 0;
+
     await foreach (StreamingResponseUpdate rsp in stream)
     {
-        if (rsp is StreamingResponseOutputTextDeltaUpdate delta)
+        if (rsp is StreamingResponseCompletedUpdate completed)
+        {
+            var usage = completed.Response.Usage;
+            if (usage is not null)
+            {
+                inputTokens = usage.InputTokenCount;
+                outputTokens = usage.OutputTokenCount;
+            }
+        }
+        else if (rsp is StreamingResponseOutputTextDeltaUpdate delta)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

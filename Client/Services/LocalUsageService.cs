@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.IO;
 using System.Text.Json;
 using AiDesktopClient.Models;
@@ -31,8 +30,11 @@ public sealed class LocalUsageService : IUsageService
         _store = Load();
     }
 
-    public void RecordRequest(string modelId, string modelName, int inputTokens, int outputTokens, double responseTimeMs)
+    public void RecordRequest(string requestId, string modelId, string modelName, int inputTokens, int outputTokens, double responseTimeMs)
     {
+        if (string.IsNullOrWhiteSpace(requestId))
+            requestId = Guid.NewGuid().ToString("N");
+
         var totalTokens = inputTokens + outputTokens;
         var pricing = PricingCatalog.GetPricing(modelId);
         var cost = pricing is not null
@@ -41,6 +43,7 @@ public sealed class LocalUsageService : IUsageService
 
         var record = new UsageRecord
         {
+            RequestId = requestId,
             Timestamp = DateTime.Now,
             ModelId = modelId,
             ModelName = modelName,
@@ -53,6 +56,9 @@ public sealed class LocalUsageService : IUsageService
 
         lock (_lock)
         {
+            if (_store.Records.Any(r => r.RequestId == requestId))
+                return;
+
             _store.Records.Add(record);
             _store.TotalCost += (decimal)cost;
             _store.TotalTokens += totalTokens;
@@ -81,87 +87,88 @@ public sealed class LocalUsageService : IUsageService
         Save();
     }
 
-    public Task<UsageInfo> GetUsageAsync(DateTime? from = null, DateTime? to = null, CancellationToken cancellationToken = default)
+    public Task<UsagePeriodData> GetPeriodDataAsync(UsagePeriod period, CancellationToken cancellationToken = default)
     {
         lock (_lock)
         {
-            var today = DateTime.Today;
-            var todayRecords = _store.Records.Where(r => r.Timestamp.Date == today).ToList();
+            var now = DateTime.Now;
+            var periodTo = now.Date.AddDays(1);
+            DateTime periodFrom;
+            int maxBuckets;
 
-            var usage = new UsageInfo
+            switch (period)
             {
-                TotalCost = _store.TotalCost,
-                TotalTokens = _store.TotalTokens,
-                TotalRequests = _store.TotalRequests,
-                DailyCost = todayRecords.Sum(r => (decimal)r.Cost),
-                DailyTokens = todayRecords.Sum(r => (long)r.TotalTokens),
-                DailyRequests = todayRecords.Count,
-                BudgetLimit = _store.BudgetLimit,
-                CostChangePercent = _store.CostChangePercent,
-                TokenChangePercent = _store.TokenChangePercent,
-                RequestChangePercent = _store.RequestChangePercent
-            };
+                case UsagePeriod.Today:
+                    periodFrom = now.Date;
+                    maxBuckets = 1;
+                    break;
+                case UsagePeriod.Week:
+                    periodFrom = now.Date.AddDays(-6);
+                    maxBuckets = 7;
+                    break;
+                case UsagePeriod.Month:
+                    periodFrom = now.Date.AddDays(-29);
+                    maxBuckets = 30;
+                    break;
+                default:
+                    periodFrom = _store.Records.Count > 0
+                        ? _store.Records.Min(r => r.Timestamp.Date)
+                        : now.Date;
+                    maxBuckets = 90;
+                    break;
+            }
 
-            return Task.FromResult(usage);
-        }
-    }
-
-    public Task<IReadOnlyList<ModelUsageStat>> GetModelStatsAsync(CancellationToken cancellationToken = default)
-    {
-        lock (_lock)
-        {
-            var modelGroups = _store.Records
-                .GroupBy(r => r.ModelId)
-                .Select(g => new
-                {
-                    ModelId = g.Key,
-                    ModelName = g.First().ModelName,
-                    TotalCost = g.Sum(r => (decimal)r.Cost),
-                    RequestCount = g.Count(),
-                    TotalTokens = g.Sum(r => (long)r.TotalTokens)
-                })
-                .OrderByDescending(m => m.TotalCost)
+            var currentRecords = _store.Records
+                .Where(r => r.Timestamp >= periodFrom && r.Timestamp < periodTo)
                 .ToList();
 
-            var totalCost = modelGroups.Sum(m => m.TotalCost);
-            var stats = new List<ModelUsageStat>();
+            var previousFrom = period == UsagePeriod.AllTime
+                ? periodFrom
+                : periodFrom - (periodTo - periodFrom);
 
-            for (int i = 0; i < modelGroups.Count; i++)
+            var previousRecords = period == UsagePeriod.AllTime
+                ? []
+                : _store.Records
+                    .Where(r => r.Timestamp >= previousFrom && r.Timestamp < periodFrom)
+                    .ToList();
+
+            var cost = currentRecords.Sum(r => (decimal)r.Cost);
+            var tokens = currentRecords.Sum(r => (long)r.TotalTokens);
+            var requests = currentRecords.Count;
+
+            var previousCost = previousRecords.Sum(r => (decimal)r.Cost);
+            var previousTokens = previousRecords.Sum(r => (long)r.TotalTokens);
+            var previousRequests = previousRecords.Count;
+
+            decimal? costChange = previousCost > 0
+                ? Math.Round((cost - previousCost) / previousCost * 100, 1)
+                : cost > 0 ? 100m : null;
+
+            decimal? tokenChange = previousTokens > 0
+                ? Math.Round((decimal)(tokens - previousTokens) / previousTokens * 100, 1)
+                : tokens > 0 ? 100m : null;
+
+            decimal? requestChange = previousRequests > 0
+                ? Math.Round((decimal)(requests - previousRequests) / previousRequests * 100, 1)
+                : requests > 0 ? 100m : null;
+
+            var stats = BuildModelStats(currentRecords);
+            var dailyCosts = BuildDailyPoints(periodFrom, periodTo, maxBuckets);
+
+            return Task.FromResult(new UsagePeriodData
             {
-                var m = modelGroups[i];
-                stats.Add(new ModelUsageStat
-                {
-                    ModelId = m.ModelId,
-                    ModelName = m.ModelName,
-                    Cost = m.TotalCost,
-                    Percentage = totalCost > 0 ? (double)(m.TotalCost / totalCost * 100) : 0,
-                    RequestCount = m.RequestCount,
-                    TotalTokens = m.TotalTokens,
-                    Color = ModelColors[i % ModelColors.Length]
-                });
-            }
-
-            return Task.FromResult<IReadOnlyList<ModelUsageStat>>(stats.AsReadOnly());
-        }
-    }
-
-    public Task<IReadOnlyList<DailyCostPoint>> GetDailyCostsAsync(int days = 7, CancellationToken cancellationToken = default)
-    {
-        lock (_lock)
-        {
-            var points = new List<DailyCostPoint>();
-            for (int i = days - 1; i >= 0; i--)
-            {
-                var date = DateTime.Today.AddDays(-i);
-                var entry = _store.DailyCosts.FirstOrDefault(d => d.Date.Date == date);
-                points.Add(new DailyCostPoint
-                {
-                    Date = date,
-                    Cost = entry?.Cost ?? 0m
-                });
-            }
-
-            return Task.FromResult<IReadOnlyList<DailyCostPoint>>(points.AsReadOnly());
+                Period = period,
+                Cost = cost,
+                Tokens = tokens,
+                Requests = requests,
+                BudgetLimit = _store.BudgetLimit,
+                CostChangePercent = costChange,
+                TokenChangePercent = tokenChange,
+                RequestChangePercent = requestChange,
+                HasAnyUsage = _store.Records.Count > 0,
+                ModelStats = stats.AsReadOnly(),
+                DailyCosts = dailyCosts.AsReadOnly()
+            });
         }
     }
 
@@ -181,6 +188,69 @@ public sealed class LocalUsageService : IUsageService
         {
             // Silently ignore save failures
         }
+    }
+
+    private List<ModelUsageStat> BuildModelStats(List<UsageRecord> records)
+    {
+        var modelGroups = records
+            .GroupBy(r => r.ModelId)
+            .Select(g => new
+            {
+                ModelId = g.Key,
+                ModelName = g.First().ModelName,
+                TotalCost = g.Sum(r => (decimal)r.Cost),
+                RequestCount = g.Count(),
+                TotalTokens = g.Sum(r => (long)r.TotalTokens)
+            })
+            .OrderByDescending(m => m.TotalCost)
+            .ToList();
+
+        var totalModelCost = modelGroups.Sum(m => m.TotalCost);
+        var stats = new List<ModelUsageStat>();
+
+        for (var i = 0; i < modelGroups.Count; i++)
+        {
+            var m = modelGroups[i];
+            stats.Add(new ModelUsageStat
+            {
+                ModelId = m.ModelId,
+                ModelName = m.ModelName,
+                Cost = m.TotalCost,
+                Percentage = totalModelCost > 0 ? (double)(m.TotalCost / totalModelCost * 100) : 0,
+                RequestCount = m.RequestCount,
+                TotalTokens = m.TotalTokens,
+                Color = ModelColors[i % ModelColors.Length]
+            });
+        }
+
+        return stats;
+    }
+
+    private List<DailyCostPoint> BuildDailyPoints(DateTime from, DateTime to, int maxBuckets)
+    {
+        var points = new List<DailyCostPoint>();
+        var spanDays = Math.Max(1, (int)((to - from).TotalDays));
+        var bucketSize = Math.Max(1, (int)Math.Ceiling(spanDays / (double)Math.Max(1, maxBuckets)));
+
+        var start = from;
+        while (start < to)
+        {
+            var end = start.AddDays(bucketSize);
+            if (end > to) end = to;
+
+            var sum = _store.Records
+                .Where(r => r.Timestamp >= start && r.Timestamp < end)
+                .Sum(r => (decimal)r.Cost);
+
+            points.Add(new DailyCostPoint
+            {
+                Date = start,
+                Cost = sum
+            });
+            start = end;
+        }
+
+        return points;
     }
 
     private UsageDataStore Load()
@@ -214,32 +284,7 @@ public sealed class LocalUsageService : IUsageService
 
     private void UpdateChangePercentages()
     {
-        var today = DateTime.Today;
-        var yesterday = today.AddDays(-1);
-
-        var todayRecords = _store.Records.Where(r => r.Timestamp.Date == today).ToList();
-        var yesterdayRecords = _store.Records.Where(r => r.Timestamp.Date == yesterday).ToList();
-
-        var todayCost = todayRecords.Sum(r => (decimal)r.Cost);
-        var yesterdayCost = yesterdayRecords.Sum(r => (decimal)r.Cost);
-
-        var todayTokens = todayRecords.Sum(r => (long)r.TotalTokens);
-        var yesterdayTokens = yesterdayRecords.Sum(r => (long)r.TotalTokens);
-
-        var todayReqs = todayRecords.Count;
-        var yesterdayReqs = yesterdayRecords.Count;
-
-        _store.CostChangePercent = yesterdayCost > 0
-            ? Math.Round((todayCost - yesterdayCost) / yesterdayCost * 100)
-            : (todayCost > 0 ? 100 : 0);
-
-        _store.TokenChangePercent = yesterdayTokens > 0
-            ? Math.Round((decimal)(todayTokens - yesterdayTokens) / yesterdayTokens * 100)
-            : (todayTokens > 0 ? 100 : 0);
-
-        _store.RequestChangePercent = yesterdayReqs > 0
-            ? Math.Round((decimal)(todayReqs - yesterdayReqs) / yesterdayReqs * 100)
-            : (todayReqs > 0 ? 100 : 0);
+        UpdateChangePercentagesForStore(_store);
     }
 
     private static void UpdateChangePercentagesForStore(UsageDataStore store)

@@ -88,9 +88,71 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 
-            <controls:MarkdownRenderer x:Name="MarkdownContent"
-                                       Grid.Row="2"
-                                       MinHeight="20"/>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border x:Name="ErrorBadge"
+                        Grid.Row="0"
+                        Visibility="Collapsed"
+                        Background="{DynamicResource UserMessageBackgroundBrush}"
+                        BorderBrush="{DynamicResource ErrorAccentBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="10,6"
+                        Margin="0,0,0,8"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE783;"
+                                   FontFamily="Segoe MDL2 Assets"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource ErrorAccentBrush}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock Text="Request failed."
+                                   Foreground="{DynamicResource ErrorAccentBrush}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text=" Press Regenerate to try again."
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                   FontSize="12"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <Grid Grid.Row="1">
+                <controls:MarkdownRenderer x:Name="MarkdownContent"
+                                           MinHeight="20"/>
+
+                <StackPanel x:Name="GeneratingPlaceholder"
+                            Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Border Background="{DynamicResource PrimaryAccentBrush}"
+                                CornerRadius="4"
+                                Width="14" Height="14"
+                                VerticalAlignment="Center"/>
+                        <TextBlock Text="Assistant is responding…"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   Margin="10,0,0,0"/>
+                    </StackPanel>
+                    <controls:SkeletonControl Width="220" Height="12" CornerRadius="5"
+                                              HorizontalAlignment="Left"
+                                              Margin="0,0,0,8"/>
+                    <controls:SkeletonControl Width="160" Height="12" CornerRadius="5"
+                                              HorizontalAlignment="Left"
+                                              Margin="0,0,0,8"/>
+                    <controls:SkeletonControl Width="260" Height="12" CornerRadius="5"
+                                              HorizontalAlignment="Left"/>
+                </StackPanel>
+                </Grid>
+            </Grid>
 
             <StackPanel x:Name="TokenInfoPanel"
                         Grid.Row="3"

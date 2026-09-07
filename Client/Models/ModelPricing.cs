@@ -1,4 +1,4 @@
-using System.Collections.Frozen;
+﻿using System.Collections.Frozen;
 
 namespace AiDesktopClient.Models;
 
@@ -21,28 +21,28 @@ public static class PricingCatalog
             ["model-a"] = new ModelPricing
             {
                 ModelId = "model-a",
-                DisplayName = "Model A",
+                DisplayName = "GPT-5.6 Luna",
                 InputPricePerMillion = 3.0,
                 OutputPricePerMillion = 15.0
             },
             ["model-b"] = new ModelPricing
             {
                 ModelId = "model-b",
-                DisplayName = "Model B",
+                DisplayName = "GPT-6 Astra Fast",
                 InputPricePerMillion = 1.0,
                 OutputPricePerMillion = 2.0
             },
             ["model-c"] = new ModelPricing
             {
                 ModelId = "model-c",
-                DisplayName = "Model C",
+                DisplayName = "MiMo V2.5",
                 InputPricePerMillion = 10.0,
                 OutputPricePerMillion = 30.0
             },
             ["model-d"] = new ModelPricing
             {
                 ModelId = "model-d",
-                DisplayName = "Model D",
+                DisplayName = "Claude Opus 4.5",
                 InputPricePerMillion = 5.0,
                 OutputPricePerMillion = 10.0
             }

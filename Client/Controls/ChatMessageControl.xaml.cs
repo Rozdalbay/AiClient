@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using AiDesktopClient.Models;
 using AiDesktopClient.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,7 @@ public partial class ChatMessageControl : UserControl
             new PropertyMetadata(null, OnMessageChanged));
 
     private ObservableCollection<Attachment>? _subscribedAttachments;
+    private bool _contentVisible;
 
     public ChatMessageControl()
     {
@@ -110,7 +112,29 @@ public partial class ChatMessageControl : UserControl
                 (Application.Current.FindResource("PrimaryAccentBrush") as SolidColorBrush)?.Clone() ?? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#7C5CFC"));
         }
 
-        if (message.Role == MessageRole.Assistant && !message.IsGenerating)
+        var isAssistant = message.Role == MessageRole.Assistant;
+        var showPlaceholder = isAssistant && message.IsGenerating && string.IsNullOrEmpty(message.Content);
+        GeneratingPlaceholder.Visibility = showPlaceholder ? Visibility.Visible : Visibility.Collapsed;
+        ErrorBadge.Visibility = isAssistant && message.IsError && !message.IsGenerating ? Visibility.Visible : Visibility.Collapsed;
+
+        if (showPlaceholder)
+        {
+            MarkdownContent.Visibility = Visibility.Collapsed;
+            _contentVisible = false;
+        }
+        else
+        {
+            if (!_contentVisible)
+            {
+                MarkdownContent.Visibility = Visibility.Visible;
+                MarkdownContent.Opacity = 0;
+                MarkdownContent.BeginAnimation(UIElement.OpacityProperty,
+                    new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200)));
+            }
+            _contentVisible = true;
+        }
+
+        if (isAssistant && !message.IsGenerating)
         {
             ActionButtons.Visibility = Visibility.Visible;
 

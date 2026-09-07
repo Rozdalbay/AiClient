@@ -80,11 +80,6 @@ public sealed class SseChatService : IChatService
                     PropertyNameCaseInsensitive = true
                 });
 
-<<<<<<< HEAD
-            if (sseChunk?.Delta is not null)
-            {
-                yield return sseChunk.Delta;
-=======
             if (sseEvent is null)
                 continue;
 
@@ -93,10 +88,9 @@ public sealed class SseChatService : IChatService
                 capturedUsage = sseEvent.Usage;
             }
 
-            if (sseEvent.Chunk is not null)
+            if (sseEvent.Delta is not null)
             {
-                yield return new StreamChunk { Text = sseEvent.Chunk };
->>>>>>> de9053342a5ad45f6fd65e19f3e47371c691cd48
+                yield return new StreamChunk { Text = sseEvent.Delta };
             }
         }
 
@@ -137,11 +131,7 @@ public sealed class SseChatService : IChatService
 
     private sealed class SseEvent
     {
-<<<<<<< HEAD
         public string? Delta { get; init; }
-=======
-        public string? Chunk { get; init; }
         public StreamUsage? Usage { get; init; }
->>>>>>> de9053342a5ad45f6fd65e19f3e47371c691cd48
     }
 }

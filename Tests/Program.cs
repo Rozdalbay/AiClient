@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using AiDesktopClient;
 using AiDesktopClient.Controls;
+using AiDesktopClient.Contracts;
 using AiDesktopClient.Models;
 using AiDesktopClient.Services;
 using AiDesktopClient.ViewModels;
@@ -28,6 +29,9 @@ internal static class Program
             var app = new App();
             app.InitializeComponent();
             SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext());
+            TestSseEventParser();
+            TestMarkdownStreamingBoundary();
+            TestBackendConnectionFlow();
             TestCardsAndStreaming();
             TestSseProtocol();
             if (args.Contains("--live")) TestLiveBackend();
@@ -39,6 +43,45 @@ internal static class Program
             Console.Error.WriteLine(ex);
             return 1;
         }
+    }
+
+    static void TestBackendConnectionFlow()
+    {
+        using var http = new HttpClient(new ConnectionHandler())
+        {
+            BaseAddress = new Uri("http://old-host/")
+        };
+        var service = new BackendHealthService(http);
+
+        Check("Health check uses root endpoint", service.GetStatusAsync().GetAwaiter().GetResult().Status == BackendStatus.Connected);
+        Check("Test Connection uses same client and endpoint", service.TestConnectionAsync("http://localhost:5000").GetAwaiter().GetResult());
+        Check("Test Connection preserves shared client configuration", http.BaseAddress == new Uri("http://old-host/"));
+    }
+
+    static void TestSseEventParser()
+    {
+        var parser = new SseEventParser();
+        var events = new List<string>();
+        events.AddRange(parser.Append("data: {\"choices\":[{\"delta\":{\"cont"));
+        events.AddRange(parser.Append("ent\":\"hello\"}}]}\r\n\r\n"));
+        events.AddRange(parser.Append("data: {}\n\ndata: [DONE]\n\n"));
+
+        Check("SSE event survives split network chunks", events[0].Contains("hello"));
+        Check("SSE JSON without content is preserved", events[1] == "{}");
+        Check("SSE DONE is parsed", events[2] == "[DONE]");
+
+        var emptyParser = new SseEventParser();
+        var emptyEvents = emptyParser.Append("\r\n\r\ndata: one\r\n\r\n").ToList();
+        Check("Empty SSE event does not corrupt following event", emptyEvents.Single() == "one");
+
+        var incompleteParser = new SseEventParser();
+        Check("Incomplete SSE event waits for delimiter", !incompleteParser.Append("data: incomplete").Any() && !incompleteParser.Complete().Any());
+    }
+
+    static void TestMarkdownStreamingBoundary()
+    {
+        var renderer = new MarkdownRenderer { Markdown = "**" };
+        Check("Incomplete bold markdown does not throw", renderer.FindName("Document") is not null);
     }
 
     static void TestCardsAndStreaming()
@@ -58,13 +101,15 @@ internal static class Program
         Check("User text rendered", Renderer(user).Markdown == "Hello from user");
         Check("Role rendered", ((TextBlock)user.FindName("RoleText")).Text == "You");
         Check("ViewModel retained for actions", ReferenceEquals(assistant.DataContext, vm));
-        Check("Markdown visible", Renderer(assistant).Visibility == Visibility.Visible);
+        Check("Markdown hidden while waiting for first chunk", Renderer(assistant).Visibility == Visibility.Collapsed);
         Check("Debug overlay removed", assistant.FindName("DebugText") is null && view.FindName("DebugCountText") is null);
         Check("Actions hidden while streaming", VisibilityOf(assistant, "ActionButtons") == Visibility.Collapsed);
+        Check("Compact generating indicator visible", VisibilityOf(assistant, "GeneratingPlaceholder") == Visibility.Visible);
 
         service.Chunks.Writer.TryWrite(new StreamChunk { Text = "Привет " });
         WaitUntil(() => assistant.Message!.Content == "Привет ", view);
         Check("First chunk rendered before response ends", Renderer(assistant).Markdown == "Привет " && !send.IsCompleted);
+        Check("Generating indicator hides after first chunk", VisibilityOf(assistant, "GeneratingPlaceholder") == Visibility.Collapsed);
         service.Chunks.Writer.TryWrite(new StreamChunk { Text = "**мир**!" });
         WaitUntil(() => assistant.Message!.Content.EndsWith("**мир**!"), view);
         Check("Second chunk rendered on same card", ReferenceEquals(assistant, Descendants<ChatMessageControl>(view).Last()) && Renderer(assistant).Markdown == "Привет **мир**!");
@@ -117,6 +162,7 @@ internal static class Program
         error.GetAwaiter().GetResult();
         var errorCard = Descendants<ChatMessageControl>(view).Last();
         Check("Error text displayed", errorCard.Message!.IsError && Renderer(errorCard).Markdown.Contains("An error occurred"));
+        Check("Generating indicator hides on error", VisibilityOf(errorCard, "GeneratingPlaceholder") == Visibility.Collapsed);
 
         var oldMessage = errorCard.Message;
         errorCard.Message = new ChatMessage { Role = MessageRole.User, Content = "Replacement" };
@@ -156,7 +202,7 @@ internal static class Program
         var collect = Collect(new SseChatService(http));
         WaitUntil(() => collect.IsCompleted);
         var chunks = collect.GetAwaiter().GetResult();
-        Check("Actual SSE parser decodes JSON, Cyrillic, comments and DONE", chunks.SequenceEqual(new[] { "Привет ", "world!" }));
+            Check("Actual SSE parser decodes delta, OpenAI choices content and DONE", chunks.SequenceEqual(new[] { "Привет ", "world!" }));
     }
 
     static void TestLiveBackend()
@@ -219,8 +265,17 @@ internal static class Program
             Check("SSE uses POST /stream", request.Method == HttpMethod.Post && request.RequestUri!.AbsolutePath == "/stream");
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(": keepalive\n\ndata: {\"chunk\":\"Привет \"}\n\ndata: {\"chunk\":\"world!\"}\n\ndata: [DONE]\n\ndata: {\"chunk\":\"ignored\"}\n\n", Encoding.UTF8, "text/event-stream")
+                Content = new StringContent(": keepalive\n\ndata: {\"delta\":\"Привет \"}\n\ndata: {\"choices\":[{\"delta\":{\"content\":\"world!\"}}]}\n\ndata: {\"choices\":[{\"delta\":{\"content\":null},\"finish_reason\":\"stop\"}],\"usage\":{\"input_tokens\":3,\"output_tokens\":2}}\n\ndata: [DONE]\n\ndata: {\"delta\":\"ignored\"}\n\n", Encoding.UTF8, "text/event-stream")
             });
+        }
+    }
+
+    sealed class ConnectionHandler : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Check("Connection check uses GET /", request.Method == HttpMethod.Get && request.RequestUri!.AbsolutePath == "/");
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
         }
     }
 }

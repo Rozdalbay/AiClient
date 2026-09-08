@@ -29,6 +29,21 @@ public sealed class ThemeManager
 
     public AppTheme CurrentTheme => _currentTheme;
 
+    public string? LoadBackendUrl()
+    {
+        return LoadSettings().BackendUrl;
+    }
+
+    public void SaveBackendUrl(string backendUrl)
+    {
+        if (string.IsNullOrWhiteSpace(backendUrl))
+            return;
+
+        var data = LoadSettings();
+        data.BackendUrl = backendUrl.Trim();
+        SaveSettings(data);
+    }
+
     public void ApplyInitialTheme()
     {
         var saved = LoadSavedTheme();
@@ -139,41 +154,43 @@ public sealed class ThemeManager
 
     private static AppTheme LoadSavedTheme()
     {
-        try
-        {
-            if (File.Exists(SettingsPath))
-            {
-                var json = File.ReadAllText(SettingsPath);
-                var data = JsonSerializer.Deserialize<SettingsData>(json);
-                if (data?.Theme == "Light")
-                    return AppTheme.Light;
-            }
-        }
-        catch { }
-        return AppTheme.Dark;
+        return LoadSettings().Theme == "Light" ? AppTheme.Light : AppTheme.Dark;
     }
 
     private static void SaveTheme(AppTheme theme)
+    {
+        var data = LoadSettings();
+        data.Theme = theme.ToString();
+        SaveSettings(data);
+    }
+
+    private static SettingsData LoadSettings()
+    {
+        try
+        {
+            if (!File.Exists(SettingsPath))
+                return new SettingsData();
+
+            var json = File.ReadAllText(SettingsPath);
+            return JsonSerializer.Deserialize<SettingsData>(json) ?? new SettingsData();
+        }
+        catch
+        {
+            return new SettingsData();
+        }
+    }
+
+    private static void SaveSettings(SettingsData data)
     {
         try
         {
             var dir = Path.GetDirectoryName(SettingsPath)!;
             Directory.CreateDirectory(dir);
 
-            SettingsData data;
-            if (File.Exists(SettingsPath))
-            {
-                var json = File.ReadAllText(SettingsPath);
-                data = JsonSerializer.Deserialize<SettingsData>(json) ?? new SettingsData();
-            }
-            else
-            {
-                data = new SettingsData();
-            }
-
-            data.Theme = theme.ToString();
+            var temporaryPath = SettingsPath + ".tmp";
             var options = new JsonSerializerOptions { WriteIndented = true };
-            File.WriteAllText(SettingsPath, JsonSerializer.Serialize(data, options));
+            File.WriteAllText(temporaryPath, JsonSerializer.Serialize(data, options));
+            File.Move(temporaryPath, SettingsPath, true);
         }
         catch { }
     }
@@ -181,6 +198,7 @@ public sealed class ThemeManager
     private class SettingsData
     {
         public string Theme { get; set; } = "Dark";
+        public string? BackendUrl { get; set; }
     }
 
     private sealed class ThemeWipeAdorner : System.Windows.Documents.Adorner

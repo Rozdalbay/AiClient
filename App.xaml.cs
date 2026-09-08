@@ -186,17 +186,21 @@ public partial class App : Application
         services.AddSingleton<ThemeManager>();
         services.AddSingleton<IToastService, ToastService>();
         services.AddSingleton<AuthService>();
-        services.AddSingleton(_ =>
+        services.AddSingleton(sp =>
         {
             var handler = new HttpClientHandler { UseProxy = false };
+            var backendUrl = sp.GetRequiredService<ThemeManager>().LoadBackendUrl() ?? "localhost";
+            if (!backendUrl.EndsWith('/'))
+                backendUrl += "/";
+
             return new HttpClient(handler)
             {
-                BaseAddress = new Uri("http://127.0.0.1:5000/"),
+                BaseAddress = CreateBackendUri(backendUrl),
                 Timeout = Timeout.InfiniteTimeSpan
             };
         });
         services.AddSingleton<IChatService, SseChatService>();
-        services.AddSingleton<IModelService, MockModelService>();
+        services.AddSingleton<IModelService, BackendModelService>();
         services.AddSingleton<IUsageService, LocalUsageService>();
         services.AddSingleton<IBackendService, BackendHealthService>();
 
@@ -205,5 +209,16 @@ public partial class App : Application
         services.AddSingleton<SettingsViewModel>();
 
         services.AddTransient<MainWindow>();
+    }
+
+    private static Uri CreateBackendUri(string backendUrl)
+    {
+        if (Uri.TryCreate(backendUrl, UriKind.Absolute, out var absoluteUri) &&
+            (absoluteUri.Scheme == Uri.UriSchemeHttp || absoluteUri.Scheme == Uri.UriSchemeHttps))
+        {
+            return absoluteUri;
+        }
+
+        return new Uri($"http://{backendUrl}", UriKind.Absolute);
     }
 }

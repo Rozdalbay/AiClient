@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -150,8 +151,11 @@ public partial class ChatViewModel : ObservableObject
                 {
                     fullContent += chunk.Text;
                     assistantMessage.Content = fullContent;
+                    Debug.WriteLine($"Assistant response length: {fullContent.Length}");
                 }
             }
+
+            Debug.WriteLine($"Assistant response length: {fullContent.Length}");
 
             var elapsed = (DateTime.Now - startTime).TotalMilliseconds;
             assistantMessage.ResponseTimeMs = elapsed;
@@ -160,7 +164,7 @@ public partial class ChatViewModel : ObservableObject
             var modelId = SelectedModel?.Id ?? "model-a";
             var modelName = SelectedModel?.DisplayName ?? assistantMessage.ModelName;
 
-            // если бэкенд реальный прислал usage - берём его; если нет (сервер лежит или мок) - считаем токены "на глаз" по словам, чтобы юзер видел хоть какие-то цифры
+            // Usage записывается только при наличии реальных данных от backend; локальная оценка токенов запрещена.
             if (streamUsage is not null)
             {
                 assistantMessage.InputTokens = streamUsage.InputTokens;

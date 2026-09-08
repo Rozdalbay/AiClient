@@ -27,5 +27,11 @@ public partial class ModelInfo : ObservableObject
     private int _contextWindow;
 
     [ObservableProperty]
+    private bool _isFree;
+
+    [ObservableProperty]
+    private string? _description;
+
+    [ObservableProperty]
     private string _icon = "\uE99A"; 
 }

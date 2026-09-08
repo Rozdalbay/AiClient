@@ -161,6 +161,11 @@ public partial class MainViewModel : ObservableObject
             AvailableModels = new ObservableCollection<ModelInfo>(models);
             SelectedModel = AvailableModels.FirstOrDefault();
         }
+        catch
+        {
+            AvailableModels.Clear();
+            SelectedModel = null;
+        }
         finally
         {
             IsModelsLoading = false;

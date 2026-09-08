@@ -8,6 +8,7 @@ namespace AiDesktopClient.Services;
 public sealed class BackendHealthService : IBackendService
 {
     private readonly HttpClient _httpClient;
+    private readonly SemaphoreSlim _requestLock = new(1, 1);
 
     public BackendHealthService(HttpClient httpClient)
     {
@@ -18,11 +19,13 @@ public sealed class BackendHealthService : IBackendService
     public async Task<BackendStatusDto> GetStatusAsync(CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();
+        await _requestLock.WaitAsync(cancellationToken);
         try
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, "/");
             using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             sw.Stop();
+            Debug.WriteLine($"[ConnectionStatus] URL={_httpClient.BaseAddress} Endpoint=/ StatusCode={(int)response.StatusCode}");
 
             return new BackendStatusDto
             {
@@ -57,20 +60,45 @@ public sealed class BackendHealthService : IBackendService
                 ErrorMessage = "Backend is unreachable"
             };
         }
+        finally
+        {
+            _requestLock.Release();
+        }
     }
 
     public async Task<bool> TestConnectionAsync(string backendUrl, CancellationToken cancellationToken = default)
     {
+        var backendUri = CreateBackendUri(backendUrl);
+        await _requestLock.WaitAsync(cancellationToken);
         try
         {
-            using var testClient = new HttpClient { BaseAddress = new Uri(backendUrl), Timeout = TimeSpan.FromSeconds(5) };
-            using var request = new HttpRequestMessage(HttpMethod.Get, "/");
-            using var response = await testClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            return true;
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeout.CancelAfter(TimeSpan.FromSeconds(5));
+            using var request = new HttpRequestMessage(HttpMethod.Get, new Uri(backendUri, "/"));
+            using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
+            Debug.WriteLine($"[TestConnection] URL={backendUri} Endpoint=/ StatusCode={(int)response.StatusCode}");
+
+            return response.IsSuccessStatusCode || (int)response.StatusCode >= 400;
         }
         catch
         {
             return false;
         }
+        finally
+        {
+            _requestLock.Release();
+        }
+    }
+
+    private static Uri CreateBackendUri(string backendUrl)
+    {
+        var value = backendUrl.Trim();
+        if (!Uri.TryCreate(value, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+        {
+            uri = new Uri($"http://{value}", UriKind.Absolute);
+        }
+
+        return new UriBuilder(uri) { Path = uri.AbsolutePath.EndsWith('/') ? uri.AbsolutePath : uri.AbsolutePath + '/' }.Uri;
     }
 }

@@ -228,7 +228,7 @@ public partial class MarkdownRenderer : UserControl
         {
             if (string.IsNullOrEmpty(part)) continue;
 
-            if (part.StartsWith("**") && part.EndsWith("**"))
+            if (part.Length >= 4 && part.StartsWith("**") && part.EndsWith("**"))
             {
                 paragraph.Inlines.Add(new Run(part[2..^2])
                 {

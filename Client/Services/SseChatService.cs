@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -48,7 +49,20 @@ public sealed class SseChatService : IChatService
             HttpCompletionOption.ResponseHeadersRead,
             cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorMessage = response.StatusCode switch
+            {
+                System.Net.HttpStatusCode.Unauthorized => "OpenRouter API key is invalid or missing.",
+                System.Net.HttpStatusCode.Forbidden => "OpenRouter access was forbidden for this request.",
+                System.Net.HttpStatusCode.TooManyRequests => "OpenRouter rate limit reached. Please try again later.",
+                System.Net.HttpStatusCode.BadRequest => "OpenRouter rejected the request.",
+                System.Net.HttpStatusCode.RequestTimeout => "OpenRouter request timed out. Please try again.",
+                >= System.Net.HttpStatusCode.InternalServerError => "OpenRouter is temporarily unavailable. Please try again later.",
+                _ => "Backend request failed."
+            };
+            throw new HttpRequestException(errorMessage, null, response.StatusCode);
+        }
 
         await using var stream =
             await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -57,47 +71,56 @@ public sealed class SseChatService : IChatService
 
         // чанки текста отдаём наружу as-yield возвращая, а usage складываем в словарь и в конце отдаём отдельным чанком - чтобы VM не гадала
         StreamUsage? capturedUsage = null;
+        var eventCount = 0;
+        var contentChunkCount = 0;
+        var responseLength = 0;
 
+        var parser = new SseEventParser();
+        var buffer = new char[1024];
         while (true)
         {
-            var line = await reader.ReadLineAsync(cancellationToken);
-
-            if (line is null)
+            var count = await reader.ReadAsync(buffer.AsMemory(), cancellationToken);
+            if (count == 0)
                 break;
 
-            if (string.IsNullOrWhiteSpace(line))
-                continue;
+            foreach (var data in parser.Append(buffer.AsSpan(0, count)))
+            {
+                eventCount++;
+                Debug.WriteLine($"SSE event received; length: {data.Length}");
 
-            if (!line.StartsWith("data:"))
-                continue;
+                if (data == "[DONE]")
+                    goto StreamCompleted;
 
-            var data = line["data:".Length..].TrimStart();
+                if (string.IsNullOrWhiteSpace(data))
+                    continue;
 
-            // маркер конца стрима; [DONE] - всё, шабаш; иначе распарсили JSON и раздали по карманам (delta → текст, usage → словарь)
-            if (data == "[DONE]")
-                break;
-
-            var sseEvent = JsonSerializer.Deserialize<SseEvent>(
-                data,
-                new JsonSerializerOptions
+                var sseEvent = JsonSerializer.Deserialize<SseEvent>(data, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
 
-            if (sseEvent is null)
-                continue;
+                if (sseEvent is null)
+                    continue;
 
-            if (sseEvent.Usage is not null)
-            {
-                capturedUsage = sseEvent.Usage;
-            }
+                if (sseEvent.Error is not null)
+                    throw new HttpRequestException(sseEvent.Error);
 
-            if (sseEvent.Delta is not null)
-            {
-                yield return new StreamChunk { Text = sseEvent.Delta };
+                if (sseEvent.Usage is not null)
+                    capturedUsage = sseEvent.Usage;
+
+                var text = sseEvent.Delta ?? sseEvent.Chunk ?? sseEvent.Choices?.FirstOrDefault()?.Delta?.Content;
+                if (text is not null)
+                {
+                    contentChunkCount++;
+                    responseLength += text.Length;
+                    Debug.WriteLine($"Content chunk length: {text.Length}");
+                    yield return new StreamChunk { Text = text };
+                }
             }
         }
 
+    StreamCompleted:
+        Debug.WriteLine($"Assistant response length: {responseLength}; SSE events: {eventCount}; content chunks: {contentChunkCount}");
         _usageResults[chatId] = capturedUsage;
 
         yield return new StreamChunk { Usage = capturedUsage };
@@ -137,6 +160,19 @@ public sealed class SseChatService : IChatService
     private sealed class SseEvent
     {
         public string? Delta { get; init; }
+        public string? Chunk { get; init; }
+        public List<SseChoice>? Choices { get; init; }
         public StreamUsage? Usage { get; init; }
+        public string? Error { get; init; }
+    }
+
+    private sealed class SseChoice
+    {
+        public SseDelta? Delta { get; init; }
+    }
+
+    private sealed class SseDelta
+    {
+        public string? Content { get; init; }
     }
 }

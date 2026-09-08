@@ -60,6 +60,7 @@ public partial class SettingsViewModel : ObservableObject
         _themeManager = themeManager;
         _authService = authService;
         _isDarkTheme = themeManager.CurrentTheme == AppTheme.Dark;
+        _backendUrl = themeManager.LoadBackendUrl() ?? "localhost";
 
         var session = authService.LoadSession();
         _currentUsername = session?.Username ?? string.Empty;
@@ -91,6 +92,9 @@ public partial class SettingsViewModel : ObservableObject
             ConnectionTestResult = result
                 ? "Connection successful"
                 : "Connection failed. Check the URL and try again.";
+
+            if (result)
+                _themeManager.SaveBackendUrl(BackendUrl);
         }
         catch (Exception ex)
         {

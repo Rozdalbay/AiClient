@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AiDesktopClient.Models;
 
 namespace AiDesktopClient.Services;
@@ -29,8 +30,14 @@ public sealed class StreamChunk
 
 public sealed class StreamUsage
 {
+    [JsonPropertyName("input_tokens")]
     public int InputTokens { get; init; }
+
+    [JsonPropertyName("output_tokens")]
     public int OutputTokens { get; init; }
+
+    [JsonPropertyName("model")]
+    public string? ModelId { get; init; }
 }
 
 public sealed class ChatResponse
